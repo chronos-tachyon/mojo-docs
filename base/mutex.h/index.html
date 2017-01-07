@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>base/mutex.h : Mojo</title>
+  <link rel="sitemap" type="text/xml" href="../../sitemap.xml">
+  <!-- link rel="icon" type="image/png" href="../../.img/favicon.png" -->
+  <link rel="stylesheet" type="text/css" href="../../.css/lity-1.6.6.min.css">
+  <link rel="stylesheet" type="text/css" href="../../.css/style.css">
+  <script src="../../.js/jquery-3.1.0.slim.min.js" defer></script>
+  <script src="../../.js/lity-1.6.6.min.js" defer></script>
+  <script src="../../.js/nav.js" defer></script>
+</head>
+<body>
+  <article id="main">
+    <header>
+      <p><a href="/">Mojo</a> &gt; <a href="../">base</a> &gt;</p>
+      <h1>mutex.h</h1>
+    </header>
+
+    <p>GitHub:
+    <a href="https://github.com/chronos-tachyon/mojo/blob/master/base/mutex.h">base/mutex.h</a>
+    <a href="https://github.com/chronos-tachyon/mojo/blob/master/base/mutex.cc">base/mutex.cc</a>
+    </p>
+
+    <div id="toc">
+      Waiting on JavaScript...
+    </div>
+
+    <section>
+      <h2 id="functions">Top-level Functions</h2>
+
+      <h3 id="acquire_lock">acquire_lock()</h3>
+
+<pre class="codebox">
+namespace base {
+
+<a href="#Lock">Lock</a> <b>acquire_lock</b>(<a href="http://en.cppreference.com/w/cpp/thread/mutex">std::mutex</a>&amp; mu);
+
+}
+</pre>
+
+      <p>STABLE. Wrapper for <code>base::Lock(mu)</code>.</p>
+
+      <h3 id="acquire_read">acquire_read()</h3>
+
+<pre class="codebox">
+namespace base {
+
+<a href="#RLock">RLock</a> <b>acquire_read</b>(<a href="#RWMutex">RWMutex</a>&amp; rwmu);
+
+}
+</pre>
+
+      <p>STABLE. Wrapper for <code>base::RLock(rwmu)</code>.</p>
+
+      <h3 id="acquire_write">acquire_write()</h3>
+
+<pre class="codebox">
+namespace base {
+
+<a href="#WLock">WLock</a> <b>acquire_write</b>(<a href="#RWMutex">RWMutex</a>&amp; rwmu);
+
+}
+</pre>
+
+      <p>STABLE. Wrapper for <code>base::WLock(rwmu)</code>.</p>
+    </section>
+    <hr>
+    <section>
+      <h2 id="RWMutex">RWMutex</h2>
+
+<pre class="codebox">
+namespace base {
+
+class <b>RWMutex</b> {
+ public:
+  <a href="#RWMutex-ctor">RWMutex</a>();
+
+  void <a href="#RWMutex-lock">lock</a>();
+  bool <a href="#RWMutex-try_lock">try_lock</a>();
+  void <a href="#RWMutex-unlock">unlock</a>();
+
+  void <a href="#RWMutex-lock_read">lock_read</a>();
+  bool <a href="#RWMutex-try_lock_read">try_lock_read</a>();
+  void <a href="#RWMutex-unlock_read">unlock_read</a>();
+
+  <s>RWMutex(const RWMutex&amp;) = delete;</s>
+  <s>RWMutex(RWMutex&amp;&amp;) = delete;</s>
+  <s>RWMutex&amp; operator=(const RWMutex&amp;) = delete;</s>
+  <s>RWMutex&amp; operator=(RWMutex&amp;&amp;) = delete;</s>
+};
+
+}
+</pre>
+
+      <p>STABLE. Implements a
+      <a href="https://en.wikipedia.org/wiki/Readers%E2%80%93writer_lock">readers-writer lock</a>
+      with a write-preferring bias. This implementation is intended for
+      protecting frequently-read, rarely-updated data.</p>
+
+      <p>This class should normally be used via the RAII helpers,
+      <a href="#RLock">base::RLock</a> and
+      <a href="#WLock">base::WLock</a>.</p>
+
+      <h3 id="RWMutex-ctor">RWMutex::RWMutex()</h3>
+
+      <p>Constructs the mutex in the unlocked state.</p>
+
+      <h3 id="RWMutex-lock">RWMutex::lock()</h3>
+
+      <p>Locks the mutex in exclusive/writer mode. Blocks until the mutex can
+      be acquired exclusively, i.e. until the mutex has been released by all
+      other threads.</p>
+
+      <h3 id="RWMutex-try_lock">RWMutex::try_lock()</h3>
+
+      <p>Attempts to lock the mutex in exclusive/writer mode. Does not block;
+      returns true iff the lock was acquired without blocking.</p>
+
+      <h3 id="RWMutex-unlock">RWMutex::unlock()</h3>
+
+      <p>Releases the exclusive/writer lock.</p>
+
+      <h3 id="RWMutex-lock_read">RWMutex::lock_read()</h3>
+
+      <p>Locks the mutex in shared/reader mode. Multiple readers can lock the
+      mutex in parallel without blocking, but locking will block if any
+      threads are attempting to acquire the lock in exclusive/writer mode.</p>
+
+      <h3 id="RWMutex-try_lock_read">RWMutex::try_lock_read()</h3>
+
+      <p>Attempts to lock the mutex in shared/reader mode. Does not block;
+      returns true iff the lock was acquired without blocking.</p>
+
+      <h3 id="RWMutex-unlock_read">RWMutex::unlock_read()</h3>
+
+      <p>Releases a shared/reader lock.</p>
+    </section>
+    <hr>
+    <section>
+      <h2 id="Lock">Lock</h2>
+
+<pre class="codebox">
+namespace base {
+
+using <b>Lock</b> = <a href="http://en.cppreference.com/w/cpp/thread/unique_lock">std::unique_lock</a>&lt;<a href="http://en.cppreference.com/w/cpp/thread/mutex">std::mutex</a>&gt;;
+
+}
+</pre>
+
+      <p>STABLE. RAII class that acquires and releases the mutex. Friendly
+      alias for
+      <a href="http://en.cppreference.com/w/cpp/thread/unique_lock">std::unique_lock</a>
+      with
+      <a href="http://en.cppreference.com/w/cpp/thread/mutex">std::mutex</a>.</p>
+    </section>
+    <hr>
+    <section>
+      <h2 id="RLock">RLock</h2>
+
+<pre class="codebox">
+namespace base {
+
+class <b>RLock</b> {
+ public:
+  <a href="#RLock-ctor">RLock</a>() noexcept;
+  <a href="#RLock-ctor">explicit RLock</a>(<a href="#RWMutex">RWMutex</a>&amp; rwmu);
+  <a href="#RLock-ctor">RLock</a>(<a href="#RWMutex">RWMutex</a>&amp; rwmu, <a href="http://en.cppreference.com/w/cpp/thread/lock_tag_t">std::defer_lock_t</a>) noexcept;
+  <a href="#RLock-ctor">RLock</a>(<a href="#RWMutex">RWMutex</a>&amp; rwmu, <a href="http://en.cppreference.com/w/cpp/thread/lock_tag_t">std::try_to_lock_t</a>);
+  <a href="#RLock-ctor">RLock</a>(<a href="#RWMutex">RWMutex</a>&amp; rwmu, <a href="http://en.cppreference.com/w/cpp/thread/lock_tag_t">std::adopt_lock_t</a>);
+  <a href="#RLock-ctor">RLock</a>(RLock&amp;&amp; x) noexcept;
+  <a href="#RLock-dtor">~RLock</a>() noexcept;
+
+  RLock&amp; <a href="#RLock-opeq">operator=</a>(RLock&amp;&amp; x) noexcept;
+
+  void <a href="#RLock-swap">swap</a>(RLock&amp; x) noexcept;
+
+  void <a href="#RLock-lock">lock</a>();
+  void <a href="#RLock-unlock">unlock</a>();
+
+  <a href="#RWMutex">RWMutex</a>* <a href="#RLock-release">release</a>() noexcept;
+  <a href="#RWMutex">RWMutex</a>* <a href="#RLock-mutex">mutex</a>() const noexcept;
+  bool <a href="#RLock-owns_lock">owns_lock</a>() const noexcept;
+  <a href="#RLock-opbool">explicit operator bool</a>() const noexcept;
+
+  <s>RLock(const RLock&amp;) = delete;</s>
+  <s>RLock&amp; operator=(const RLock&amp;) = delete;</s>
+};
+
+void <a href="#RLock-swap">swap</a>(RLock&amp; a, RLock&amp; b) noexcept;
+
+}
+</pre>
+
+      <p>STABLE. RAII class that acquires and releases the mutex in
+      shared/reader mode.</p>
+
+      <p>This class is basically a reimplementation of
+      <code>std::unique_lock</code> modified to call the
+      <code>foo_read()</code> methods of
+      <a href="#RWMutex"><code>RWMutex</code></a>.</p>
+
+      <h3 id="RLock-ctor">RLock::RLock()</h3>
+
+      <p>Constructs an RLock.</p>
+
+      <ul>
+        <li>
+          The default constructor produces an empty RLock: that is, an RLock
+          in the "not owned" mode that has a null RWMutex.
+        </li>
+        <li>
+          The 1-arg RWMutex constructor locks the mutex in shared/read mode
+          upon construction and leaves the RLock in "owned" mode.
+        </li>
+        <li>
+          The <code>std::defer_lock_t</code> constructor does NOT lock the
+          mutex and leaves the RLock in "not owned" mode.
+        </li>
+        <li>
+          The <code>std::try_to_lock_t</code> constructor tries to lock the
+          mutex in shared/read mode without blocking, leaving the RLock in
+          either "owned" or "not owned" mode. The caller must check which is
+          the case by using
+          <a href="#RLock-owns_lock"><code>owns_lock()</code></a>.
+        </li>
+        <li>
+          The <code>std::adopt_lock_t</code> constructor does NOT lock the
+          mutex, BUT assumes that the caller has locked it, and therefore
+          leaves the RLock in "owned" mode.
+        </li>
+        <li>
+          The move constructor takes the mutex and ownership of the moved-from
+          RLock, if the moved-from RLock had a mutex and/or was in "owned"
+          mode. The moved-from RLock is left in the default-constructed state.
+        </li>
+      </ul>
+
+      <h3 id="RLock-dtor">RLock::~RLock()</h3>
+
+      <p>Destroys the RLock. If the RLock is in "owned" mode, unlocks the
+      mutex in shared/read mode.</p>
+
+      <h3 id="RLock-opeq">RLock::operator=()</h3>
+
+      <p>Assigns an RLock. The move assignment operator works analogously to
+      the move constructor, leaving the moved-from RLock in the
+      default-constructed state.</p>
+
+      <h3 id="RLock-swap">RLock::swap()</h3>
+
+      <p>Swaps two RLocks.</p>
+
+      <h3 id="RLock-lock">RLock::lock()</h3>
+
+      <p>Locks the RWMutex in shared/read mode and changes the RLock from "not
+      owned" mode to "owned" mode.</p>
+
+      <h3 id="RLock-unlock">RLock::unlock()</h3>
+
+      <p>Unlocks the RWMutex in shared/read mode and changes the RLock from
+      "owned" mode to "not owned" mode.</p>
+
+      <h3 id="RLock-release">RLock::release()</h3>
+
+      <p>Releases ownership of the RWMutex, returning a pointer to the mutex
+      and changing this RLock to the default-constructed state. This method
+      does not force the mutex into a particular state before returning it: it
+      is the caller's responsibility to know if the mutex needs to be
+      unlocked.</p>
+
+      <h3 id="RLock-mutex">RLock::mutex()</h3>
+
+      <p>Returns a pointer to this RLock's associated RWMutex.</p>
+
+      <h3 id="RLock-owns_lock">RLock::owns_lock()</h3>
+
+      <p>Returns true iff this RLock is in "owned" mode.</p>
+
+      <h3 id="RLock-opbool">RLock::operator bool()</h3>
+
+      <p>Alias for <a href="#RLock-owns_lock">owns_lock()</a>: returns true
+      iff this RLock is in "owned" mode.</p>
+    </section>
+    <hr>
+    <section>
+      <h2 id="WLock">WLock</h2>
+
+<pre class="codebox">
+namespace base {
+
+using <b>WLock</b> = <a href="http://en.cppreference.com/w/cpp/thread/unique_lock">std::unique_lock</a>&lt;<a href="#RWMutex">RWMutex</a>&gt;;
+
+}
+</pre>
+
+      <p>STABLE. RAII class that acquires and releases the mutex in
+      exclusive/writer mode. Friendly alias for
+      <a href="http://en.cppreference.com/w/cpp/thread/unique_lock">std::unique_lock</a>
+      with <a href="#RWMutex">RWMutex</a>.</p>
+    </section>
+  </article>
+
+  <nav id="navbar">
+    <p>Waiting for JavaScript...</p>
+  </nav>
+</body>
+</html>

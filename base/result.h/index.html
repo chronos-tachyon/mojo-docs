@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>base/result.h : Mojo</title>
+  <link rel="sitemap" type="text/xml" href="../../sitemap.xml">
+  <!-- link rel="icon" type="image/png" href="../../.img/favicon.png" -->
+  <link rel="stylesheet" type="text/css" href="../../.css/lity-1.6.6.min.css">
+  <link rel="stylesheet" type="text/css" href="../../.css/style.css">
+  <script src="../../.js/jquery-3.1.0.slim.min.js" defer></script>
+  <script src="../../.js/lity-1.6.6.min.js" defer></script>
+  <script src="../../.js/nav.js" defer></script>
+</head>
+<body>
+  <article id="main">
+    <header>
+      <p><a href="/">Mojo</a> &gt; <a href="../">base</a> &gt;</p>
+      <h1>result.h</h1>
+    </header>
+
+    <p>GitHub:
+    <a href="https://github.com/chronos-tachyon/mojo/blob/master/base/result.h">base/result.h</a>
+    <a href="https://github.com/chronos-tachyon/mojo/blob/master/base/result.cc">base/result.cc</a>
+    </p>
+
+    <div id="toc">
+      Waiting on JavaScript...
+    </div>
+
+    <section>
+      <h2 id="ResultCode">ResultCode</h2>
+
+<pre class="codebox">
+namespace base {
+
+enum class <b>ResultCode</b> : uint8_t {
+  OK                  = 0x00,
+  UNKNOWN             = 0x01,
+  INTERNAL            = 0x02,
+  CANCELLED           = 0x03,
+  FAILED_PRECONDITION = 0x04,
+  NOT_FOUND           = 0x05,
+  ALREADY_EXISTS      = 0x06,
+  WRONG_TYPE          = 0x07,
+  PERMISSION_DENIED   = 0x08,
+  UNAUTHENTICATED     = 0x09,
+  INVALID_ARGUMENT    = 0x0a,
+  OUT_OF_RANGE        = 0x0b,
+  NOT_IMPLEMENTED     = 0x0c,
+  UNAVAILABLE         = 0x0d,
+  ABORTED             = 0x0e,
+  RESOURCE_EXHAUSTED  = 0x0f,
+  DEADLINE_EXCEEDED   = 0x10,
+  DATA_LOSS           = 0x11,
+  END_OF_FILE         = 0x12,
+};
+
+}
+</pre>
+
+      <p>STABLE. Denotes the type of success or failure that the operation
+      encountered.</p>
+
+      <ul>
+        <li>
+          <code>OK</code>: Success.
+        </li>
+        <li>
+          <code>UNKNOWN</code>: Failure of an unknown type, or of a type that does not fit into these codes.
+        </li>
+        <li>
+          <code>INTERNAL</code>: Internal-only failure that should never be seen by the user.
+        </li>
+        <li>
+          <code>CANCELLED</code>: The operation was cancelled before it could complete.
+        </li>
+        <li>
+          <code>FAILED_PRECONDITION</code>: The world was in a state that was not compatible with the operation.
+          <ul>
+            <li>Example: attempting to close a file that isn't open.</li>
+          </ul>
+        </li>
+        <li>
+          <code>NOT_FOUND</code>: The operation was unable to find the specified resource.
+        </li>
+        <li>
+          <code>ALREADY_EXISTS</code>: The operation found that the specified resource already existed.
+        </li>
+        <li>
+          <code>WRONG_TYPE</code>: The operation found a resource of the wrong type.
+          <ul>
+            <li>Example: expected a directory, found a regular file.</li>
+          </ul>
+        </li>
+        <li>
+          <code>PERMISSION_DENIED</code>: The operation failed because the authenticated user is not authorized.
+        </li>
+        <li>
+          <code>UNAUTHENTICATED</code>: The operation failed because the user could not be authenticated.
+        </li>
+        <li>
+          <code>INVALID_ARGUMENT</code>: The operation failed because of an argument that doesn't make sense.
+        </li>
+        <li>
+          <code>OUT_OF_RANGE</code>: The operation failed because an argument was outside the valid range.
+        </li>
+        <li>
+          <code>NOT_IMPLEMENTED</code>: The operation failed because the resource does not support it.
+        </li>
+        <li>
+          <code>UNAVAILABLE</code>: The operation failed because the resource was not available.
+          <ul>
+            <li>Example: cannot read a remote file because the network is down.</li>
+          </ul>
+        </li>
+        <li>
+          <code>ABORTED</code>: The operation failed because the system interrupted it.
+        </li>
+        <li>
+          <code>RESOURCE_EXHAUSTED</code>: The operation failed because a finite resource was already in use.
+          <ul>
+            <li>Example: too many open file handles.</li>
+            <li>Example: disk full.</li>
+          </ul>
+        </li>
+        <li>
+          <code>DEADLINE_EXCEEDED</code>: The operation took so long that we gave up on it.
+          <ul>
+            <li>Example: timed out while writing to remote filesystem.</li>
+          </ul>
+        </li>
+        <li>
+          <code>DATA_LOSS</code>: The operation failed because data was lost or corrupted.
+          <ul>
+            <li>Example: read from file fails due to bad checksum.</li>
+          </ul>
+        </li>
+        <li>
+          <code>END_OF_FILE</code>: The operation failed because the end of the stream was reached prematurely.
+        </li>
+      </ul>
+    </section>
+    <hr>
+    <section>
+      <h2 id="Result">Result</h2>
+
+<pre class="codebox">
+namespace base {
+
+class <b>Result</b> {
+ public:
+  template &lt;typename... Args&gt; static Result <a href="#Result-unknown">unknown</a>(const Args&amp;... args);
+  template &lt;typename... Args&gt; static Result <a href="#Result-internal">internal</a>(const Args&amp;... args);
+  template &lt;typename... Args&gt; static Result <a href="#Result-cancelled">cancelled</a>(const Args&amp;... args);
+  template &lt;typename... Args&gt; static Result <a href="#Result-failed_precondition">failed_precondition</a>(const Args&amp;... args);
+  template &lt;typename... Args&gt; static Result <a href="#Result-not_found">not_found</a>(const Args&amp;... args);
+  template &lt;typename... Args&gt; static Result <a href="#Result-already_exists">already_exists</a>(const Args&amp;... args);
+  template &lt;typename... Args&gt; static Result <a href="#Result-wrong_type">wrong_type</a>(const Args&amp;... args);
+  template &lt;typename... Args&gt; static Result <a href="#Result-permission_denied">permission_denied</a>(const Args&amp;... args);
+  template &lt;typename... Args&gt; static Result <a href="#Result-unauthenticated">unauthenticated</a>(const Args&amp;... args);
+  template &lt;typename... Args&gt; static Result <a href="#Result-invalid_argument">invalid_argument</a>(const Args&amp;... args);
+  template &lt;typename... Args&gt; static Result <a href="#Result-out_of_range">out_of_range</a>(const Args&amp;... args);
+  template &lt;typename... Args&gt; static Result <a href="#Result-not_implemented">not_implemented</a>(const Args&amp;... args);
+  template &lt;typename... Args&gt; static Result <a href="#Result-unavailable">unavailable</a>(const Args&amp;... args);
+  template &lt;typename... Args&gt; static Result <a href="#Result-aborted">aborted</a>(const Args&amp;... args);
+  template &lt;typename... Args&gt; static Result <a href="#Result-resource_exhausted">resource_exhausted</a>(const Args&amp;... args);
+  template &lt;typename... Args&gt; static Result <a href="#Result-deadline_exceeded">deadline_exceeded</a>(const Args&amp;... args);
+  template &lt;typename... Args&gt; static Result <a href="#Result-data_loss">data_loss</a>(const Args&amp;... args);
+  template &lt;typename... Args&gt; static Result <a href="#Result-eof">eof</a>(const Args&amp;... args);
+
+  template &lt;typename... Args&gt; static Result <a href="#Result-from_errno">from_errno</a>(int err_no, const Args&amp;... args);
+
+  <a href="#Result-ctor">Result</a>() noexcept;
+  <a href="#Result-ctor">Result</a>(std::nullptr_t) noexcept;
+  <a href="#Result-ctor">Result</a>(<a href="#ResultCode">ResultCode</a> code, std::string message = std::string(), int err_no = -1);
+  <a href="#Result-ctor">Result</a>(const Result&amp;) noexcept;
+  <a href="#Result-ctor">Result</a>(Result&amp;&amp;) noexcept;
+  Result&amp; <a href="#Result-opeq">operator=</a>(const Result&amp;) noexcept;
+  Result&amp; <a href="#Result-opeq">operator=</a>(Result&amp;&amp;) noexcept;
+  Result&amp; <a href="#Result-opeq">operator=</a>(std::nullptr_t);
+
+  void <a href="#Result-reset">reset</a>() noexcept;
+  void <a href="#Result-swap">swap</a>(Result&amp; other) noexcept;
+
+  <a href="#ResultCode">ResultCode</a> <a href="#Result-code">code</a>() const noexcept;
+  int <a href="#Result-errno_value">errno_value</a>() const noexcept;
+  const std::string&amp; <a href="#Result-message">message</a>() const noexcept;
+
+  <a href="#Result-opbool">explicit operator bool</a>() const;
+  void <a href="#Result-expect_ok">expect_ok</a>(const char* file, unsigned int line) const;
+  void <a href="#Result-ignore_ok">ignore_ok</a>() const;
+
+  template &lt;typename F, typename... Args&gt;
+  Result <a href="#Result-and_then">and_then</a>(F continuation, Args&amp;&amp;... args) const;
+  Result <a href="#Result-and_then">and_then</a>(base::Result x) const;
+
+  template &lt;typename F, typename... Args&gt;
+  Result <a href="#Result-or_else">or_else</a>(F continuation, Args&amp;&amp;... args) const;
+  Result <a href="#Result-or_else">or_else</a>(base::Result r) const;
+
+  void <a href="#Result-append_to">append_to</a>(std::string* out) const;
+  std::size_t <a href="#Result-length_hint">length_hint</a>() const noexcept;
+  std::string <a href="#Result-as_string">as_string</a>() const;
+};
+
+void <a href="#Result-swap">swap</a>(Result&amp; a, Result&amp; b) noexcept;
+
+}
+</pre>
+
+      <p>STABLE. A value type representing the success or failure of an
+      operation. All field accessor methods are read-only.</p>
+
+      <h3 id="Result-ctor">Result::Result()</h3>
+
+      <p>Constructs a Result. The default constructor creates a successful
+      Result, the copy constructor does the usual thing, the move constructor
+      leaves the moved-from Result in the default-constructed (successful)
+      state, and the 3-arg constructor creates a failed Result with the
+      provided fields.</p>
+
+      <h3 id="Result-opeq">Result::operator=()</h3>
+
+      <p>Assigns a Result. The copy assignment operator does the usual thing,
+      the move assignment operator leaves the moved-from Result in the
+      default-constructed (successful) state, and the <code>nullptr</code>
+      assignment operator changes this Result to the default-constructed
+      (successful) state.</p>
+
+      <h3 id="Result-reset">Result::reset()</h3>
+
+      <p>Changes this Result to the default-constructed (successful)
+      state.</p>
+
+      <h3 id="Result-swap">Result::swap()</h3>
+
+      <p>Swaps two Result objects.</p>
+
+      <h3 id="Result-accessors">Accessors</h3>
+
+      <h4 id="Result-code">Result::code()</h4>
+
+      <p>Returns the <a href="#ResultCode">ResultCode</a> with which this
+      Result was constructed.</p>
+
+      <h4 id="Result-errno_value">Result::errno_value()</h4>
+
+      <p>Returns the errno code with which this Result was constructed. Always
+      returns <code>0</code> if this Result is a success, and returns
+      <code>-1</code> if it is a failure but no errno code was provided.</p>
+
+      <h4 id="Result-message">Result::message()</h4>
+
+      <p>Returns the message with which this Result was constructed. Always
+      returns <code>""</code> if this Result is a success, or if it is a
+      failure but no message was provided.</p>
+
+      <h3 id="Result-checking-success">Checking for Success</h3>
+
+      <h4 id="Result-opbool">Result::operator bool()</h4>
+
+      <p>Returns true iff this Result is successful.</p>
+
+      <h4 id="Result-expect_ok">Result::expect_ok()</h4>
+
+      <p>Logs an error iff this Result is a failure.</p>
+
+      <h4 id="Result-ignore_ok">Result::ignore_ok()</h4>
+
+      <p>Ignores whether this Result is a success or failure.</p>
+
+      <p>This method exists to signal to the compiler that ignoring the
+      Result's value is intentional, as functions returning
+      <code>base::Result</code> may annotate themselves with
+      <a href="https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html"><code>__attribute__((warn_unused_result))</code></a>
+      or equivalent.</p>
+
+      <h4 id="Result-and_then">Result::and_then()</h4>
+
+      <p>If this Result is a failure, returns it immediately. If it is a
+      success, the non-functor version returns its argument, and the functor
+      version calls its functor and returns its return value.</p>
+
+      <p>Example:</p>
+
+<pre class="codebox">
+base::Result result = op1().<b>and_then</b>([] {
+  // op2() is never called if op1() failed
+  return op2();
+}).<b>and_then</b>([] {
+  // op3() is never called if op1() or op2() failed
+  return op3();
+});
+// This CHECK_OK fails if any of op1(), op2(), or op3() failed
+CHECK_OK(result);
+</pre>
+
+      <h4 id="Result-or_else">Result::or_else()</h4>
+
+      <p>If this Result is a success, returns it immediately. If it is a
+      failure, the non-functor version returns its argument, and the functor
+      version calls its functor and returns its return value.</p>
+
+      <p>Example:</p>
+
+<pre class="codebox">
+base::Result result = op1().<b>or_else</b>([] {
+  // op2() is only called if op1() failed
+  return op2();
+}).<b>or_else</b>([] {
+  // op3() is only called if op1() and op2() both failed
+  return op3();
+});
+// This CHECK_OK only fails if all three of op1(), op2(), and op3() failed
+CHECK_OK(result);
+</pre>
+
+      <h3 id="Result-stringify">Stringification</h3>
+
+      <h4 id="Result-append_to">Result::append_to()</h4>
+
+      <p>Stringifies this Result and appends it to the given string.</p>
+
+      <h4 id="Result-length_hint">Result::length_hint()</h4>
+
+      <p>Returns the estimated length of this Result's stringification.</p>
+
+      <h4 id="Result-as_string">Result::as_string()</h4>
+
+      <p>Stringifies this Result and returns it.</p>
+
+      <h3 id="Result-alternate-ctors">Alternate Constructors</h3>
+
+      <h4 id="Result-unknown">Result::unknown()</h4>
+      <h4 id="Result-internal">Result::internal()</h4>
+      <h4 id="Result-cancelled">Result::cancelled()</h4>
+      <h4 id="Result-failed_precondition">Result::failed_precondition()</h4>
+      <h4 id="Result-not_found">Result::not_found()</h4>
+      <h4 id="Result-already_exists">Result::already_exists()</h4>
+      <h4 id="Result-wrong_type">Result::wrong_type()</h4>
+      <h4 id="Result-permission_denied">Result::permission_denied()</h4>
+      <h4 id="Result-unauthenticated">Result::unauthenticated()</h4>
+      <h4 id="Result-invalid_argument">Result::invalid_argument()</h4>
+      <h4 id="Result-out_of_range">Result::out_of_range()</h4>
+      <h4 id="Result-not_implemented">Result::not_implemented()</h4>
+      <h4 id="Result-unavailable">Result::unavailable()</h4>
+      <h4 id="Result-aborted">Result::aborted()</h4>
+      <h4 id="Result-resource_exhausted">Result::resource_exhausted()</h4>
+      <h4 id="Result-deadline_exceeded">Result::deadline_exceeded()</h4>
+      <h4 id="Result-data_loss">Result::data_loss()</h4>
+      <h4 id="Result-eof">Result::eof()</h4>
+
+      <p>Each of these functions <code>Result::foo(...)</code> is a shortcut
+      for <code>Result(ResultCode::FOO, concat(...))</code>.</p>
+
+      <h4 id="Result-from_errno">Result::from_errno()</h4>
+
+      <p>This function <code>Result::from_errno(err_no, ...)</code> is a
+      shortcut for <code>Result(rc, concat(...), err_no)</code>, where
+      <code>rc</code> is determined automatically from
+      <code>err_no</code>.</p>
+    </section>
+  </article>
+
+  <nav id="navbar">
+    <p>Waiting for JavaScript...</p>
+  </nav>
+</body>
+</html>

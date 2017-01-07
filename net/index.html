@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>net : Mojo</title>
+  <link rel="sitemap" type="text/xml" href="../sitemap.xml">
+  <!-- link rel="icon" type="image/png" href="../.img/favicon.png" -->
+  <link rel="stylesheet" type="text/css" href="../.css/lity-1.6.6.min.css">
+  <link rel="stylesheet" type="text/css" href="../.css/style.css">
+  <script src="../.js/jquery-3.1.0.slim.min.js" defer></script>
+  <script src="../.js/lity-1.6.6.min.js" defer></script>
+  <script src="../.js/nav.js" defer></script>
+</head>
+<body>
+  <article id="main">
+    <header>
+      <p><a href="/">Mojo</a> &gt;</p>
+      <h1>net</h1>
+      <h2>Networking</h2>
+    </header>
+
+    <div id="toc">
+      Waiting on JavaScript...
+    </div>
+
+    <section>
+      <h2>net/options.h</h2>
+
+      <p>RC.  Provides <code>net::Options</code>, which holds options for how
+      to perform network operations.  In addition to holding an instance of
+      <code>io::Options</code>, this class includes knobs for the
+      <code>SO_REUSEADDR</code> and <code>IPV6_V6ONLY</code> socket options,
+      and for IPv4-vs-IPv6 address selection preferences.</p>
+    </section>
+
+    <section>
+      <h2>net/addr.h</h2>
+
+      <p>RC.  Provides <code>net::Addr</code>, a class that provides an
+      abstraction for network addresses.  Also defines
+      <code>net::AddrImpl</code>, a base class for implementations of
+      <code>net::Addr</code>.</p>
+    </section>
+
+    <section>
+      <h2>net/ip.h</h2>
+
+      <p>RC.  Provides <code>net::IP</code>, a value type for IPv4 and IPv6
+      addresses, and <code>net::CIDR</code>, a value type for address masks
+      adhering to the CIDR standard.</p>
+    </section>
+
+    <section>
+      <h2>net/sockopt.h</h2>
+
+      <p>RC.  Provides <code>net::SockOpt</code>, a value type representing a
+      specific socket option.</p>
+
+      <p>Example: <code>net::sockopt_reuseaddr</code> represents
+      <code>(SOL_SOCKET, SO_REUSEADDR)</code>.</p>
+    </section>
+
+    <section>
+      <h2>net/conn.h</h2>
+
+      <p>RC.  Provides <code>net::Conn</code> and
+      <code>net::ListenConn</code>, which provides a higher-level API over
+      sockets and other bi-directional data pipes.  Also defines
+      <code>net::ConnImpl</code> and <code>net::ListenConnImpl</code>, which
+      are the base classes for socket implementations.  One pre-made
+      implementation of each (native BSD sockets) is available in
+      <code>net/connfd.h</code>.</p>
+    </section>
+
+    <section>
+      <h2>net/protocol.h</h2>
+
+      <p>RC.  Defines <code>net::Protocol</code>, a base class for protocols.
+      A protocol is identified by a string like "tcp4" (TCP over IPv4) or
+      "unixgram" (<code>AF_UNIX</code> socket in datagram mode); each protocol
+      roughly corresponds to a triple of numbers passed to
+      <code>socket(2)</code>.</p>
+    </section>
+
+    <section>
+      <h2>net/registry.h</h2>
+
+      <p>RC.  Provides <code>net::Registry</code>, which provides a
+      higher-level API over a library of available protocols.</p>
+
+      <p>Also provides <code>net::system_registry()</code>, a shared instance
+      of <code>net::Registry</code> where certain <code>net::Protocol</code>s
+      get automatically installed.</p>
+    </section>
+
+    <section>
+      <h2>net/net.h</h2>
+
+      <p>RC.  Provides high-level functions for performing network operations,
+      such as <code>net::resolve()</code> (turn names into addresses) and
+      <code>net::dial()</code> (connect to an address).</p>
+
+      <p>(These are thin wrappers around the methods of
+      <code>net::system_registry()</code>.)</p>
+    </section>
+
+    <section>
+      <h2>net/inet.h</h2>
+
+      <p>RC.  Provides <code>net::inetaddr()</code>, a function which turns a
+      protocol name, a <code>net::IP</code>, and a port number into a
+      <code>net::Addr</code>.  Also provides <code>net::inetprotocol()</code>,
+      which returns the singleton instance of <code>net::Protocol</code> for
+      IPv4 and IPv6 sockets.</p>
+    </section>
+
+    <section>
+      <h2>net/unix.h</h2>
+
+      <p>RC.  Provides <code>net::unixaddr()</code>, a function which turns a
+      protocol name and a path into a <code>net::Addr</code>.  Also provides
+      <code>net::unixprotocol()</code>, which returns the singleton instance
+      of <code>net::Protocol</code> for <code>AF_UNIX</code> sockets.</p>
+    </section>
+
+    <section>
+      <h2>net/fake.h</h2>
+
+      <p>BETA.  Provides a toolkit for registering your own fake protocol that
+      uses in-process "sockets" (no FDs are involved).  Useful in tests of
+      higher-level socket code.</p>
+    </section>
+
+    <section>
+      <h2>net/connfd.h</h2>
+
+      <p><strong>NOTE</strong>: This header is only useful to implementers of
+      <code>net::Protocol</code> subclasses that use native BSD sockets.</p>
+
+      <p>RC.  Provides <code>net::fdconnreader()</code>,
+      <code>net::fdconnwriter()</code>, <code>net::fdconn()</code>, and
+      <code>net::fdlistenconn()</code>, each of which takes a file descriptor
+      for a native BSD socket and returns an implementation of its respective
+      class.</p>
+
+      <p>Also provides <code>net::FDProtocol</code>, a partially-specified
+      base class for subclasses of <code>net::Protocol</code> that use native
+      BSD sockets.</p>
+    </section>
+
+    <section>
+      <h2>net/testing.h</h2>
+
+      <p><strong>NOTE</strong>: This header is only useful to implementers of
+      <code>net::Protocol</code> subclasses.</p>
+
+      <p>BETA.  Provides <code>net::TestListenAndDial()</code>, a function
+      that takes a <code>net::Protocol</code> implementation and subjects it
+      to a vigorous workout.</p>
+    </section>
+  </article>
+
+  <nav id="navbar">
+    <p>Waiting for JavaScript...</p>
+  </nav>
+</body>
+</html>

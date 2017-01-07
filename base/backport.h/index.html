@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>base/backport.h : Mojo</title>
+  <link rel="sitemap" type="text/xml" href="../../sitemap.xml">
+  <!-- link rel="icon" type="image/png" href="../../.img/favicon.png" -->
+  <link rel="stylesheet" type="text/css" href="../../.css/lity-1.6.6.min.css">
+  <link rel="stylesheet" type="text/css" href="../../.css/style.css">
+  <script src="../../.js/jquery-3.1.0.slim.min.js" defer></script>
+  <script src="../../.js/lity-1.6.6.min.js" defer></script>
+  <script src="../../.js/nav.js" defer></script>
+</head>
+<body>
+  <article id="main">
+    <header>
+      <p><a href="/">Mojo</a> &gt; <a href="../">base</a> &gt;</p>
+      <h1>backport.h</h1>
+    </header>
+
+    <p>GitHub:
+    <a href="https://github.com/chronos-tachyon/mojo/blob/master/base/backport.h">base/backport.h</a>
+    <a href="https://github.com/chronos-tachyon/mojo/blob/master/base/backport.cc">base/backport.cc</a>
+    </p>
+
+    <div id="toc">
+      Waiting on JavaScript...
+    </div>
+
+    <section>
+      <h2 id="functions">Top-level Functions</h2>
+
+      <h3 id="make_unique">make_unique()</h3>
+
+<pre class="codebox">
+namespace base {
+namespace backport {
+
+template &lt;typename T, typename... Args&gt;
+std::unique_ptr&lt;T&gt; <b>make_unique</b>(Args&amp;&amp;... args);
+
+}
+}
+</pre>
+
+      <p>FROZEN.  This is a backport of
+      <a href="http://en.cppreference.com/w/cpp/memory/unique_ptr/make_unique"><code>std::make_unique</code> from C++14</a>.
+      It allocates a new instance of <code>T</code> via the
+      <code>T(args...)</code> constructor, and wraps it in a
+      <code>std::unique_ptr</code>.</p>
+    </section>
+
+    <section>
+      <h2 id="integer_sequence">integer_sequence</h2>
+      <h2 id="make_integer_sequence">make_integer_sequence</h2>
+      <h2 id="index_sequence">index_sequence</h2>
+      <h2 id="make_index_sequence">make_index_sequence</h2>
+
+<pre class="codebox">
+namespace base {
+namespace backport {
+
+template &lt;typename T, T... Indices&gt;
+struct <b>integer_sequence</b> {
+  using value_type = T;
+  static constexpr std::size_t size() noexcept;
+};
+
+template &lt;typename T, T N&gt;
+using <b>make_integer_sequence</b> = integer_sequence&lt;T, /* 0, 1, 2, ..., (N - 1)*/ &gt;;
+
+template &lt;std::size_t... Indices&gt;
+using <b>index_sequence</b> = integer_sequence&lt;std::size_t, Indices...&gt;;
+
+template &lt;std::size_t N&gt;
+using <b>make_index_sequence</b> = make_integer_sequence&lt;std::size_t, N&gt;;
+
+}
+}
+</pre>
+
+      <p>FROZEN.  These are backports of
+      <a href="http://en.cppreference.com/w/cpp/utility/integer_sequence"><code>std::integer_sequence</code> and friends from C++14</a>.
+      They provide compile-time integer sequences, which are useful for
+      unpacking items from a <code>std::tuple</code>.</p>
+    </section>
+  </article>
+
+  <nav id="navbar">
+    <p>Waiting for JavaScript...</p>
+  </nav>
+</body>
+</html>

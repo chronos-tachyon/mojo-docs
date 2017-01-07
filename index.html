@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mojo</title>
+  <!-- link rel="sitemap" type="text/xml" href="/sitemap.xml" -->
+  <!-- link rel="icon" type="image/png" href="/.img/favicon.png" -->
+  <link rel="stylesheet" type="text/css" href="/.css/lity-1.6.6.min.css">
+  <link rel="stylesheet" type="text/css" href="/.css/style.css">
+  <script src="/.js/jquery-3.1.0.slim.min.js" defer></script>
+  <script src="/.js/lity-1.6.6.min.js" defer></script>
+  <script src="/.js/nav.js" defer></script>
+</head>
+<body>
+  <article id="main">
+    <header>
+      <h1>Mojo</h1>
+    </header>
+
+    <div id="toc">
+      Waiting for JavaScript...
+    </div>
+
+    <section>
+      <h2 id="about">About Mojo</h2>
+
+      <p>Mojo is a toolkit for C++ <a href="https://bazel.build/">Bazel</a>
+      users.  The long-term goal is for Mojo to be for C++ what the Python or Go
+      standard libraries are for their respective languages.  The immediate
+      focus for early versions of Mojo is to build the infrastructure for
+      network servers powered by asynchronous event-driven dispatch.  This will
+      eventually include a basic but standards compliant HTTP/1.1 and HTTP/2.0
+      web server library.</p>
+
+      <p>While Mojo is original code, it was not written in a vacuum. It takes
+      inspiration from a number of sources:</p>
+
+      <ul>
+        <li>The C++ codebase at a previous employer</li>
+        <li>The <a href="https://golang.org/pkg/">Go standard library</a></li>
+        <li>The <a href="https://docs.python.org/3/library/index.html">Python standard library</a></li>
+      </ul>
+
+      <p>Exported features fall into one of the following categories:</p>
+
+      <ul>
+        <li>FROZEN: APIs are frozen.  No changes except bug fixes.</li>
+        <li>STABLE: Existing APIs are stable, but new APIs may be added.</li>
+        <li>RC: APIs are provisional and subject to change.</li>
+        <li>BETA: APIs are in flux.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2 id="packages">Packages</h2>
+
+      <section>
+        <h3 id="base">base</h3>
+
+        <p><a href="/base/">The <code>base</code> package</a> is a toolkit of
+        helpers for various small tasks: logging, building message strings,
+        returning standardized error codes, measuring and manipulating time, and
+        several others.</p>
+      </section>
+
+      <section>
+        <h3 id="event">event</h3>
+
+        <p><a href="/event/">The <code>event</code> package</a>, loosely
+        inspired by
+        <a href="https://docs.python.org/3/library/asyncio.html">the Python 3 <code>asyncio</code> module</a>,
+        provides event loops, thread pools, and other tools for asynchronous and
+        parallel processing.  Most significantly, the package provides
+        <code>event::Manager</code>, a class for asynchronously handling events
+        from file descriptors, signals, timers, and other sources.</p>
+      </section>
+
+      <section>
+        <h3 id="io">io</h3>
+
+        <p><a href="/io/">The <code>io</code> package</a>, which takes
+        inspiration from
+        <a href="https://golang.org/pkg/io/">the Go <code>io</code> package</a>,
+        provides a standardized API for arbitrary input and output byte streams:
+        <code>io::Reader</code> and <code>io::Writer</code>.</p>
+      </section>
+
+      <section>
+        <h3 id="net">net</h3>
+
+        <p><a href="/net/">The <code>net</code> package</a>, which takes
+        inspiration from
+        <a href="https://golang.org/pkg/net/">the Go <code>net</code> package</a>,
+        provides networking abstractions like <code>net::Addr</code> and
+        <code>net::Conn</code>.</p>
+      </section>
+    </section>
+  </article>
+
+  <nav id="navbar">
+    <p>Waiting for JavaScript...</p>
+  </nav>
+</body>
+</html>

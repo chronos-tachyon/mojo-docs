@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>base/clock.h : Mojo</title>
+  <link rel="sitemap" type="text/xml" href="../../sitemap.xml">
+  <!-- link rel="icon" type="image/png" href="../../.img/favicon.png" -->
+  <link rel="stylesheet" type="text/css" href="../../.css/lity-1.6.6.min.css">
+  <link rel="stylesheet" type="text/css" href="../../.css/style.css">
+  <script src="../../.js/jquery-3.1.0.slim.min.js" defer></script>
+  <script src="../../.js/lity-1.6.6.min.js" defer></script>
+  <script src="../../.js/nav.js" defer></script>
+</head>
+<body>
+  <article id="main">
+    <header>
+      <p><a href="/">Mojo</a> &gt; <a href="../">base</a> &gt;</p>
+      <h1>clock.h</h1>
+    </header>
+
+    <p>GitHub:
+    <a href="https://github.com/chronos-tachyon/mojo/blob/master/base/clock.h">base/clock.h</a>
+    <a href="https://github.com/chronos-tachyon/mojo/blob/master/base/clock.cc">base/clock.cc</a>
+    </p>
+
+    <div id="toc">
+      Waiting on JavaScript...
+    </div>
+
+    <section>
+      <h2 id="functions">Top-level Functions</h2>
+
+      <h3 id="now">now()</h3>
+
+<pre class="codebox">
+namespace base {
+
+Time <b>now</b>();
+
+}
+</pre>
+
+      <p>STABLE. Returns the current wallclock time.</p>
+
+      <p>Thread-safe.</p>
+
+      <p>This is a convenience function for
+      <code><a href="#system_wallclock">base::system_wallclock</a>().<a href="#Clock-now">now</a>()</code>.</p>
+
+      <h3 id="monotonic_now">monotonic_now()</h3>
+
+<pre class="codebox">
+namespace base {
+
+MonotonicTime <b>monotonic_now</b>();
+
+}
+</pre>
+
+      <p>STABLE. Returns the current monotonic time.</p>
+
+      <p>Thread-safe.</p>
+
+      <p>This is a convenience function for
+      <code><a href="#system_monotonic_clock">base::system_monotonic_clock</a>().<a href="#MonotonicClock-now">now</a>()</code>.</p>
+
+      <h3 id="system_wallclock">system_wallclock()</h3>
+
+<pre class="codebox">
+namespace base {
+
+<a href="#Clock">Clock</a> <b>system_wallclock</b>();
+
+}
+</pre>
+
+      <p>STABLE. Returns the system clock for wall time.</p>
+
+      <p>Thread-safe.</p>
+
+      <h3 id="system_monotonic_clock">system_monotonic_clock()</h3>
+
+<pre class="codebox">
+namespace base {
+
+<a href="#MonotonicClock">MonotonicClock</a> <b>system_monotonic_clock</b>();
+
+}
+</pre>
+
+      <p>STABLE. Returns the system clock for monotonic time.</p>
+
+      <p>Thread-safe.</p>
+
+      <h3 id="set_system_wallclock">set_system_wallclock()</h3>
+
+<pre class="codebox">
+namespace base {
+
+void <b>set_system_wallclock</b>(<a href="#Clock">Clock</a> clock);
+
+}
+</pre>
+
+      <p>STABLE. Replaces the system clock for wall time.  Useful in tests.</p>
+
+      <p>Thread-safe.</p>
+
+      <h3 id="set_system_monotonic_clock">set_system_monotonic_clock()</h3>
+
+<pre class="codebox">
+namespace base {
+
+void <b>set_system_monotonic_clock</b>(<a href="#MonotonicClock">MonotonicClock</a> clock);
+
+}
+</pre>
+
+      <p>STABLE. Replaces the system clock for monotonic time.  Useful in tests.</p>
+
+      <p>Thread-safe.</p>
+    </section>
+    <hr>
+    <section>
+      <h2 id="Clock">Clock</h2>
+
+<pre class="codebox">
+namespace base {
+
+class <b>Clock</b> {
+ public:
+  <a href="#Clock-ctor">Clock</a>() noexcept;
+  <a href="#Clock-ctor">Clock</a>(std::shared_ptr&lt;<a href="#ClockImpl">const ClockImpl</a>&gt; ptr) noexcept;
+  <a href="#Clock-ctor">Clock</a>(const Clock&amp;) noexcept;
+  <a href="#Clock-ctor">Clock</a>(Clock&amp;) noexcept;
+  Clock&amp; <a href="#Clock-opeq">operator=</a>(const Clock&amp;) noexcept;
+  Clock&amp; <a href="#Clock-opeq">operator=</a>(Clock&amp;) noexcept;
+
+  <a href="#Clock-opbool">explicit operator bool</a>() const noexcept;
+  void <a href="#Clock-assert_valid">assert_valid</a>() const;
+
+  Time <a href="#Clock-now">now</a>() const;
+};
+
+}
+</pre>
+
+      <p>RC.  Used to obtain <code>base::Time</code> values.</p>
+
+      <p>This is a holder class for
+      <a href="#ClockImpl"><code>base::ClockImpl</code></a>.  It has two
+      states: "valid" (holds an implementation) and "invalid" (does not hold
+      an implementation).</p>
+
+      <h3 id="Clock-ctor">Clock::Clock()</h3>
+
+      <p>Constructs a clock.  If an implementation is given, or if the clock
+      is constructed from an existing valid clock, then the constructed clock
+      is valid.  If constructed via the default constructor or from an invalid
+      clock, then the constructed clock is invalid.</p>
+
+      <h3 id="Clock-opeq">Clock::operator=()</h3>
+
+      <p>Assigns this clock from another.  If the other clock is valid, makes
+      this clock use that clock's implementation; if the other clock is
+      invalid, makes this clock invalid as well.</p>
+
+      <h3 id="Clock-opbool">Clock::operator bool()</h3>
+
+      <p>Returns true iff this clock is valid.</p>
+
+      <h3 id="Clock-assert_valid">Clock::assert_valid()</h3>
+
+      <p>Crashes the program if this clock is invalid.</p>
+
+      <h3 id="Clock-now">Clock::now()</h3>
+
+      <p>Returns the current time.</p>
+
+      <p>See also:
+      <a href="#ClockImpl-now"><code>base::ClockImpl::now()</code></a>.</p>
+    </section>
+    <hr>
+    <section>
+      <h2 id="MonotonicClock">MonotonicClock</h2>
+
+<pre class="codebox">
+namespace base {
+
+class <b>MonotonicClock</b> {
+ public:
+  <a href="#MonotonicClock-ctor">MonotonicClock</a>() noexcept;
+  <a href="#MonotonicClock-ctor">MonotonicClock</a>(std::shared_ptr&lt;const MonotonicClockImpl&gt; ptr) noexcept;
+  <a href="#MonotonicClock-ctor">MonotonicClock</a>(const MonotonicClock&amp;) noexcept;
+  <a href="#MonotonicClock-ctor">MonotonicClock</a>(MonotonicClock&amp;) noexcept;
+  MonotonicClock&amp; <a href="#MonotonicClock-opeq">operator=</a>(const MonotonicClock&amp;) noexcept;
+  MonotonicClock&amp; <a href="#MonotonicClock-opeq">operator=</a>(MonotonicClock&amp;) noexcept;
+
+  <a href="#MonotonicClock-opbool">explicit operator bool</a>() const noexcept;
+  void <a href="#MonotonicClock-assert_valid">assert_valid</a>() const;
+
+  MonotonicTime <a href="#MonotonicClock-now">now</a>() const;
+  MonotonicTime <a href="#MonotonicClock-convert">convert</a>(Time t) const;
+  Time <a href="#MonotonicClock-convert">convert</a>(MonotonicTime t) const;
+};
+
+}
+</pre>
+
+      <p>RC.  Used to obtain <code>base::MonotonicTime</code> values.</p>
+
+      <p>This is a holder class for <code>base::MonotonicClockImpl</code>.  It
+      has two states: "valid" (holds an implementation) and "invalid" (does
+      not hold an implementation).</p>
+
+      <h3 id="MonotonicClock-ctor">MonotonicClock::MonotonicClock()</h3>
+
+      <p>Constructs a monotonic clock.  If an implementation is given, or if
+      the clock is constructed from an existing valid clock, then the
+      constructed clock is valid.  If constructed via the default constructor
+      or from an invalid clock, then the constructed clock is invalid.</p>
+
+      <h3 id="MonotonicClock-opeq">MonotonicClock::operator=()</h3>
+
+      <p>Assigns this monotonic clock from another.  If the other clock is
+      valid, makes this clock use that clock's implementation; if the other
+      clock is invalid, makes this clock invalid as well.</p>
+
+      <h3 id="MonotonicClock-opbool">MonotonicClock::operator bool()</h3>
+
+      <p>Returns true iff this monotonic clock is valid.</p>
+
+      <h3 id="MonotonicClock-assert_valid">MonotonicClock::assert_valid()</h3>
+
+      <p>Crashes the program if this monotonic clock is invalid.</p>
+
+      <h3 id="MonotonicClock-now">MonotonicClock::now()</h3>
+
+      <p>Returns the current monotonic time.</p>
+
+      <p>See also:
+      <a href="#MonotonicClockImpl-now"><code>base::MonotonicClockImpl::now()</code></a>.</p>
+
+      <h3 id="MonotonicClock-convert">MonotonicClock::convert()</h3>
+
+      <p>Converts monotonic time to wallclock time, or vice versa.  The
+      conversion is <em>not</em> guaranteed to be exact.</p>
+
+      <p>See also:
+      <a href="#MonotonicClockImpl-convert"><code>base::MonotonicClockImpl::convert()</code></a>.</p>
+    </section>
+    <hr>
+    <section>
+      <h2 id="ClockImpl">ClockImpl</h2>
+
+<pre class="codebox">
+namespace base {
+
+class <b>ClockImpl</b> {
+ public:
+  virtual ~ClockImpl() noexcept = default;
+
+  virtual Time <a href="#ClockImpl-now">now</a>() const = 0;
+
+  <s>ClockImpl(const ClockImpl&amp;) = delete;</s>
+  <s>ClockImpl(ClockImpl&amp;&amp;) = delete;</s>
+  <s>ClockImpl&amp; operator=(const ClockImpl&amp;) = delete;</s>
+  <s>ClockImpl&amp; operator=(ClockImpl&amp;&amp;) = delete;</s>
+};
+
+}
+</pre>
+
+      <p>RC.  Abstract base class for providing <code>base::Time</code>
+      values.</p>
+
+      <h3 id="ClockImpl-now">ClockImpl::now()</h3>
+
+      <p>Implementers must override this method to provide the current
+      <code>base::Time</code>… for whatever concept of "current" applies to
+      their respective implementations.</p>
+
+      <p>Implementations of this method <strong>MUST</strong> be
+      thread-safe.</p>
+    </section>
+    <hr>
+    <section>
+      <h2 id="MonotonicClockImpl">MonotonicClockImpl</h2>
+
+<pre class="codebox">
+namespace base {
+
+class <b>MonotonicClockImpl</b> {
+ public:
+  virtual ~MonotonicClockImpl() noexcept = default;
+
+  virtual MonotonicTime <a href="#MonotonicClockImpl-now">now</a>() const = 0;
+  virtual MonotonicTime <a href="#MonotonicClockImpl-convert">convert</a>(Time t) const = 0;
+  virtual Time <a href="#MonotonicClockImpl-convert">convert</a>(MonotonicTime t) const = 0;
+
+  <s>MonotonicClockImpl(const MonotonicClockImpl&amp;) = delete;</s>
+  <s>MonotonicClockImpl(MonotonicClockImpl&amp;&amp;) = delete;</s>
+  <s>MonotonicClockImpl&amp; operator=(const MonotonicClockImpl&amp;) = delete;</s>
+  <s>MonotonicClockImpl&amp; operator=(MonotonicClockImpl&amp;&amp;) = delete;</s>
+};
+
+}
+</pre>
+
+      <p>RC.  Abstract base class for providing
+      <code>base::MonotonicTime</code> values.</p>
+
+      <h3 id="MonotonicClockImpl-now">MonotonicClockImpl::now()</h3>
+
+      <p>Implementers must override this method to provide the current
+      <code>base::MonotonicTime</code>… for whatever concept of "current"
+      applies to their respective implementations.</p>
+
+      <p>Implementations of this method <strong>MUST</strong> be
+      thread-safe.</p>
+
+      <h3 id="MonotonicClockImpl-convert">MonotonicClockImpl::convert()</h3>
+
+      <p>Implementers must override these methods to provide an approximate,
+      best-effort bidirectional mapping between the <code>base::Time</code>
+      and <code>base::MonotonicTime</code> epochs.</p>
+
+      <p>Implementations of these methods <strong>MUST</strong> be
+      thread-safe.</p>
+    </section>
+  </article>
+
+  <nav id="navbar">
+    <p>Waiting for JavaScript...</p>
+  </nav>
+</body>
+</html>

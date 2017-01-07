@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>base/result_testing.h : Mojo</title>
+  <link rel="sitemap" type="text/xml" href="../../sitemap.xml">
+  <!-- link rel="icon" type="image/png" href="../../.img/favicon.png" -->
+  <link rel="stylesheet" type="text/css" href="../../.css/lity-1.6.6.min.css">
+  <link rel="stylesheet" type="text/css" href="../../.css/style.css">
+  <script src="../../.js/jquery-3.1.0.slim.min.js" defer></script>
+  <script src="../../.js/lity-1.6.6.min.js" defer></script>
+  <script src="../../.js/nav.js" defer></script>
+</head>
+<body>
+  <article id="main">
+    <header>
+      <p><a href="/">Mojo</a> &gt; <a href="../">base</a> &gt;</p>
+      <h1>result_testing.h</h1>
+    </header>
+
+    <p>GitHub:
+    <a href="https://github.com/chronos-tachyon/mojo/blob/master/base/result_testing.h">base/result_testing.h</a>
+    <a href="https://github.com/chronos-tachyon/mojo/blob/master/base/result_testing.cc">base/result_testing.cc</a>
+    </p>
+
+    <div id="toc">
+      Waiting on JavaScript...
+    </div>
+
+    <section>
+      <h2 id="asserts">ASSERT Macros</h2>
+
+      <h3 id="ASSERT_OK">ASSERT_OK()</h3>
+
+<pre class="codebox">
+#define ASSERT_OK(result) ...
+</pre>
+
+      <p>Asserts that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::OK</code>.</p>
+
+      <h3 id="ASSERT_UNKNOWN">ASSERT_UNKNOWN()</h3>
+
+<pre class="codebox">
+#define ASSERT_UNKNOWN(result) ...
+</pre>
+
+      <p>Asserts that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::UNKNOWN</code>.</p>
+
+      <h3 id="ASSERT_INTERNAL">ASSERT_INTERNAL()</h3>
+
+<pre class="codebox">
+#define ASSERT_INTERNAL(result) ...
+</pre>
+
+      <p>Asserts that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::INTERNAL</code>.</p>
+
+      <h3 id="ASSERT_CANCELLED">ASSERT_CANCELLED()</h3>
+
+<pre class="codebox">
+#define ASSERT_CANCELLED(result) ...
+</pre>
+
+      <p>Asserts that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::CANCELLED</code>.</p>
+
+      <h3 id="ASSERT_FAILED_PRECONDITION">ASSERT_FAILED_PRECONDITION()</h3>
+
+<pre class="codebox">
+#define ASSERT_FAILED_PRECONDITION(result) ...
+</pre>
+
+      <p>Asserts that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::FAILED_PRECONDITION</code>.</p>
+
+      <h3 id="ASSERT_NOT_FOUND">ASSERT_NOT_FOUND()</h3>
+
+<pre class="codebox">
+#define ASSERT_NOT_FOUND(result) ...
+</pre>
+
+      <p>Asserts that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::NOT_FOUND</code>.</p>
+
+      <h3 id="ASSERT_ALREADY_EXISTS">ASSERT_ALREADY_EXISTS()</h3>
+
+<pre class="codebox">
+#define ASSERT_ALREADY_EXISTS(result) ...
+</pre>
+
+      <p>Asserts that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::ALREADY_EXISTS</code>.</p>
+
+      <h3 id="ASSERT_WRONG_TYPE">ASSERT_WRONG_TYPE()</h3>
+
+<pre class="codebox">
+#define ASSERT_WRONG_TYPE(result) ...
+</pre>
+
+      <p>Asserts that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::WRONG_TYPE</code>.</p>
+
+      <h3 id="ASSERT_PERMISSION_DENIED">ASSERT_PERMISSION_DENIED()</h3>
+
+<pre class="codebox">
+#define ASSERT_PERMISSION_DENIED(result) ...
+</pre>
+
+      <p>Asserts that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::PERMISSION_DENIED</code>.</p>
+
+      <h3 id="ASSERT_UNAUTHENTICATED">ASSERT_UNAUTHENTICATED()</h3>
+
+<pre class="codebox">
+#define ASSERT_UNAUTHENTICATED(result) ...
+</pre>
+
+      <p>Asserts that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::UNAUTHENTICATED</code>.</p>
+
+      <h3 id="ASSERT_INVALID_ARGUMENT">ASSERT_INVALID_ARGUMENT()</h3>
+
+<pre class="codebox">
+#define ASSERT_INVALID_ARGUMENT(result) ...
+</pre>
+
+      <p>Asserts that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::INVALID_ARGUMENT</code>.</p>
+
+      <h3 id="ASSERT_OUT_OF_RANGE">ASSERT_OUT_OF_RANGE()</h3>
+
+<pre class="codebox">
+#define ASSERT_OUT_OF_RANGE(result) ...
+</pre>
+
+      <p>Asserts that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::OUT_OF_RANGE</code>.</p>
+
+      <h3 id="ASSERT_NOT_IMPLEMENTED">ASSERT_NOT_IMPLEMENTED()</h3>
+
+<pre class="codebox">
+#define ASSERT_NOT_IMPLEMENTED(result) ...
+</pre>
+
+      <p>Asserts that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::NOT_IMPLEMENTED</code>.</p>
+
+      <h3 id="ASSERT_UNAVAILABLE">ASSERT_UNAVAILABLE()</h3>
+
+<pre class="codebox">
+#define ASSERT_UNAVAILABLE(result) ...
+</pre>
+
+      <p>Asserts that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::UNAVAILABLE</code>.</p>
+
+      <h3 id="ASSERT_ABORTED">ASSERT_ABORTED()</h3>
+
+<pre class="codebox">
+#define ASSERT_ABORTED(result) ...
+</pre>
+
+      <p>Asserts that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::ABORTED</code>.</p>
+
+      <h3 id="ASSERT_RESOURCE_EXHAUSTED">ASSERT_RESOURCE_EXHAUSTED()</h3>
+
+<pre class="codebox">
+#define ASSERT_RESOURCE_EXHAUSTED(result) ...
+</pre>
+
+      <p>Asserts that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::RESOURCE_EXHAUSTED</code>.</p>
+
+      <h3 id="ASSERT_DEADLINE_EXCEEDED">ASSERT_DEADLINE_EXCEEDED()</h3>
+
+<pre class="codebox">
+#define ASSERT_DEADLINE_EXCEEDED(result) ...
+</pre>
+
+      <p>Asserts that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::DEADLINE_EXCEEDED</code>.</p>
+
+      <h3 id="ASSERT_DATA_LOSS">ASSERT_DATA_LOSS()</h3>
+
+<pre class="codebox">
+#define ASSERT_DATA_LOSS(result) ...
+</pre>
+
+      <p>Asserts that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::DATA_LOSS</code>.</p>
+
+      <h3 id="ASSERT_EOF">ASSERT_EOF()</h3>
+
+<pre class="codebox">
+#define ASSERT_EOF(result) ...
+</pre>
+
+      <p>Asserts that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::END_OF_FILE</code>.</p>
+    </section>
+    <hr>
+    <section>
+      <h2 id="expects">EXPECT Macros</h2>
+
+      <h3 id="EXPECT_OK">EXPECT_OK()</h3>
+
+<pre class="codebox">
+#define EXPECT_OK(result) ...
+</pre>
+
+      <p>Expects that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::OK</code>.</p>
+
+      <h3 id="EXPECT_UNKNOWN">EXPECT_UNKNOWN()</h3>
+
+<pre class="codebox">
+#define EXPECT_UNKNOWN(result) ...
+</pre>
+
+      <p>Expects that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::UNKNOWN</code>.</p>
+
+      <h3 id="EXPECT_INTERNAL">EXPECT_INTERNAL()</h3>
+
+<pre class="codebox">
+#define EXPECT_INTERNAL(result) ...
+</pre>
+
+      <p>Expects that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::INTERNAL</code>.</p>
+
+      <h3 id="EXPECT_CANCELLED">EXPECT_CANCELLED()</h3>
+
+<pre class="codebox">
+#define EXPECT_CANCELLED(result) ...
+</pre>
+
+      <p>Expects that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::CANCELLED</code>.</p>
+
+      <h3 id="EXPECT_FAILED_PRECONDITION">EXPECT_FAILED_PRECONDITION()</h3>
+
+<pre class="codebox">
+#define EXPECT_FAILED_PRECONDITION(result) ...
+</pre>
+
+      <p>Expects that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::FAILED_PRECONDITION</code>.</p>
+
+      <h3 id="EXPECT_NOT_FOUND">EXPECT_NOT_FOUND()</h3>
+
+<pre class="codebox">
+#define EXPECT_NOT_FOUND(result) ...
+</pre>
+
+      <p>Expects that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::NOT_FOUND</code>.</p>
+
+      <h3 id="EXPECT_ALREADY_EXISTS">EXPECT_ALREADY_EXISTS()</h3>
+
+<pre class="codebox">
+#define EXPECT_ALREADY_EXISTS(result) ...
+</pre>
+
+      <p>Expects that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::ALREADY_EXISTS</code>.</p>
+
+      <h3 id="EXPECT_WRONG_TYPE">EXPECT_WRONG_TYPE()</h3>
+
+<pre class="codebox">
+#define EXPECT_WRONG_TYPE(result) ...
+</pre>
+
+      <p>Expects that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::WRONG_TYPE</code>.</p>
+
+      <h3 id="EXPECT_PERMISSION_DENIED">EXPECT_PERMISSION_DENIED()</h3>
+
+<pre class="codebox">
+#define EXPECT_PERMISSION_DENIED(result) ...
+</pre>
+
+      <p>Expects that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::PERMISSION_DENIED</code>.</p>
+
+      <h3 id="EXPECT_UNAUTHENTICATED">EXPECT_UNAUTHENTICATED()</h3>
+
+<pre class="codebox">
+#define EXPECT_UNAUTHENTICATED(result) ...
+</pre>
+
+      <p>Expects that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::UNAUTHENTICATED</code>.</p>
+
+      <h3 id="EXPECT_INVALID_ARGUMENT">EXPECT_INVALID_ARGUMENT()</h3>
+
+<pre class="codebox">
+#define EXPECT_INVALID_ARGUMENT(result) ...
+</pre>
+
+      <p>Expects that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::INVALID_ARGUMENT</code>.</p>
+
+      <h3 id="EXPECT_OUT_OF_RANGE">EXPECT_OUT_OF_RANGE()</h3>
+
+<pre class="codebox">
+#define EXPECT_OUT_OF_RANGE(result) ...
+</pre>
+
+      <p>Expects that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::OUT_OF_RANGE</code>.</p>
+
+      <h3 id="EXPECT_NOT_IMPLEMENTED">EXPECT_NOT_IMPLEMENTED()</h3>
+
+<pre class="codebox">
+#define EXPECT_NOT_IMPLEMENTED(result) ...
+</pre>
+
+      <p>Expects that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::NOT_IMPLEMENTED</code>.</p>
+
+      <h3 id="EXPECT_UNAVAILABLE">EXPECT_UNAVAILABLE()</h3>
+
+<pre class="codebox">
+#define EXPECT_UNAVAILABLE(result) ...
+</pre>
+
+      <p>Expects that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::UNAVAILABLE</code>.</p>
+
+      <h3 id="EXPECT_ABORTED">EXPECT_ABORTED()</h3>
+
+<pre class="codebox">
+#define EXPECT_ABORTED(result) ...
+</pre>
+
+      <p>Expects that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::ABORTED</code>.</p>
+
+      <h3 id="EXPECT_RESOURCE_EXHAUSTED">EXPECT_RESOURCE_EXHAUSTED()</h3>
+
+<pre class="codebox">
+#define EXPECT_RESOURCE_EXHAUSTED(result) ...
+</pre>
+
+      <p>Expects that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::RESOURCE_EXHAUSTED</code>.</p>
+
+      <h3 id="EXPECT_DEADLINE_EXCEEDED">EXPECT_DEADLINE_EXCEEDED()</h3>
+
+<pre class="codebox">
+#define EXPECT_DEADLINE_EXCEEDED(result) ...
+</pre>
+
+      <p>Expects that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::DEADLINE_EXCEEDED</code>.</p>
+
+      <h3 id="EXPECT_DATA_LOSS">EXPECT_DATA_LOSS()</h3>
+
+<pre class="codebox">
+#define EXPECT_DATA_LOSS(result) ...
+</pre>
+
+      <p>Expects that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::DATA_LOSS</code>.</p>
+
+      <h3 id="EXPECT_EOF">EXPECT_EOF()</h3>
+
+<pre class="codebox">
+#define EXPECT_EOF(result) ...
+</pre>
+
+      <p>Expects that the <code>base::Result</code> argument has code
+      <code>base::ResultCode::END_OF_FILE</code>.</p>
+    </section>
+  </article>
+
+  <nav id="navbar">
+    <p>Waiting for JavaScript...</p>
+  </nav>
+</body>
+</html>

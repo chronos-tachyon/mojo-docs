@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>base/token.h : Mojo</title>
+  <link rel="sitemap" type="text/xml" href="../../sitemap.xml">
+  <!-- link rel="icon" type="image/png" href="../../.img/favicon.png" -->
+  <link rel="stylesheet" type="text/css" href="../../.css/lity-1.6.6.min.css">
+  <link rel="stylesheet" type="text/css" href="../../.css/style.css">
+  <script src="../../.js/jquery-3.1.0.slim.min.js" defer></script>
+  <script src="../../.js/lity-1.6.6.min.js" defer></script>
+  <script src="../../.js/nav.js" defer></script>
+</head>
+<body>
+  <article id="main">
+    <header>
+      <p><a href="/">Mojo</a> &gt; <a href="../">base</a> &gt;</p>
+      <h1>token.h</h1>
+    </header>
+
+    <p>GitHub:
+    <a href="https://github.com/chronos-tachyon/mojo/blob/master/base/token.h">base/token.h</a>
+    <a href="https://github.com/chronos-tachyon/mojo/blob/master/base/token.cc">base/token.cc</a>
+    </p>
+
+    <div id="toc">
+      Waiting on JavaScript...
+    </div>
+
+    <section>
+      <h2 id="functions">Top-level Functions</h2>
+
+<pre class="codebox">
+namespace base {
+
+<a href="#token_t">token_t</a> <b>next_token</b>() noexcept;
+
+}
+</pre>
+
+      <h3 id="next_token">next_token()</h3>
+
+      <p>STABLE. Returns a <code>token_t</code> value. This value is
+      guaranteed to be distinct from the null token, and to be distinct from
+      all existing and future tokens issued within this process. This function
+      is thread-safe.</p>
+
+      <p>NOTE: the order in which the tokens are issued is NOT a part of the
+      stable API!</p>
+
+      <p>Example:</p>
+
+<pre class="codebox">
+base::token_t token1 = base::next_token();
+base::token_t token2 = base::next_token();
+CHECK_EQ(token1, token1);           // tokens are comparable
+CHECK_NE(token1, token2);           // tokens are distinct from each other
+CHECK_NE(token1, base::token_t());  // default is distinct from any other
+CHECK_NE(token2, base::token_t());
+auto hash = std::hash&lt;base::token_t&gt;()(token1);  // tokens are hashable
+</pre>
+    </section>
+    <hr>
+    <section>
+      <h2 id="token_t">token_t</h2>
+
+<pre class="codebox">
+namespace base {
+
+class <b>token_t</b> {
+ public:
+  constexpr <a href="#token_t-ctor">token_t</a>() noexcept;
+  constexpr <a href="#token_t-ctor">token_t</a>(const token_t&amp;) noexcept;
+  constexpr <a href="#token_t-ctor">token_t</a>(token_t&amp;&amp;) noexcept;
+  constexpr <a href="#token_t-ctor">explicit token_t</a>(uint64_t value) noexcept;
+  token_t&amp; <a href="#token_t-opeq">operator=</a>(const token_t&amp;) noexcept;
+  token_t&amp; <a href="#token_t-opeq">operator=</a>(token_t&amp;&amp;) noexcept;
+
+  constexpr <a href="#token_t-opu64">explicit operator uint64_t</a>() const noexcept;
+};
+
+constexpr bool <a href="#token_t-opeqeq">operator==</a>(token_t a, token_t b) noexcept;
+constexpr bool <a href="#token_t-opnoteq">operator!=</a>(token_t a, token_t b) noexcept;
+constexpr bool <a href="#token_t-oplt">operator&lt;</a>(token_t a, token_t b) noexcept;
+constexpr bool <a href="#token_t-oplteq">operator&lt;=</a>(token_t a, token_t b) noexcept;
+constexpr bool <a href="#token_t-opgt">operator&gt;</a>(token_t a, token_t b) noexcept;
+constexpr bool <a href="#token_t-opgteq">operator&gt;=</a>(token_t a, token_t b) noexcept;
+
+}
+
+namespace std {
+
+template &lt;&gt;
+struct hash&lt;base::token_t&gt; {
+  std::size_t <a href="#token_t-hash">operator</a>()(base::token_t t) const noexcept;
+}
+
+}
+</pre>
+
+      <p>STABLE. <code>token_t</code> is a value type, meant to be passed
+      around as an opaque token. While it is backed by an integer — a
+      <code>uint64_t</code> to be precise — the actual value of that integer
+      is arbitrary, and the token's reason for existence is the uniqueness of
+      its value.</p>
+
+      <p>While the principal operation on a <code>token_t</code> is to compare
+      it to another token for equality, the class provides the full suite of
+      comparison operators as well as a hash function, to facilitate its use
+      as a map key.</p>
+
+      <h3 id="token_t-ctor">token_t::token_t()</h3>
+
+      <p>Constructs a <code>token_t</code>.</p>
+
+      <ul>
+        <li>
+          The default constructor creates the null token. The null token is
+          never returned by
+          <a href="#next_token"><code>next_token()</code></a>, so it may be
+          safely used as a sentinel value.
+        </li>
+        <li>
+          The copy constructor has the usual behavior. The copied token will
+          compare equal to the source token.
+        </li>
+        <li>
+          The move constructor has the same effect as the copy constructor.
+        </li>
+        <li>
+          The explicit 1-arg <code>uint64_t</code> constructor creates a token
+          from a raw integer, and should be used sparingly, if at all. If the
+          argument is zero, a null token is constructed. The only safe way to
+          select a non-zero integer is to obtain it from a token returned by
+          <a href="#next_token"><code>next_token()</code></a>, by way of
+          <a href="#token_t-opu64"><code>operator uint64_t()</code></a>.
+          Performing such an action has the same effect as calling the copy
+          constructor.
+        </li>
+      </ul>
+
+      <h3 id="token_t-opeq">token_t::operator=()</h3>
+
+      <p>Assigns a <code>token_t</code>. The copy and move assignment
+      operators work analogously to the copy and move constructors.</p>
+
+      <h3 id="token_t-opu64">token_t::operator uint64_t()</h3>
+
+      <p>Returns the raw integer backing this token. The only safe operations
+      to perform with this value are (a) to compare it to zero, or (b) to
+      construct a token from its value, using
+      <a href="#token_t-ctor">the explicit 1-arg <code>uint64_t</code> constructor</a>.
+      The latter has the same effect as the copy constructor.</p>
+
+      <h3 id="token_t-opeqeq">token_t::operator==()</h3>
+      <h3 id="token_t-opnoteq">token_t::operator!=()</h3>
+      <h3 id="token_t-oplt">token_t::operator&lt;()</h3>
+      <h3 id="token_t-oplteq">token_t::operator&lt;=()</h3>
+      <h3 id="token_t-opgt">token_t::operator&gt;()</h3>
+      <h3 id="token_t-opgteq">token_t::operator&gt;=()</h3>
+
+      <p>Compares two <code>token_t</code> values.</p>
+
+      <p>NOTE: The tokens have an arbitrary, but stable, total order. Whether
+      <code>token_t(n) &lt; token_t(n+1)</code> is not part of the API!</p>
+
+      <h3 id="token_t-hash">std::hash&lt;token_t&gt;()()</h3>
+
+      <p>Hashes a <code>token_t</code> value.</p>
+
+      <p>NOTE: The hash values are guaranteed to be stable within a process,
+      but are NOT guaranteed to be stable across program invocations.</p>
+    </section>
+  </article>
+
+  <nav id="navbar">
+    <p>Waiting for JavaScript...</p>
+  </nav>
+</body>
+</html>

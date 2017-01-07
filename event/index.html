@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>event : Mojo</title>
+  <link rel="sitemap" type="text/xml" href="../sitemap.xml">
+  <!-- link rel="icon" type="image/png" href="../.img/favicon.png" -->
+  <link rel="stylesheet" type="text/css" href="../.css/lity-1.6.6.min.css">
+  <link rel="stylesheet" type="text/css" href="../.css/style.css">
+  <script src="../.js/jquery-3.1.0.slim.min.js" defer></script>
+  <script src="../.js/lity-1.6.6.min.js" defer></script>
+  <script src="../.js/nav.js" defer></script>
+</head>
+<body>
+  <article id="main">
+    <header>
+      <p><a href="/">Mojo</a> &gt;</p>
+      <h1>event</h1>
+      <h2>Event Loops and Asynchronous Programming</h2>
+    </header>
+
+    <p><strong>NOTE</strong>: Most users will be interested in the
+    <code>event::Manager</code> API.</p>
+
+    <p><strong>NOTE</strong>: These APIs are frequently used with
+    <a href="/io/">the I/O APIs</a>.</p>
+
+    <div id="toc">
+      Waiting on JavaScript...
+    </div>
+
+    <section>
+      <h2 id="callback.h">event/callback.h</h2>
+      <h2 id="task.h">event/task.h</h2>
+      <h2 id="dispatcher.h">event/dispatcher.h</h2>
+
+      <p>RC.  Defines the following:</p>
+
+      <ul>
+        <li><code>event::Callback</code>, a base class for oneshot callback functions;</li>
+        <li><code>event::Task</code>, a class that allows observers to watch an operation; and</li>
+        <li><code>event::Dispatcher</code>, a base class for running callbacks.</li>
+      </ul>
+
+      <p>Three basic models of <code>event::Dispatcher</code> are provided:
+      <strong>inline</strong> dispatchers run their callbacks immediately;
+      <strong>async</strong> dispatchers defer their callbacks until the next
+      turn of the event loop; and <strong>threaded</strong> dispatchers run
+      their callbacks ASAP on a thread pool.</p>
+
+      <p>Quick example:</p>
+
+<pre class="codebox">
+// Create a new asynchronous dispatcher.
+event::DispatcherPtr dispatcher;
+event::DispatcherOptions do;
+do.set_type(event::DispatcherType::async_dispatcher);
+CHECK_OK(event::new_dispatcher(&amp;dispatcher, do));
+
+// Start an asynchronous operation.
+event::Task task;
+operation(&amp;task, dispatcher);
+
+// Schedules an action to run when the operation completes.
+bool done = false;
+task-&gt;on_finish(event::callback([&amp;task, &amp;done] {
+  CHECK_OK(task.result());
+  done = true;
+  return base::Result();
+});
+
+// Spin the event loop.
+while (!done) dispatcher-&gt;donate(false);
+</pre>
+    </section>
+
+    <section>
+      <h2 id="set.h">event/set.h</h2>
+      <h2 id="poller.h">event/poller.h</h2>
+
+      <p>RC.  Provides <code>event::Poller</code>, a base class that abstracts
+      over event polling techniques, and helper class <code>event::Set</code>,
+      a value type representing a set of events.</p>
+    </section>
+
+    <section>
+      <h2 id="data.h">event/data.h</h2>
+      <h2 id="handler.h">event/handler.h</h2>
+      <h2 id="manager.h">event/manager.h</h2>
+
+      <p>RC.  Defines the following:</p>
+
+      <ul>
+        <li><code>event::Data</code>, an aggregate struct containing data about an event;</li>
+        <li><code>event::Handler</code>, a base class for multishot callback functions;</li>
+        <li><code>event::Manager</code>, a class that integrates polling and dispatching;</li>
+        <li><code>event::FileDescriptor</code>, <code>event::Signal</code>, <code>event::Timer</code>, and <code>event::Generic</code>, each of which binds an event to an <code>event::Handler</code>.</li>
+      </ul>
+
+      <p>Example:</p>
+
+<pre class="codebox">
+// Create a new asynchronous event manager.
+event::Manager m;
+event::ManagerOptions mo;
+mo.set_async_mode();
+CHECK_OK(event::new_manager(&amp;m, mo));
+
+// Set up a non-blocking socket.
+int fdnum = accept4(..., SOCK_NONBLOCK);
+base::FD fd = base::FDHolder::make(fdnum);
+
+// Operate on socket asynchronously.
+event::FileDescriptor evt;
+bool done = false;
+auto closure = [&amp;](event::Data data) {
+  if (data.events.error()) {
+    // Got an error from the remote end!
+    CHECK_OK(evt.disable());  // No more handler callbacks, please.
+    CHECK_OK(fd-&gt;close());
+    return;
+  }
+  if (data.events.readable()) {
+    // Socket has data to read!
+    ...;  // Call read(2) in a loop until -1, errno=EAGAIN.
+  }
+  if (data.events.writable()) {
+    // Socket can accept writes!
+    ...;  // Call write(2) in a loop until -1, errno=EAGAIN.
+  }
+}
+CHECK_OK(m.fd(&amp;evt, fd, event::Set::all_bits(), event::handler(closure)));
+
+// Spin the event loop.
+while (!done) m.donate(false);
+</pre>
+    </section>
+  </article>
+
+  <nav id="navbar">
+    <p>Waiting for JavaScript...</p>
+  </nav>
+</body>
+</html>

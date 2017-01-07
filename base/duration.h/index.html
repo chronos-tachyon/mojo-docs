@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>base/duration.h : Mojo</title>
+  <link rel="sitemap" type="text/xml" href="../../sitemap.xml">
+  <!-- link rel="icon" type="image/png" href="../../.img/favicon.png" -->
+  <link rel="stylesheet" type="text/css" href="../../.css/lity-1.6.6.min.css">
+  <link rel="stylesheet" type="text/css" href="../../.css/style.css">
+  <script src="../../.js/jquery-3.1.0.slim.min.js" defer></script>
+  <script src="../../.js/lity-1.6.6.min.js" defer></script>
+  <script src="../../.js/nav.js" defer></script>
+</head>
+<body>
+  <article id="main">
+    <header>
+      <p><a href="/">Mojo</a> &gt; <a href="../">base</a> &gt;</p>
+      <h1>duration.h</h1>
+    </header>
+
+    <p>GitHub:
+    <a href="https://github.com/chronos-tachyon/mojo/blob/master/base/duration.h">base/duration.h</a>
+    <a href="https://github.com/chronos-tachyon/mojo/blob/master/base/duration.cc">base/duration.cc</a>
+    </p>
+
+    <div id="toc">
+      Waiting on JavaScript...
+    </div>
+
+    <section>
+      <h2 id="functions">Top-level Functions</h2>
+
+      <h3 id="nanoseconds">nanoseconds()</h3>
+
+<pre class="codebox">
+namespace base {
+
+constexpr <a href="#duration">Duration</a> <b>nanoseconds</b>(int64_t ns);
+
+}
+</pre>
+
+      <p>RC. Returns a duration consisting of the specified number of
+      nanoseconds.</p>
+
+      <h3 id="microseconds">microseconds()</h3>
+
+<pre class="codebox">
+namespace base {
+
+constexpr <a href="#duration">Duration</a> <b>microseconds</b>(int64_t us);
+
+}
+</pre>
+
+      <p>RC. Returns a duration consisting of the specified number of
+      microseconds.</p>
+
+      <h3 id="milliseconds">milliseconds()</h3>
+
+<pre class="codebox">
+namespace base {
+
+constexpr <a href="#duration">Duration</a> <b>milliseconds</b>(int64_t ms);
+
+}
+</pre>
+
+      <p>RC. Returns a duration consisting of the specified number of
+      milliseconds.</p>
+
+      <h3 id="seconds">seconds()</h3>
+
+<pre class="codebox">
+namespace base {
+
+constexpr <a href="#duration">Duration</a> <b>seconds</b>(int64_t s);
+
+}
+</pre>
+
+      <p>RC. Returns a duration consisting of the specified number of
+      seconds.</p>
+
+      <h3 id="minutes">minutes()</h3>
+
+<pre class="codebox">
+namespace base {
+
+constexpr <a href="#duration">Duration</a> <b>minutes</b>(int64_t min);
+
+}
+</pre>
+
+      <p>RC. Returns a duration consisting of the specified number of
+      minutes.</p>
+
+      <h3 id="hours">hours()</h3>
+
+<pre class="codebox">
+namespace base {
+
+constexpr <a href="#duration">Duration</a> <b>hours</b>(int64_t hr);
+
+}
+</pre>
+
+      <p>RC. Returns a duration consisting of the specified number of
+      hours.</p>
+    </section>
+    <hr>
+    <section>
+      <h2 id="duration">Duration</h2>
+
+<pre class="codebox">
+namespace base {
+
+class <b>Duration</b> {
+ public:
+  constexpr <a href="#Duration-ctor">Duration</a>();
+  constexpr <a href="#Duration-ctor">Duration</a>(const Duration&amp;) noexcept;
+  constexpr <a href="#Duration-ctor">Duration</a>(Duration&amp;&amp;) noexcept;
+  Duration&amp; <a href="#Duration-opeq">operator=</a>(const Duration&amp;) noexcept;
+  Duration&amp; <a href="#Duration-opeq">operator=</a>(Duration&amp;&amp;) noexcept;
+
+  Duration&amp; <a href="#Duration-oppluseq">operator+=</a>(Duration b);
+  Duration&amp; <a href="#Duration-opminuseq">operator-=</a>(Duration b);
+  template &lt;typename Integer&gt;
+  Duration&amp; <a href="#Duration-opstareq">operator*=</a>(Integer b);
+
+  void <a href="#Duration-swap">swap</a>(Duration&amp; other) noexcept;
+
+  constexpr bool <a href="#Duration-is_zero">is_zero</a>() const noexcept;
+  constexpr bool <a href="#Duration-is_neg">is_neg</a>() const noexcept;
+
+  constexpr uint64_t <a href="#Duration-abs_nanoseconds">abs_nanoseconds</a>() const;
+  constexpr uint64_t <a href="#Duration-abs_microseconds">abs_microseconds</a>() const;
+  constexpr uint64_t <a href="#Duration-abs_milliseconds">abs_milliseconds</a>() const;
+  constexpr uint64_t <a href="#Duration-abs_seconds">abs_seconds</a>() const;
+  constexpr uint64_t <a href="#Duration-abs_minutes">abs_minutes</a>() const;
+  constexpr uint64_t <a href="#Duration-abs_hours">abs_hours</a>() const;
+
+  constexpr int64_t <a href="#Duration-nanoseconds">nanoseconds</a>() const;
+  constexpr int64_t <a href="#Duration-microseconds">microseconds</a>() const;
+  constexpr int64_t <a href="#Duration-milliseconds">milliseconds</a>() const;
+  constexpr int64_t <a href="#Duration-seconds">seconds</a>() const;
+  constexpr int64_t <a href="#Duration-minutes">minutes</a>() const;
+  constexpr int64_t <a href="#Duration-hours">hours</a>() const;
+
+  constexpr Duration <a href="#Duration-opplus">operator+</a>() const noexcept;
+  constexpr Duration <a href="#Duration-opminus">operator-</a>() const noexcept;
+
+  void <a href="#Duration-append_to">append_to</a>(std::string* out) const;
+  std::string <a href="#Duration-as_string">as_string</a>() const;
+};
+
+void <a href="#Duration-swap">swap</a>(Duration&amp; a, Duration&amp; b) noexcept;
+
+constexpr bool <a href="#Duration-opeqeq">operator==</a>(Duration a, Duration b);
+constexpr bool <a href="#Duration-opnoteq">operator!=</a>(Duration a, Duration b);
+constexpr bool <a href="#Duration-oplt">operator&lt;</a>(Duration a, Duration b);
+constexpr bool <a href="#Duration-oplteq">operator&lt;=</a>(Duration a, Duration b);
+constexpr bool <a href="#Duration-opgt">operator&gt;</a>(Duration a, Duration b);
+constexpr bool <a href="#Duration-opgteq">operator&gt;=</a>(Duration a, Duration b);
+
+constexpr Duration <a href="#Duration-opplus">operator+</a>(Duration a, Duration b);
+constexpr Duration <a href="#Duration-opminus">operator-</a>(Duration a, Duration b);
+
+template &lt;typename Integer&gt;
+constexpr Duration <a href="#Duration-opstar">operator*</a>(Duration a, Integer b);
+
+template &lt;typename Integer&gt;
+constexpr Duration <a href="#Duration-opstar">operator*</a>(Integer a, Duration b);
+
+}
+</pre>
+
+      <p>RC. Represents a span of time.</p>
+
+      <h3 id="Duration-ctor">Duration::Duration()</h3>
+
+      <p>Constructs a duration. The default constructor produces a zero
+      duration, while the copy and move constructors do the obvious thing.</p>
+
+      <p>To construct values other than zero, use one of the
+      <a href="#functions">top-level functions</a>.</p>
+
+      <h3 id="Duration-opeq">Duration::operator=()</h3>
+
+      <p>Assigns a duration. The copy and move assignment operators do the
+      obivous thing.</p>
+
+      <h3 id="Duration-oppluseq">Duration::operator+=()</h3>
+
+      <p>Adds another duration to this duration.</p>
+
+      <h3 id="Duration-opminuseq">Duration::operator-=()</h3>
+
+      <p>Subtracts another duration from this duration.</p>
+
+      <h3 id="Duration-opstareq">Duration::operator*=()</h3>
+
+      <p>Scales this duration by the given factor.</p>
+
+      <h3 id="Duration-swap">Duration::swap()</h3>
+
+      <p>Swaps two durations.</p>
+
+      <h3 id="Duration-opeqeq">Duration::operator==()</h3>
+      <h3 id="Duration-opnoteq">Duration::operator!=()</h3>
+      <h3 id="Duration-oplt">Duration::operator&lt;()</h3>
+      <h3 id="Duration-oplteq">Duration::operator&lt;=()</h3>
+      <h3 id="Duration-opgt">Duration::operator&gt;()</h3>
+      <h3 id="Duration-opgteq">Duration::operator&gt;=()</h3>
+
+      <p>Compares two durations. Durations have the usual total order: most to
+      least negative, zero, least to most positive.</p>
+
+      <h3 id="Duration-opplus">Duration::operator+()</h3>
+
+      <p>Unary: returns a copy of this duration.</p>
+
+      <p>Binary: returns the sum of the two arguments.</p>
+
+      <h3 id="Duration-opminus">Duration::operator-()</h3>
+
+      <p>Unary: returns the negaction of this duration.</p>
+
+      <p>Binary: returns the difference of the two arguments.</p>
+
+      <h3 id="Duration-opstar">Duration::operator*()</h3>
+
+      <p>Binary: returns a scaled copy of the duration.</p>
+
+      <h3 id="Duration-is_zero">Duration::is_zero()</h3>
+
+      <p>Returns true iff this duration is the zero duration.</p>
+
+      <h3 id="Duration-is_neg">Duration::is_neg()</h3>
+
+      <p>Returns true iff this duration is less than the zero duration.</p>
+
+      <h3 id="Duration-abs_nanoseconds">Duration::abs_nanoseconds()</h3>
+      <h3 id="Duration-abs_microseconds">Duration::abs_microseconds()</h3>
+      <h3 id="Duration-abs_milliseconds">Duration::abs_milliseconds()</h3>
+      <h3 id="Duration-abs_seconds">Duration::abs_seconds()</h3>
+      <h3 id="Duration-abs_minutes">Duration::abs_minutes()</h3>
+      <h3 id="Duration-abs_hours">Duration::abs_hours()</h3>
+
+      <p>Converts the absolute value of this duration into the chosen
+      units.</p>
+
+      <h3 id="Duration-nanoseconds">Duration::nanoseconds()</h3>
+      <h3 id="Duration-microseconds">Duration::microseconds()</h3>
+      <h3 id="Duration-milliseconds">Duration::milliseconds()</h3>
+      <h3 id="Duration-seconds">Duration::seconds()</h3>
+      <h3 id="Duration-minutes">Duration::minutes()</h3>
+      <h3 id="Duration-hours">Duration::hours()</h3>
+
+      <p>Converts this duration into the chosen units.</p>
+
+      <h3 id="Duration-append_to">Duration::append_to()</h3>
+
+      <p>Stringifies this duration and appends it to the given string.</p>
+
+      <p>See also:
+      <a href="../concat.h/#append_to"><code>base::append_to()</code></a>.</p>
+
+      <h3 id="Duration-as_string">Duration::as_string()</h3>
+
+      <p>Stringifies this duration and returns it.</p>
+    </section>
+  </article>
+
+  <nav id="navbar">
+    <p>Waiting for JavaScript...</p>
+  </nav>
+</body>
+</html>

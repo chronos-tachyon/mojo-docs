@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>base/fd.h : Mojo</title>
+  <link rel="sitemap" type="text/xml" href="../../sitemap.xml">
+  <!-- link rel="icon" type="image/png" href="../../.img/favicon.png" -->
+  <link rel="stylesheet" type="text/css" href="../../.css/lity-1.6.6.min.css">
+  <link rel="stylesheet" type="text/css" href="../../.css/style.css">
+  <script src="../../.js/jquery-3.1.0.slim.min.js" defer></script>
+  <script src="../../.js/lity-1.6.6.min.js" defer></script>
+  <script src="../../.js/nav.js" defer></script>
+</head>
+<body>
+  <article id="main">
+    <header>
+      <p><a href="/">Mojo</a> &gt; <a href="../">base</a> &gt;</p>
+      <h1>fd.h</h1>
+    </header>
+
+    <p>GitHub:
+    <a href="https://github.com/chronos-tachyon/mojo/blob/master/base/fd.h">base/fd.h</a>
+    <a href="https://github.com/chronos-tachyon/mojo/blob/master/base/fd.cc">base/fd.cc</a>
+    </p>
+
+    <div id="toc">
+      Waiting on JavaScript...
+    </div>
+
+    <section>
+      <h2 id="functions">Top-level Functions</h2>
+
+      <h3 id="wrapfd">wrapfd()</h3>
+
+<pre class="codebox">
+namespace base {
+
+<a href="#FDHolder">FD</a> <b>wrapfd</b>(int fdnum);
+
+}
+</pre>
+
+      <p>STABLE. Constructs a new
+      <a href="#FDHolder"><code>FDHolder</code></a> wrapped in a
+      <code>std::shared_ptr</code>. This is the standard way of constructing
+      <code>FDHolder</code> instances.</p>
+
+      <h3 id="make_pipe">make_pipe()</h3>
+
+<pre class="codebox">
+namespace base {
+
+struct <b>Pipe</b> {
+  <a href="#FDHolder">FD</a> read;
+  <a href="#FDHolder">FD</a> write;
+};
+
+<a href="../result.h/#Result">Result</a> <b>make_pipe</b>(Pipe* out);
+
+}
+</pre>
+
+      <p>STABLE. Creates an anonymous unidirectional pipe. Data written to the
+      <code>write</code> file descriptor will become available to the
+      <code>read</code> file descriptor.</p>
+
+      <p>Each file descriptor will have the <code>O_CLOEXEC</code> and
+      <code>O_NONBLOCK</code> flags set.</p>
+
+      <p>See also:
+      <a href="http://man7.org/linux/man-pages/man2/pipe2.2.html"><code>pipe2(2)</code></a>.</p>
+
+      <h3 id="make_socketpair">make_socketpair()</h3>
+
+<pre class="codebox">
+namespace base {
+
+struct <b>SocketPair</b> {
+  <a href="#FDHolder">FD</a> left;
+  <a href="#FDHolder">FD</a> right;
+};
+
+<a href="../result.h/#Result">Result</a> <b>make_socketpair</b>(SocketPair* out, int domain, int type, int protocol);
+
+}
+</pre>
+
+      <p>STABLE. Creates an anonymous bidirectional socket pair. Data written
+      to either file descriptor will become available to the other.</p>
+
+      <p>Each file descriptor will have the <code>O_CLOEXEC</code> and
+      <code>O_NONBLOCK</code> flags set.</p>
+
+      <p>See also:
+      <a href="http://man7.org/linux/man-pages/man2/socketpair.2.html"><code>socketpair(2)</code></a>.</p>
+
+      <h3 id="set_blocking">set_blocking()</h3>
+
+<pre class="codebox">
+namespace base {
+
+<a href="../result.h/#Result">Result</a> <b>set_blocking</b>(<a href="#FDHolder">FD</a> fd, bool value);
+
+}
+</pre>
+
+      <p>STABLE. Changes the <code>O_NONBLOCK</code> flag: the flag is forced
+      to be set if <code>value</code> is true, or forced to be cleared if
+      <code>value</code> is false.<p>
+
+      <h3 id="shutdown">shutdown()</h3>
+
+<pre class="codebox">
+namespace base {
+
+<a href="../result.h/#Result">Result</a> <b>shutdown</b>(<a href="#FDHolder">FD</a> fd, int how);
+
+}
+</pre>
+
+      <p>STABLE. Thin wrapper for
+      <a href="http://man7.org/linux/man-pages/man2/shutdown.2.html"><code>shutdown(2)</code></a>.<p>
+
+      <h3 id="seek">seek()</h3>
+
+<pre class="codebox">
+namespace base {
+
+<a href="../result.h/#Result">Result</a> <b>seek</b>(off_t* out, <a href="#FDHolder">FD</a> fd, off_t offset, int whence);
+
+}
+</pre>
+
+      <p>STABLE. Thin wrapper for
+      <a href="http://man7.org/linux/man-pages/man2/lseek.2.html"><code>lseek(2)</code></a>.<p>
+
+      <h3 id="read_exactly">read_exactly()</h3>
+
+<pre class="codebox">
+namespace base {
+
+<a href="../result.h/#Result">Result</a> <b>read_exactly</b>(<a href="#FDHolder">FD</a> fd, void* ptr, std::size_t len, const char* what);
+
+}
+</pre>
+
+      <p>RC. Wrapper for
+      <a href="http://man7.org/linux/man-pages/man2/read.2.html"><code>read(2)</code></a>
+      that returns an error if the read was short.<p>
+
+      <p>The <code>what</code> argument names the FD in error messages.</p>
+
+      <h3 id="write_exactly">write_exactly()</h3>
+
+<pre class="codebox">
+namespace base {
+
+<a href="../result.h/#Result">Result</a> <b>write_exactly</b>(<a href="#FDHolder">FD</a> fd, const void* ptr, std::size_t len, const char* what);
+
+}
+</pre>
+
+      <p>RC. Wrapper for
+      <a href="http://man7.org/linux/man-pages/man2/write.2.html"><code>write(2)</code></a>
+      that returns an error if the write was short.<p>
+
+      <p>The <code>what</code> argument names the FD in error messages.</p>
+
+      <h3 id="make_tempfile">make_tempfile()</h3>
+
+<pre class="codebox">
+namespace base {
+
+<a href="../result.h/#Result">Result</a> <b>make_tempfile</b>(std::string* path, <a href="#FDHolder">FD</a>* fd, const char* tmpl);
+
+}
+</pre>
+
+      <p>RC. Wrapper for
+      <a href="http://man7.org/linux/man-pages/man3/mkstemp.3.html"><code>mkostemp(3)</code></a>
+      that takes a template relative to <code>$TMPDIR</code>.</p>
+
+      <p>The file descriptor will have the <code>O_CLOEXEC</code> flag
+      set.</p>
+    </section>
+    <hr>
+    <section>
+      <h2 id="FDHolder">FDHolder</h2>
+
+<pre class="codebox">
+namespace base {
+
+class <b>FDHolder</b> {
+ public:
+  using HookFn = <a href="http://en.cppreference.com/w/cpp/utility/functional/function">std::function</a>&lt;void()&gt;;
+
+  <a href="#FDHolder-ctor">explicit FDHolder</a>(int fd) noexcept;
+
+  <a href="#FDHolder-dtor">~FDHolder</a>() noexcept;
+
+  <a href="#FDHolder-opbool">explicit operator bool</a>() const noexcept;
+
+  void <a href="#FDHolder-on_close">on_close</a>(HookFn hook);
+  std::pair&lt;int, RLock&gt; <a href="#FDHolder-acquire_fd">acquire_fd</a>() const noexcept;
+  int <a href="#FDHolder-release_fd">release_fd</a>() noexcept;
+  <a href="../result.h/#Result">Result</a> <a href="#FDHolder-close">close</a>();
+
+  <s>FDHolder(const FDHolder&amp;) = delete;</s>
+  <s>FDHolder(FDHolder&amp;&amp;) = delete;</s>
+  <s>FDHolder&amp; operator=(const FDHolder&amp;) = delete;</s>
+  <s>FDHolder&amp; operator=(FDHolder&amp;&amp;) = delete;</s>
+};
+
+using <b>FD</b> = <a href="http://en.cppreference.com/w/cpp/memory/shared_ptr">std::shared_ptr</a>&lt;FDHolder&gt;;
+
+}
+</pre>
+
+      <p>RC. Owns a file descriptor, ensuring that it will be closed when the
+      last reference is removed. <code>FDHolder</code> also ensures that the
+      file descriptor cannot be closed while in use, a property which protects
+      against race conditions caused by the recycling of file descriptor
+      numbers.</p>
+
+      <h3 id="FDHolder-ctor">FDHolder::FDHolder()</h3>
+
+      <p>Takes ownership of a file descriptor.</p>
+
+      <h3 id="FDHolder-dtor">FDHolder::~FDHolder()</h3>
+
+      <p>Closes the file descriptor, if not already closed.</p>
+
+      <h3 id="FDHolder-opbool">FDHolder::operator bool()</h3>
+
+      <p>Returns true iff the file descriptor is still open.</p>
+
+      <h3 id="FDHolder-on_close">FDHolder::on_close()</h3>
+
+      <p>Registers a callback that will be called when the file descriptor is
+      closed.</p>
+
+      <h3 id="FDHolder-acquire_fd">FDHolder::acquire_fd()</h3>
+
+      <p>Obtains a shared lock on the file descriptor, returning both the file
+      descriptor number and the shared lock.  Returns <code>-1</code> as the
+      file descriptor number if the file descriptor was already closed.</p>
+
+      <h3 id="FDHolder-release_fd">FDHolder::release_fd()</h3>
+
+      <p>Relinquishes ownership of the file descriptor, returning the file
+      descriptor number.  Returns <code>-1</code> if the file descriptor was
+      already closed.</p>
+
+      <p>NOTE: this runs all <a href="#FDHolder-on_close">on_close</a> hooks,
+      as if the file descriptor were being closed.</p>
+
+      <h3 id="FDHolder-close">FDHolder::close()</h3>
+
+      <p>Closes the file descriptor.</p>
+
+      <p>NOTE: this runs all <a href="#FDHolder-on_close">on_close</a>
+      hooks.</p>
+    </section>
+  </article>
+
+  <nav id="navbar">
+    <p>Waiting for JavaScript...</p>
+  </nav>
+</body>
+</html>

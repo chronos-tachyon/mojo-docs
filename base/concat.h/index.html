@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>base/concat.h : Mojo</title>
+  <link rel="sitemap" type="text/xml" href="../../sitemap.xml">
+  <!-- link rel="icon" type="image/png" href="../../.img/favicon.png" -->
+  <link rel="stylesheet" type="text/css" href="../../.css/lity-1.6.6.min.css">
+  <link rel="stylesheet" type="text/css" href="../../.css/style.css">
+  <script src="../../.js/jquery-3.1.0.slim.min.js" defer></script>
+  <script src="../../.js/lity-1.6.6.min.js" defer></script>
+  <script src="../../.js/nav.js" defer></script>
+</head>
+<body>
+  <article id="main">
+    <header>
+      <p><a href="/">Mojo</a> &gt; <a href="../">base</a> &gt;</p>
+      <h1>concat.h</h1>
+    </header>
+
+    <p>GitHub:
+    <a href="https://github.com/chronos-tachyon/mojo/blob/master/base/concat.h">base/concat.h</a>
+    <a href="https://github.com/chronos-tachyon/mojo/blob/master/base/concat.cc">base/concat.cc</a>
+    </p>
+
+    <div id="toc">
+      Waiting on JavaScript...
+    </div>
+
+    <section>
+      <h2 id="functions">Top-level Functions</h2>
+
+      <h3 id="concat">concat()</h3>
+
+<pre class="codebox">
+namespace base {
+
+template &lt;typename... Args&gt;
+std::string concat(const Args&amp;... args);
+
+}
+</pre>
+
+      <p>STABLE.  Converts each arg into a string, concatenates them together,
+      and returns the result.</p>
+
+      <p>Example:</p>
+
+<pre class="codebox">
+auto t = std::make_tuple(1, "foo", true);
+std::string str = base::concat("I can print tuples, like so: ", t);
+</pre>
+
+      <h3 id="concat_to">concat_to()</h3>
+
+<pre class="codebox">
+namespace base {
+
+template &lt;typename... Args&gt;
+void concat_to(std::string* out, const Args&amp;... args);
+
+}
+</pre>
+
+      <p>STABLE.  Like <a href="#concat"><code>concat()</code></a>, but
+      appends its output to an existing string.</p>
+
+      <h3 id="append_to">append_to()</h3>
+
+<pre class="codebox">
+namespace base {
+
+template &lt;typename T&gt;
+void append_to(std::string* out, T arg);
+
+}
+</pre>
+
+      <p>STABLE.  Converts a single item to a string, then appends it to an
+      existing string.</p>
+
+      <p>NOTE: like <code>std::swap</code>, this is a hook for implementers to
+      override.  These overrides are found via
+      <a href="http://en.cppreference.com/w/cpp/language/adl">ADL</a>, and
+      thus callers to this function should anticipate ADL.</p>
+
+      <p>Most callers should use
+      <a href="#concat_to"><code>concat_to()</code></a> instead.
+      <code>concat_to()</code> handles the ADL details for you.</p>
+
+      <p>Example:</p>
+
+<pre class="codebox">
+namespace foo {
+
+struct Foo {
+  uint16_t value;
+};
+
+void append_to(std::string* out, const Foo&amp; arg) {
+  base::concat_to(out, "foo::Foo(", arg.value, ")");
+}
+
+}  // namespace foo
+
+...
+
+foo::Foo x = {42};
+std::string str;
+using base::append_to;
+append_to(&amp;str, x);
+</pre>
+
+      <h3 id="length_hint">length_hint()</h3>
+
+<pre class="codebox">
+namespace base {
+
+template &lt;typename T&gt;
+std::size_t length_hint(T arg);
+
+}
+</pre>
+
+      <p>STABLE.  Returns the estimated length of its argument if converted to
+      a string.  This is useful for reducing the number of dynamic
+      reallocations when appending multiple items to a string, turning an
+      <code>O(n log n)</code> algorithm into an <code>O(n)</code> one.</p>
+
+      <p>NOTE: like <code>std::swap</code>, this is a hook for implementers to
+      override.  These overrides are found via
+      <a href="http://en.cppreference.com/w/cpp/language/adl">ADL</a>, and
+      thus callers to this function should anticipate ADL.</p>
+
+      <p>Most callers should use
+      <a href="#concat_to"><code>concat_to()</code></a> instead.
+      <code>concat_to()</code> handles the ADL details for you.</p>
+    </section>
+  </article>
+
+  <nav id="navbar">
+    <p>Waiting for JavaScript...</p>
+  </nav>
+</body>
+</html>

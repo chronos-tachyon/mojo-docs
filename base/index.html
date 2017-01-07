@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>base : Mojo</title>
+  <link rel="sitemap" type="text/xml" href="../sitemap.xml">
+  <!-- link rel="icon" type="image/png" href="../.img/favicon.png" -->
+  <link rel="stylesheet" type="text/css" href="../.css/lity-1.6.6.min.css">
+  <link rel="stylesheet" type="text/css" href="../.css/style.css">
+  <script src="../.js/jquery-3.1.0.slim.min.js" defer></script>
+  <script src="../.js/lity-1.6.6.min.js" defer></script>
+  <script src="../.js/nav.js" defer></script>
+</head>
+<body>
+  <article id="main">
+    <header>
+      <p><a href="/">Mojo</a> &gt;</p>
+      <h1>base</h1>
+      <h2>Frequently-Used Miscellany</h2>
+    </header>
+
+    <div id="toc">
+      Waiting on JavaScript...
+    </div>
+
+    <section>
+      <h2 id="strings">Strings</h2>
+
+      <ul>
+        <li><a href="concat.h/">base/concat.h</a></li>
+      </ul>
+
+      <p>Provides <code>base::concat(...)</code> and
+      <code>base::concat_to(&amp;str, ...)</code> functions for building
+      strings through concatenation of pieces. Also defines an interface for
+      objects to declare themselves stringable.</p>
+    </section>
+    <hr>
+    <section>
+      <h2 id="results">Results</h2>
+
+      <ul>
+        <li><a href="result.h/">base/result.h</a></li>
+        <li><a href="result_testing.h/">base/result_testing.h</a></li>
+      </ul>
+
+      <p>Provides a <code>base::Result</code> value type representing success
+      or failure of an operation, plus macros for checking such values in
+      tests.</p>
+    </section>
+    <hr>
+    <section>
+      <h2 id="logging">Logging</h2>
+
+      <ul>
+        <li><a href="logging.h/">base/logging.h</a></li>
+        <li><a href="debug.h/">base/debug.h</a></li>
+      </ul>
+
+      <p>Provides macros for generating log messages, including logged
+      assertions. Also provides an API for consuming/intercepting logs, and
+      provides functions for checking and changing the global debugging
+      mode.</p>
+    </section>
+    <hr>
+    <section>
+      <h2 id="date-time">Date/Time</h2>
+
+      <ul>
+        <li><a href="duration.h/">base/duration.h</a></li>
+        <li><a href="time.h/">base/time.h</a></li>
+        <li><a href="clock.h/">base/clock.h</a></li>
+        <li><a href="clockfake.h/">base/clockfake.h</a></li>
+        <li><a href="stopwatch.h/">base/stopwatch.h</a></li>
+      </ul>
+
+      <p>Provides a number of classes and value types for representing and
+      manipulating time:</p>
+
+      <ul>
+        <li>
+          <code>base::Duration</code> represents a span of time.
+        </li>
+        <li>
+          <code>base::Time</code> and <code>base::MonotonicTime</code>
+          represent instants of time.
+        </li>
+        <li>
+          <code>base::now()</code> and <code>base::monotonic_now()</code>
+          obtain time values.
+        </li>
+        <li>
+          Alternatively, the <code>base::Clock</code> and
+          <code>base::MonotonicClock</code> holder classes can be used
+          directly.
+        </li>
+        <li>
+          Custom clock implementations can be created via the
+          <code>base::ClockImpl</code> and
+          <code>base::MonotonicClockImpl</code> abstract base classes.
+        </li>
+        <li>
+          <code>base::Stopwatch</code> can be used to measure spans of elapsed
+          time.
+        </li>
+      </ul>
+    </section>
+    <hr>
+    <section>
+      <h2 id="files">Files (low level)</h2>
+
+      <ul>
+        <li><a href="fd.h/">base/fd.h</a></li>
+      </ul>
+
+      <p>Provides <code>base::FDHolder</code> (a wrapper for file descriptors)
+      and <code>base::FD</code> (a smart pointer for
+      <code>base::FDHolder</code>).  Wrapping a file descriptor ensures that
+      it gets closed when no longer in use, and also protects against the
+      recycling of file descriptor numbers.</p>
+    </section>
+    <hr>
+    <section>
+      <h2 id="misc">Miscellaneous</h2>
+
+      <ul>
+        <li><a href="backport.h/">base/backport.h</a></li>
+      </ul>
+
+      <p>Provides backports of C++14 and/or C++17 features.</p>
+
+      <p>Provides <code>base::backport::make_unique()</code>, for
+      constructing objects wrapped in <code>std::unique_ptr</code>.</p>
+
+      <p>Provides <code>base::backport::integer_sequence</code>,
+      <code>base::backport::make_integer_sequence</code>,
+      <code>base::backport::index_sequence</code>, and
+      <code>base::backport::make_index_sequence</code>, for indexing
+      tuples.</p>
+
+      <ul>
+        <li><a href="cleanup.h/">base/cleanup.h</a></li>
+      </ul>
+
+      <p>Provides <code>base::Cleanup</code>, a RAII class to call a functor
+      upon leaving a scope.</p>
+
+      <ul>
+        <li><a href="mutex.h/">base/mutex.h</a></li>
+      </ul>
+
+      <p>Provides mutexes, locks, and other concurrency tools.</p>
+
+      <ul>
+        <li><a href="token.h/">base/token.h</a></li>
+      </ul>
+
+      <p>Provides <code>base::token_t</code>, a value type representing a
+      unique opaque token.</p>
+    </section>
+  </article>
+
+  <nav id="navbar">
+    <p>Waiting for JavaScript...</p>
+  </nav>
+</body>
+</html>

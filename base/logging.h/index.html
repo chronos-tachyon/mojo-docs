@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>base/logging.h : Mojo</title>
+  <link rel="sitemap" type="text/xml" href="../../sitemap.xml">
+  <!-- link rel="icon" type="image/png" href="../../.img/favicon.png" -->
+  <link rel="stylesheet" type="text/css" href="../../.css/lity-1.6.6.min.css">
+  <link rel="stylesheet" type="text/css" href="../../.css/style.css">
+  <script src="../../.js/jquery-3.1.0.slim.min.js" defer></script>
+  <script src="../../.js/lity-1.6.6.min.js" defer></script>
+  <script src="../../.js/nav.js" defer></script>
+</head>
+<body>
+  <article id="main">
+    <header>
+      <p><a href="/">Mojo</a> &gt; <a href="../">base</a> &gt;</p>
+      <h1>logging.h</h1>
+    </header>
+
+    <p>GitHub:
+    <a href="https://github.com/chronos-tachyon/mojo/blob/master/base/logging.h">base/logging.h</a>
+    <a href="https://github.com/chronos-tachyon/mojo/blob/master/base/logging.cc">base/logging.cc</a>
+    </p>
+
+    <div id="toc">
+      Waiting on JavaScript...
+    </div>
+
+    <section>
+      <h2 id="macros">Macros</h2>
+
+      <h3 id="level-macros">Priority Level Macros</h3>
+
+      <h4 id="LOG_LEVEL_INFO">LOG_LEVEL_INFO</h4>
+      <h4 id="LOG_LEVEL_WARN">LOG_LEVEL_WARN</h4>
+      <h4 id="LOG_LEVEL_ERROR">LOG_LEVEL_ERROR</h4>
+      <h4 id="LOG_LEVEL_DFATAL">LOG_LEVEL_DFATAL</h4>
+      <h4 id="LOG_LEVEL_FATAL">LOG_LEVEL_FATAL</h4>
+      <h4 id="LOG_LEVEL">LOG_LEVEL()</h4>
+      <h4 id="VLOG_LEVEL">VLOG_LEVEL()</h4>
+
+<pre class="codebox">
+#define <b>LOG_LEVEL_INFO</b> ...
+#define <b>LOG_LEVEL_WARN</b> ...
+#define <b>LOG_LEVEL_ERROR</b> ...
+#define <b>LOG_LEVEL_DFATAL</b> ...
+#define <b>LOG_LEVEL_FATAL</b> ...
+#define <b>LOG_LEVEL</b>(name) LOG_LEVEL_##name
+#define <b>VLOG_LEVEL</b>(num) ...
+</pre>
+
+      <p>RC. These macros define a family of <b>log priority levels</b>:</p>
+
+      <ul>
+        <li>
+          <code>LOG_LEVEL_FATAL</code>: indicates an error which is wholly
+          unrecoverable, a sign of a major bug in the program. Logging one of
+          these crashes the program to prevent further damage.
+        </li>
+        <li>
+          <code>LOG_LEVEL_DFATAL</code>: indicates an error which is
+          technically recoverable but is nonetheless a sign of a major bug in
+          the program. In <a href="../debug.h/#debug">debug mode</a>,
+          logging one of these crashes the program to prevent further damage
+          (and to allow easier debugging with <code>gdb</code>).
+        </li>
+        <li>
+          <code>LOG_LEVEL_ERROR</code>: indicates a serious problem that
+          prevents the program from accomplishing something.
+        </li>
+        <li>
+          <code>LOG_LEVEL_WARN</code>: indicates a problem that the program
+          can work around.
+        </li>
+        <li>
+          <code>LOG_LEVEL_INFO</code>: indicates a situation which is not a
+          problem, but unusual enough to be worth commenting on.
+        </li>
+        <li>
+          <code>VLOG_LEVEL(num)</code>: indicates a debugging or other
+          high-verbosity message. The valid range for <code>num</code> is
+          <code>0..127</code>; each increment marks a higher level of
+          verbosity.
+        </li>
+      </ul>
+
+      <h3 id="log-macros">Logging Macros</h3>
+
+      <h4 id="LOG">LOG()</h4>
+      <h4 id="VLOG">VLOG()</h4>
+
+<pre class="codebox">
+#define <b>LOG</b>(name) <a href="#Logger">::base::Logger</a>(__FILE__, __LINE__, 1, LOG_LEVEL(name))
+#define <b>VLOG</b>(num) <a href="#Logger">::base::Logger</a>(__FILE__, __LINE__, 1, VLOG_LEVEL(num))
+</pre>
+
+      <p>RC. These are the standard logging macros.</p>
+
+      <p>Example:</p>
+
+<pre class="codebox">
+const int x = 42;
+LOG(INFO) &lt;&lt; "Hello world!";
+VLOG(0) &lt;&lt; "x=[" &lt;&lt; x &lt;&lt; "]";
+</pre>
+
+      <h4 id="LOG_EVERY_N">LOG_EVERY_N()</h4>
+      <h4 id="VLOG_EVERY_N">VLOG_EVERY_N()</h4>
+
+<pre class="codebox">
+#define <b>LOG_EVERY_N</b>(name, n) \
+  <a href="#Logger">::base::Logger</a>(__FILE__, __LINE__, (n), LOG_LEVEL(name))
+#define <b>VLOG_EVERY_N</b>(num, n) \
+  <a href="#Logger">::base::Logger</a>(__FILE__, __LINE__, (n), VLOG_LEVEL(num))
+</pre>
+
+      <p>RC. These logging macros log only 1 message out of every
+      <code>n</code>, discarding the rest.</p>
+
+      <h4 id="LOG_EXCEPTION">LOG_EXCEPTION()</h4>
+
+<pre class="codebox">
+#define <b>LOG_EXCEPTION</b>(e) ...
+</pre>
+
+      <p>RC. This logging macro logs a caught exception.</p>
+
+      <p>Example:</p>
+
+<pre class="codebox">
+try {
+  ...;  // may throw
+} catch(...) {
+  LOG_EXCEPTION(std::current_exception());
+}
+</pre>
+
+      <h3 id="check-macros">CHECK Macros</h3>
+
+      <h4 id="CHECK">CHECK()</h4>
+
+<pre class="codebox">
+#define <b>CHECK</b>(cond) ...
+</pre>
+
+      <p>RC. Asserts that the given condition holds true, logging a
+      <code>LOG_LEVEL_DFATAL</code> message if it does not.</p>
+
+      <p>Example:</p>
+
+<pre class="codebox">
+struct Foo {...};
+Foo foo;
+bool predicate(const Foo&amp; value);
+CHECK(predicate(foo)) &lt;&lt; ": extra message";
+</pre>
+
+      <p>This is shorthand for:</p>
+
+<pre class="codebox">
+struct Foo {...};
+Foo foo;
+bool predicate(const Foo&amp; value);
+if (!predicate(foo)) {
+  LOG(DFATAL) &lt;&lt; "CHECK FAILED: predicate(foo)" &lt;&lt; ": extra message";
+}
+</pre>
+
+      <h4 id="CHECK_OK">CHECK_OK()</h4>
+
+<pre class="codebox">
+#define <b>CHECK_OK</b>(result) ...
+</pre>
+
+      <p>RC. Similar to <code>CHECK(result)</code>, where <code>result</code>
+      is a <a href="../result.h/#Result"><code>base::Result</code></a>, but
+      this macro provides better log messages.</p>
+
+      <h4 id="CHECK_EQ">CHECK_EQ()</h4>
+      <h4 id="CHECK_NE">CHECK_NE()</h4>
+      <h4 id="CHECK_LT">CHECK_LT()</h4>
+      <h4 id="CHECK_LE">CHECK_LE()</h4>
+      <h4 id="CHECK_GT">CHECK_GT()</h4>
+      <h4 id="CHECK_GE">CHECK_GE()</h4>
+
+<pre class="codebox">
+#define <b>CHECK_EQ</b>(x, y) ...
+#define <b>CHECK_NE</b>(x, y) ...
+#define <b>CHECK_LT</b>(x, y) ...
+#define <b>CHECK_LE</b>(x, y) ...
+#define <b>CHECK_GT</b>(x, y) ...
+#define <b>CHECK_GE</b>(x, y) ...
+</pre>
+
+      <p>RC. Similar to <code>CHECK(x == y)</code>,
+      <code>CHECK(x != y)</code>, etc., but these macros provide better log
+      messages.</p>
+
+      <h4 id="CHECK_NOTNULL">CHECK_NOTNULL()</h4>
+
+<pre class="codebox">
+#define <b>CHECK_NOTNULL</b>(ptr) ...
+</pre>
+
+      <p>RC. Asserts that the given pointer is non-null, logging a
+      <code>LOG_LEVEL_FATAL</code> message if it is null. <code>ptr</code>
+      may be a <code>T*</code>, a
+      <a href="http://en.cppreference.com/w/cpp/memory/shared_ptr">std::shared_ptr</a>
+      or a
+      <a href="http://en.cppreference.com/w/cpp/memory/unique_ptr">std::unique_ptr</a>.
+      Returns the pointer.</p>
+
+      <p><b>NOTE</b>: Unlike the other macros in the
+      <a href="#CHECK"><code>CHECK</code></a> family, this macro logs at
+      <code>LOG_LEVEL_FATAL</code>, i.e. it will crash production code if it
+      fails. This is because an unexpected null pointer is an unrecoverable
+      error, and a controlled crash is better than undefined behavior.</p>
+
+      <p><b>NOTE</b>: Unlike the other macros in the
+      <a href="#CHECK"><code>CHECK</code></a> family, this macro does not
+      allow the caller to add to the log message. This is because it returns a
+      pointer, not a <a href="#Logger"><code>base::Logger</code></a>.</p>
+
+<pre class="codebox">
+Foo* ptr1 = CHECK_NOTNULL(func1(...));
+Foo* ptr2 = CHECK_NOTNULL(var2);
+std::shared_ptr&lt;Foo&gt; ptr3 = CHECK_NOTNULL(func3(...));
+std::shared_ptr&lt;Foo&gt; ptr4 = CHECK_NOTNULL(std::move(var4));
+std::unique_ptr&lt;Foo&gt; ptr5 = CHECK_NOTNULL(func5(...));
+std::unique_ptr&lt;Foo&gt; ptr6 = CHECK_NOTNULL(std::move(var6));
+</pre>
+
+      <p>This is shorthand for:</p>
+
+<pre class="codebox">
+Foo* ptr1 = func1(...);
+if (!ptr1) LOG(FATAL) &lt;&lt; "CHECK FAILED: func1(...) != nullptr";
+
+Foo* ptr2 = var2;
+if (!ptr2) LOG(FATAL) &lt;&lt; "CHECK FAILED: var2 != nullptr";
+
+std::shared_ptr&lt;Foo&gt; ptr3 = func3(...);
+if (!ptr3) LOG(FATAL) &lt;&lt; "CHECK FAILED: func3(...) != nullptr";
+
+std::shared_ptr&lt;Foo&gt; ptr4 = std::move(var4);
+if (!ptr4) LOG(FATAL) &lt;&lt; "CHECK FAILED: std::move(var4) != nullptr";
+
+std::unique_ptr&lt;Foo&gt; ptr5 = func5(...);
+if (!ptr5) LOG(FATAL) &lt;&lt; "CHECK FAILED: func5(...) != nullptr";
+
+std::unique_ptr&lt;Foo&gt; ptr6 = std::move(var6);
+if (!ptr6) LOG(FATAL) &lt;&lt; "CHECK FAILED: std::move(var6) != nullptr";
+</pre>
+
+      <h3 id="debug-macros">Debug-only Macros</h3>
+
+      <h4 id="DLOG">DLOG()</h4>
+      <h4 id="DVLOG">DVLOG()</h4>
+      <h4 id="DLOG_EVERY_N">DLOG_EVERY_N()</h4>
+      <h4 id="DVLOG_EVERY_N">DVLOG_EVERY_N()</h4>
+      <h4 id="DCHECK">DCHECK()</h4>
+      <h4 id="DCHECK_OK">DCHECK_OK()</h4>
+      <h4 id="DCHECK_EQ">DCHECK_EQ()</h4>
+      <h4 id="DCHECK_NE">DCHECK_NE()</h4>
+      <h4 id="DCHECK_LT">DCHECK_LT()</h4>
+      <h4 id="DCHECK_LE">DCHECK_LE()</h4>
+      <h4 id="DCHECK_GT">DCHECK_GT()</h4>
+      <h4 id="DCHECK_GE">DCHECK_GE()</h4>
+
+<pre class="codebox">
+#define DLOG(name) ...
+#define DVLOG(vlevel) ...
+#define DLOG_EVERY_N(name, n) ...
+#define DVLOG_EVERY_N(vlevel, n) ...
+#define DCHECK(x) ...
+#define DCHECK_OK(x) ...
+#define DCHECK_EQ(x, y) ...
+#define DCHECK_NE(x, y) ...
+#define DCHECK_LT(x, y) ...
+#define DCHECK_GT(x, y) ...
+#define DCHECK_LE(x, y) ...
+#define DCHECK_GE(x, y) ...
+</pre>
+
+      <p>BETA. These macros are variants of their namesakes without the "D"
+      prefix.  When <code>NDEBUG</code> is defined, these macros evaluate to a
+      null <a href="#Logger"><code>base::Logger</code></a>. Otherwise, they
+      are exactly equivalent to their namesakes.</p>
+
+      <p><b>NOTE</b>: These should be used sparingly. Prefer the non-"D"
+      versions of these macros unless profiling shows that they are impacting
+      your performance.</p>
+
+      <h4 id="DCHECK_NOTNULL">DCHECK_NOTNULL()</h4>
+
+<pre class="codebox">
+#define DCHECK_NOTNULL(ptr) ...
+</pre>
+
+      <p>BETA. This macro is a variant of
+      <a href="#CHECK_NOTNULL"><code>CHECK_NOTNULL</code></a>. When
+      <code>NDEBUG</code> is defined, it becomes a pass-through no-op.
+      Otherwise it is exactly equivalent to its namesake.</p>
+
+      <p><b>NOTE</b>: This should be used sparingly. Prefer the non-"D"
+      version of this macro unless profiling shows that it is impacting your
+      performance.</p>
+    </section>
+    <hr>
+    <section>
+      <h2 id="functions">Top-level Functions</h2>
+
+      <h3 id="want">want()</h3>
+
+<pre class="codebox">
+namespace base {
+
+bool <b>want</b>(const char* file, unsigned int line, unsigned int every_n, <a href="#level_t">level_t</a> level);
+
+}
+</pre>
+
+      <p>BETA. Returns true if at least one
+      <a href="#LogTarget">logging target</a> would be interested in a log
+      with the given metadata.</p>
+
+      <p>This is also the function responsible for maintaining log moduli. For
+      example, if <code>want()</code> is called three times with the same
+      values for <code>file</code> and <code>line</code> and with
+      <code>every_n == 3</code>, then it will return true once and false
+      twice.</p>
+
+      <h3 id="log">log()</h3>
+
+<pre class="codebox">
+namespace base {
+
+void <b>log</b>(const <a href="#LogEntry">LogEntry</a>&amp; entry);
+
+}
+</pre>
+
+      <p>BETA. Sends the given LogEntry to all interested logging targets.</p>
+
+      <p>This is also the function responsible for automatic log flushing and
+      for terminating the program upon fatal errors.</p>
+
+      <h3 id="log_single_threaded">log_single_threaded()</h3>
+
+<pre class="codebox">
+namespace base {
+
+void <b>log_single_threaded</b>();
+
+}
+</pre>
+
+      <p>RC. Forces the use of single-threaded logging. This is mostly useful
+      for
+      <a href="https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md#death-tests">GoogleTest death tests</a>.</p>
+
+      <p><b>NOTE</b>: this function throws <code>std::logic_error</code> if
+      the logging thread has already been started.</p>
+
+      <h3 id="log_flush">log_flush()</h3>
+
+<pre class="codebox">
+namespace base {
+
+void <b>log_flush</b>();
+
+}
+</pre>
+
+      <p>RC. Blocks until all logs written before the flush have been
+      committed.</p>
+
+      <h3 id="log_flush_set_level">log_flush_set_level()</h3>
+
+<pre class="codebox">
+namespace base {
+
+void <b>log_flush_set_level</b>(<a href="#level_t">level_t</a> level);
+
+}
+</pre>
+
+      <p>RC. Sets the threshold for automatic log flushing. Messages with the
+      given priority or higher will call
+      <a href="#LogTarget-flush"><code>flush()</code></a>
+      on all logging targets.</p>
+
+      <h3 id="log_stderr_set_level">log_stderr_set_level()</h3>
+
+<pre class="codebox">
+namespace base {
+
+void <b>log_stderr_set_level</b>(<a href="#level_t">level_t</a> level);
+
+}
+</pre>
+
+      <p>BETA. Sets the threshold for <code>stderr</code> logging. Messages
+      with the given priority or higher are logged; messages with lower
+      priority are discarded.</p>
+
+      <h3 id="log_target_add">log_target_add()</h3>
+
+<pre class="codebox">
+namespace beta {
+
+void <b>log_target_add</b>(<a href="#LogTarget">LogTarget</a>* target);
+
+}
+</pre>
+
+      <p>BETA. Registers a LogTarget implementation to receive log
+      messages.</p>
+
+      <h3 id="log_target_remove">log_target_remove()</h3>
+
+<pre class="codebox">
+namespace beta {
+
+void <b>log_target_remove</b>(<a href="#LogTarget">LogTarget</a>* target);
+
+}
+</pre>
+
+      <p>BETA. Unregisters a LogTarget implementation from receiving new log
+      messages. This call implies a flush.</p>
+
+      <h3 id="log_set_gettid">log_set_gettid()</h3>
+
+<pre class="codebox">
+namespace beta {
+
+void <b>log_set_gettid</b>(pid_t (*func)());
+
+}
+</pre>
+
+      <p>BETA. Replaces the
+      <a href="http://man7.org/linux/man-pages/man2/gettid.2.html"><code>gettid(2)</code></a>
+      syscall with a fake for testing.</p>
+
+      <h3 id="log_set_gettimeofday">log_set_gettimeofday()</h3>
+
+<pre class="codebox">
+namespace beta {
+
+void <b>log_set_gettimeofday</b>(int (*func)(struct timeval*, struct timezone*));
+
+}
+</pre>
+
+      <p>BETA. Replaces the
+      <a href="http://man7.org/linux/man-pages/man2/gettimeofday.2.html"><code>gettimeofday(2)</code></a>
+      syscall with a fake for testing.</p>
+    </section>
+    <hr>
+    <section>
+      <h2 id="level_t">level_t</h2>
+
+<pre class="codebox">
+namespace base {
+
+class <b>level_t</b> {
+ public:
+  constexpr <a href="#level_t-ctor">level_t</a>() noexcept;
+  constexpr <a href="#level_t-ctor">explicit level_t</a>(signed char value) noexcept;
+  constexpr <a href="#level_t-ctor">level_t</a>(const level_t&amp;) noexcept;
+  constexpr <a href="#level_t-ctor">level_t</a>(level_t&amp;&amp;) noexcept;
+  level_t&amp; <a href="#level_t-opeq">operator=</a>(const level_t&amp;) noexcept;
+  level_t&amp; <a href="#level_t-opeq">operator=</a>(level_t&amp;&amp;) noexcept;
+
+  constexpr <a href="#level_t-opsc">explicit operator signed char</a>() const noexcept;
+};
+
+constexpr bool <a href="#level_t-opeqeq">operator==</a>(level_t a, level_t b) noexcept;
+constexpr bool <a href="#level_t-opnoteq">operator!=</a>(level_t a, level_t b) noexcept;
+constexpr bool <a href="#level_t-oplt">operator&lt;</a>(level_t a, level_t b) noexcept;
+constexpr bool <a href="#level_t-oplteq">operator&lt;=</a>(level_t a, level_t b) noexcept;
+constexpr bool <a href="#level_t-opgt">operator&gt;</a>(level_t a, level_t b) noexcept;
+constexpr bool <a href="#level_t-opgteq">operator&gt;=</a>(level_t a, level_t b) noexcept;
+
+}
+</pre>
+
+      <p>RC. A value type indicating the priority level of a log message.</p>
+
+      <p>Higher priority levels compare greater than lower priority levels;
+      for example, <code>LOG_LEVEL_ERROR &gt; LOG_LEVEL_WARN</code>.</p>
+
+      <p>NOTE: The integer values are <b>NOT</b> part of the stable API!</p>
+
+      <h3 id="level_t-ctor">level_t::level_t()</h3>
+
+      <p>Constructs a <code>level_t</code> value.</p>
+
+      <ul>
+        <li>
+          The default constructor is equivalent to <code>VLOG_LEVEL(0)</code>.
+        </li>
+        <li>
+          The explicit 1-arg <code>signed char</code> constructor creates a
+          priority level with the given underlying representation.<br>
+          Reminder: the integer values are <b>NOT</b> part of the stable API!
+        </li>
+        <li>
+          The copy constructor does the obvious thing.
+        </li>
+        <li>
+          The move constructor is equivalent to the copy constructor.
+        </li>
+      </ul>
+
+      <h3 id="level_t-opeq">level_t::operator=()</h3>
+
+      <p>Assigns a <code>level_t</code> value.  The copy and move assignment
+      operators work analogously to the copy constructor.</p>
+
+      <h3 id="level_t-opsc">level_t::operator signed char()</h3>
+
+      <p>Returns the underlying representation.<br>
+      Reminder: the integer values are <b>NOT</b> part of the stable API!</p>
+
+      <h3 id="level_t-opeqeq">level_t::operator==()</h3>
+      <h3 id="level_t-opnoteq">level_t::operator!=()</h3>
+      <h3 id="level_t-oplt">level_t::operator&lt;()</h3>
+      <h3 id="level_t-oplteq">level_t::operator&lt;=()</h3>
+      <h3 id="level_t-opgt">level_t::operator&gt;()</h3>
+      <h3 id="level_t-opgteq">level_t::operator&gt;=()</h3>
+
+      <p>Compares two <code>level_t</code> values.</p>
+    </section>
+    <hr>
+    <section>
+      <h2 id="LogEntry">LogEntry</h2>
+
+<pre class="codebox">
+namespace base {
+
+struct <b>LogEntry</b> {
+  struct timeval <a href="#LogEntry-time">time</a>;
+  pid_t <a href="#LogEntry-tid">tid</a>;
+  const char* <a href="#LogEntry-file">file</a>;
+  unsigned int <a href="#LogEntry-line">line</a>;
+  <a href="#level_t">level_t</a> <a href="#LogEntry-level">level</a>;
+  std::string <a href="#LogEntry-message">message</a>;
+
+  <a href="#LogEntry-ctor">LogEntry</a>();
+  <a href="#LogEntry-ctor">LogEntry</a>(const char* file, unsigned int line, <a href="#level_t">level_t</a> level, std::string message) noexcept;
+  <a href="#LogEntry-ctor">LogEntry</a>(const LogEntry&amp; other);
+  <a href="#LogEntry-ctor">LogEntry</a>(LogEntry&amp;&amp; other);
+  LogEntry&amp; <a href="#LogEntry-opeq">operator=</a>(const LogEntry&amp; other);
+  LogEntry&amp; <a href="#LogEntry-opeq">operator=</a>(LogEntry&amp;&amp; other);
+
+  void <a href="#LogEntry-clear">clear</a>() noexcept;
+
+  <a href="#LogEntry-opbool">explicit operator bool</a>() const noexcept;
+
+  void <a href="#LogEntry-append_to">append_to</a>(std::string* out) const;
+  std::string <a href="#LogEntry-as_string">as_string</a>() const;
+};
+
+}
+</pre>
+
+      <p>BETA. Represents a log message and the various metadata fields
+      associated with it.</p>
+
+      <h3 id="LogEntry-time">LogEntry::time</h3>
+
+      <p>Stores the time at which this LogEntry was constructed.</p>
+
+      <h3 id="LogEntry-tid">LogEntry::tid</h3>
+
+      <p>Stores the TID of the thread which constructed this LogEntry.</p>
+
+      <h3 id="LogEntry-file">LogEntry::file</h3>
+
+      <p>Identifies the source filename from where the log is coming.</p>
+
+      <h3 id="LogEntry-line">LogEntry::line</h3>
+
+      <p>Identifies the source line number from where the log is coming.</p>
+
+      <h3 id="LogEntry-level">LogEntry::level</h3>
+
+      <p>Identifies the priority level of the LogEntry.</p>
+
+      <h3 id="LogEntry-message">LogEntry::message</h3>
+
+      <p>Stores the message of the LogEntry.</p>
+
+      <h3 id="LogEntry-ctor">LogEntry::LogEntry()</h3>
+
+      <p>Constructs a LogEntry.</p>
+
+      <ul>
+        <li>
+          The default constructor creates an empty LogEntry.
+        </li>
+        <li>
+          The 4-arg constructor populates the specified fields. In addition,
+          it captures the current time and the calling thread's TID.
+        </li>
+        <li>
+          The copy constructor does the obvious thing.
+        </li>
+        <li>
+          The move constructor creates this LogEntry to hold the fields of the
+          moved-from LogEntry, leaving the moved-from LogEntry in the
+          default-constructed state.
+        </li>
+      </ul>
+
+      <h3 id="LogEntry-opeq">LogEntry::operator=()</h3>
+
+      <p>Assigns a LogEntry. The copy and move assignment operators work
+      analogously to their respective constructors.</p>
+
+      <h3 id="LogEntry-clear">LogEntry::clear()</h3>
+
+      <p>Sets the LogEntry to the default-constructed state.</p>
+
+      <h3 id="LogEntry-opbool">LogEntry::operator bool()</h3>
+
+      <p>Returns true iff this LogEntry is non-empty.</p>
+
+      <h3 id="LogEntry-append_to">LogEntry::append_to()</h3>
+
+      <p>Stringifies this LogEntry and appends it to the given string.</p>
+
+      <p>See also:
+      <a href="../concat.h/#append_to"><code>base::append_to()</code></a>.</p>
+
+      <h3 id="LogEntry-as_string">LogEntry::as_string()</h3>
+
+      <p>Stringifies this LogEntry and returns it.</p>
+    </section>
+    <hr>
+    <section>
+      <h2 id="Logger">Logger</h2>
+
+<pre class="codebox">
+namespace base {
+
+class <b>Logger</b> {
+ public:
+  <a href="#Logger-ctor">Logger</a>();
+  <a href="#Logger-ctor">Logger</a>(const char* file, unsigned int line, unsigned int every_n, <a href="#level_t">level_t</a> level);
+  <a href="#Logger-ctor">Logger</a>(Logger&amp;&amp;) noexcept;
+  <a href="#Logger-dtor">~Logger</a>() noexcept(false);
+  Logger&amp; <a href="#Logger-opeq">operator=</a>(Logger&amp;&amp;) noexcept;
+
+  void <a href="#Logger-clear">clear</a>() noexcept;
+
+  const char* <a href="#Logger-file">file</a>() const noexcept;
+  unsigned int <a href="#Logger-line">line</a>() const noexcept;
+  unsigned int <a href="#Logger-every_n">every_n</a>() const noexcept;
+  <a href="#level_t">level_t</a> <a href="#Logger-level">level</a>() const noexcept;
+
+  <a href="#Logger-opbool">explicit operator bool</a>() const noexcept;
+  <a href="http://en.cppreference.com/w/cpp/io/basic_ostringstream">std::ostringstream</a>* <a href="#Logger-stream">stream</a>() noexcept;
+  const <a href="http://en.cppreference.com/w/cpp/io/basic_ostringstream">std::ostringstream</a>* <a href="#Logger-stream">stream</a>() const noexcept;
+  std::string <a href="#Logger-message">message</a>() const;
+
+  template &lt;typename T&gt;
+  Logger&amp; <a href="#Logger-opltlt">operator&lt;&lt;</a>(const T&amp; obj);
+  Logger&amp; <a href="#Logger-opltlt">operator&lt;&lt;</a>(<a href="http://en.cppreference.com/w/cpp/io/manip">std::ostream&amp; (*obj)(std::ostream&amp;)</a>);
+
+  <a href="#LogEntry">LogEntry</a> <a href="#Logger-entry">entry</a>() const;
+
+  <s>Logger(const Logger&amp;) = delete;</s>
+  <s>Logger&amp; operator=(const Logger&amp;) = delete;</s>
+}
+
+}
+</pre>
+
+      <p>BETA. Collects the data for a log message, then logs it when the
+      destructor runs.</p>
+
+      <p>The <code>base::Logger</code> class is rarely used directly. It is
+      normally used internally by the <code>LOG</code> macro and family.</p>
+
+      <h3 id="Logger-ctor">Logger::Logger()</h3>
+
+      <p>Constructs a Logger.</p>
+      <ul>
+        <li>
+          The default constructor results in a <b>null Logger</b>, which
+          discards everything written to it and does nothing in the
+          destructor.
+        </li>
+        <li>
+          The 4-arg constructor results in a <b>non-null Logger</b>, which
+          initializes the metadata for a new LogEntry, appends message data to
+          the log, and logs the entry in the destructor.
+        </li>
+        <li>
+          The move constructor creates this Logger in the state that the
+          moved-from Logger originally had, and converts the moved-from Logger
+          into a null Logger.
+        </li>
+      </ul>
+
+      <p>For the 4-arg constructor, <code>file</code> must be non-null,
+      <code>line</code> and <code>every_n</code> must be <code>1</code> or
+      greater, and <code>level</code> must be a valid level as defined by a
+      <code>LOG_LEVEL_*</code>, <code>LOG_LEVEL(name)</code>, or
+      <code>VLOG_LEVEL(num)</code> macro.</p>
+
+      <h3 id="Logger-dtor">Logger::~Logger()</h3>
+
+      <p>Destroys the Logger. If this Logger is non-null, the accumulated
+      LogEntry will be written to the log.</p>
+
+      <h3 id="Logger-opeq">Logger::operator=()</h3>
+
+      <p>Assigns to the Logger. The move assignment operator works analogously
+      to the move constructor, converting the moved-from Logger into a null
+      Logger.</p>
+
+      <h3 id="Logger-clear">Logger::clear()</h3>
+
+      <p>Sets the Logger to the default-constructed state.</p>
+
+      <h3 id="Logger-file">Logger::file()</h3>
+
+      <p>Accesses the filename with which this Logger was constructed.
+      Returns <code>nullptr</code> iff this is a null Logger.</p>
+
+      <h3 id="Logger-line">Logger::line()</h3>
+
+      <p>Accesses the line number with which this Logger was constructed.
+      Returns <code>0</code> iff this is a null Logger.</p>
+
+      <h3 id="Logger-every_n">Logger::every_n()</h3>
+
+      <p>Accesses the count modulus with which this Logger was constructed.
+      Returns <code>0</code> iff this is a null Logger.</p>
+
+      <h3 id="Logger-level">Logger::level()</h3>
+
+      <p>Accesses the priority level with which this Logger was constructed.
+      Returns <code>VLOG_LEVEL(0)</code> if this is a null Logger.</p>
+
+      <h3 id="Logger-opbool">Logger::operator bool()</h3>
+
+      <p>Returns true iff this Logger is a non-null Logger.</p>
+
+      <h3 id="Logger-stream">Logger::stream()</h3>
+
+      <p>Returns a pointer to the <code>std::ostringstream</code> into which
+      this Logger is accumulating its message. Returns <code>nullptr</code> if
+      this is a null Logger.</p>
+
+      <h3 id="Logger-message">Logger::message()</h3>
+
+      <p>Returns the log message as accumulated so far, or the empty string if
+      this is a null Logger.</p>
+
+      <h3 id="Logger-opltlt">Logger::operator&lt;&lt;()</h3>
+
+      <p>These operators append to or manipulate the
+      <code>std::ostringstream</code> of a non-null Logger, or discard their
+      arguments when performed on a null Logger.</p>
+
+      <h3 id="Logger-entry">Logger::entry()</h3>
+
+      <p>Returns a <a href="#LogEntry"><code>LogEntry</code></a> which
+      represents the Logger's message as accumulated so far.</p>
+    </section>
+    <hr>
+    <section>
+      <h2 id="LogTarget">LogTarget</h2>
+
+<pre class="codebox">
+namespace base {
+
+class LogTarget {
+ public:
+  virtual ~LogTarget() noexcept = default;
+  virtual bool <a href="#LogTarget-want">want</a>(const char* file, unsigned int line, <a href="#level_t">level_t</a> level) const = 0;
+  virtual void <a href="#LogTarget-log">log</a>(const <a href="#LogEntry">LogEntry</a>&amp; entry) = 0;
+  virtual void <a href="#LogTarget-flush">flush</a>() = 0;
+};
+
+}
+</pre>
+
+      <p>BETA. Abstract base class for logging backend implementations.</p>
+
+      <h3 id="LogTarget-want">LogTarget::want()</h3>
+
+      <p>Returns true iff this LogTarget is interested in recording a
+      <a href="#LogEntry">LogEntry</a> with the given metadata. If no
+      LogTarget expresses interest, then the entry will not be logged at
+      all.</p>
+
+      <p>This method will be called from multiple threads.</p>
+
+      <h3 id="LogTarget-log">LogTarget::log()</h3>
+
+      <p>Observes the given <a href="#LogEntry">LogEntry</a>.</p>
+
+      <h3 id="LogTarget-flush">LogTarget::flush()</h3>
+
+      <p>Requests that the LogTarget flush all written log entries to disk,
+      using <code>fdatasync(2)</code> or equivalent.</p>
+    </section>
+  </article>
+
+  <nav id="navbar">
+    <p>Waiting for JavaScript...</p>
+  </nav>
+</body>
+</html>

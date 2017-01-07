@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>io : Mojo</title>
+  <link rel="sitemap" type="text/xml" href="../sitemap.xml">
+  <!-- link rel="icon" type="image/png" href="../.img/favicon.png" -->
+  <link rel="stylesheet" type="text/css" href="../.css/lity-1.6.6.min.css">
+  <link rel="stylesheet" type="text/css" href="../.css/style.css">
+  <script src="../.js/jquery-3.1.0.slim.min.js" defer></script>
+  <script src="../.js/lity-1.6.6.min.js" defer></script>
+  <script src="../.js/nav.js" defer></script>
+</head>
+<body>
+  <article id="main">
+    <header>
+      <p><a href="/">Mojo</a> &gt;</p>
+      <h1>io</h1>
+      <h2>Generic I/O</h2>
+    </header>
+
+    <div id="toc">
+      Waiting on JavaScript...
+    </div>
+
+    <section>
+      <h2 id="options.h">io/options.h</h2>
+
+      <p>RC.  Provides <code>io::Options</code>, which holds options for how
+      to perform I/O.  Important knobs include setting the preferred I/O
+      blocksize, specifying the <code>event::Manager</code> on which async I/O
+      will be scheduled, and (advanced performance feature) specifying a
+      buffer pool to use.</p>
+    </section>
+
+    <section>
+      <h2 id="reader.h">io/reader.h</h2>
+      <h2 id="writer.h">io/writer.h</h2>
+
+      <p>RC.  Provides <code>io::Reader</code> and <code>io::Writer</code>,
+      which provide a higher-level API for reading and writing data.  Also
+      defines <code>io::ReaderImpl</code> and <code>io::WriterImpl</code>,
+      which are the base classes for reader and writer implementations,
+      respectively.  A number of pre-made implementations are available,
+      including ones that direct I/O to strings and to file descriptors.</p>
+    </section>
+
+    <section>
+      <h2 id="util.h">io/util.h</h2>
+
+      <p>RC.  Provides <code>io::copy()</code>, a function that knows the most
+      efficient way to copy data from an <code>io::Reader</code> to an
+      <code>io::Writer</code>.</p>
+    </section>
+
+    <section>
+      <h2 id="pipe.h">io/pipe.h</h2>
+
+      <p>RC.  Provides <code>io::make_pipe()</code>, a function that produces
+      an <code>io::Reader</code> / <code>io::Writer</code> linked pair, such
+      that data written to the Writer will become available to the Reader.</p>
+    </section>
+
+    <section>
+      <h2 id="testing.h">io/testing.h</h2>
+
+      <p>BETA.  Provides <code>io::MockReader</code>, an
+      <code>io::ReaderImpl</code> that allows strict API mocking.</p>
+    </section>
+
+    <section>
+      <h2 id="buffer.h">io/buffer.h</h2>
+
+      <p>RC.  Provides <code>io::ConstBuffer</code> and
+      <code>io::Buffer</code> (pointers to existing fixed-size byte buffers),
+      <code>io::OwnedBuffer</code> (a newly allocated fixed-size byte buffer),
+      and <code>io::BufferPool</code> (a free pool of
+      <code>io::OwnedBuffer</code> objects).</p>
+    </section>
+  </article>
+
+  <nav id="navbar">
+    <p>Waiting for JavaScript...</p>
+  </nav>
+</body>
+</html>

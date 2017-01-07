@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>base/clockfake.h : Mojo</title>
+  <link rel="sitemap" type="text/xml" href="../../sitemap.xml">
+  <!-- link rel="icon" type="image/png" href="../../.img/favicon.png" -->
+  <link rel="stylesheet" type="text/css" href="../../.css/lity-1.6.6.min.css">
+  <link rel="stylesheet" type="text/css" href="../../.css/style.css">
+  <script src="../../.js/jquery-3.1.0.slim.min.js" defer></script>
+  <script src="../../.js/lity-1.6.6.min.js" defer></script>
+  <script src="../../.js/nav.js" defer></script>
+</head>
+<body>
+  <article id="main">
+    <header>
+      <p><a href="/">Mojo</a> &gt; <a href="../">base</a> &gt;</p>
+      <h1>clockfake.h</h1>
+    </header>
+
+    <p>GitHub:
+    <a href="https://github.com/chronos-tachyon/mojo/blob/master/base/clockfake.h">base/clockfake.h</a>
+    <a href="https://github.com/chronos-tachyon/mojo/blob/master/base/clockfake.cc">base/clockfake.cc</a>
+    </p>
+
+    <div id="toc">
+      Waiting on JavaScript...
+    </div>
+
+    <section>
+      <h2 id="FakeClock">FakeClock</h2>
+
+<pre class="codebox">
+namespace base {
+
+class <b>FakeClock</b> : public <a href="../clock.h/#ClockImpl">ClockImpl</a> {
+ public:
+  <a href="#FakeClock-ctor">FakeClock</a>() noexcept;
+  <a href="#FakeClock-ctor">FakeClock</a>(Time now) noexcept;
+
+  Time <a href="#FakeClock-now">now</a>() const noexcept override;
+
+  void <a href="#FakeClock-add">add</a>(Duration dur);
+
+  <a href="#FakeClock-opClock">operator Clock</a>() const noexcept;
+};
+
+}
+</pre>
+
+      <p>RC.  Provides a fake implementation of <code>base::ClockImpl</code>
+      for use in tests.</p>
+
+      <p>Example:</p>
+
+<pre class="codebox">
+base::FakeClock fc;
+base::set_system_clock(fc);
+base::Time t1 = base::now();
+fc.add(base::seconds(1));
+base::Time t2 = base::now();
+// t2 - t1 == base::seconds(1)
+</pre>
+
+      <h3 id="FakeClock-ctor">FakeClock::FakeClock()</h3>
+
+      <p>Constructs a new fake clock.  The initial current time is either the
+      given <code>base::Time</code> or, for the default constructor, the time
+      "<code>Mon 2006 Jan 02 15:04:05.123456789 -0700</code>".</p>
+
+      <p>The clock's current time never advances except as determined by calls
+      to <a href="#FakeClock-add"><code>add()</code></a>.</p>
+
+      <h3 id="FakeClock-now">FakeClock::now()</h3>
+
+      <p>Returns the clock's current time.</p>
+
+      <h3 id="FakeClock-add">FakeClock::add()</h3>
+
+      <p>Advances the clock's current time by the given duration.</p>
+
+      <h3 id="FakeClock-opClock">FakeClock::operator Clock()</h3>
+
+      <p>Convenience method that packs this clock in a
+      <code>base::Clock</code> holder.</p>
+    </section>
+    <hr>
+    <section>
+      <h2 id="FakeMonotonicClock">FakeMonotonicClock</h2>
+
+<pre class="codebox">
+namespace base {
+
+class <b>FakeMonotonicClock</b> : public <a href="../clock.h/#MonotonicClockImpl">MonotonicClockImpl</a> {
+ public:
+  <a href="#FakeMonotonicClock-ctor">FakeMonotonicClock</a>() noexcept;
+  <a href="#FakeMonotonicClock-ctor">FakeMonotonicClock</a>(MonotonicTime now, Duration delta) noexcept;
+
+  MonotonicTime <a href="#FakeMonotonicClock-now">now</a>() const noexcept override;
+  MonotonicTime <a href="#FakeMonotonicClock-convert">convert</a>(Time t) const noexcept override;
+  Time <a href="#FakeMonotonicClock-convert">convert</a>(MonotonicTime t) const noexcept override;
+
+  void <a href="#FakeMonotonicClock-add">add</a>(Duration dur);
+
+  <a href="#FakeMonotonicClock-opMonotonicClock">operator MonotonicClock</a>() const noexcept;
+};
+
+}
+</pre>
+
+      <p>RC.  Provides a fake implementation of
+      <code>base::MonotonicClockImpl</code> for use in tests.</p>
+
+      <h3 id="FakeMonotonicClock-ctor">FakeMonotonicClock::FakeMonotonicClock()</h3>
+
+      <p>Constructs a new fake monotonic clock.  The initial current time is
+      either the given <code>base::MonotonicTime</code> or, for the default
+      constructor, zero seconds past the monotonic epoch.  The monotonic epoch
+      is offset from the <code>base::Time</code> epoch by the given amount or,
+      for the default constructor, the delta such that monotonic zero equals
+      "<code>Mon 2006 Jan 02 15:04:05.123456789 -0700</code>" wall time.</p>
+
+      <p>The clock's current time never advances except as determined by calls
+      to <a href="#FakeMonotonicClock-add"><code>add()</code></a>.</p>
+
+      <h3 id="FakeMonotonicClock-now">FakeMonotonicClock::now()</h3>
+
+      <p>Returns the clock's current time.</p>
+
+      <h3 id="FakeMonotonicClock-convert">FakeMonotonicClock::convert()</h3>
+
+      <p>Converts a monotonic time to a wall time, or vice versa.</p>
+
+      <h3 id="FakeMonotonicClock-add">FakeMonotonicClock::add()</h3>
+
+      <p>Advances the clock's current time by the given duration.</p>
+
+      <h3 id="FakeMonotonicClock-opMonotonicClock">FakeMonotonicClock::operator MonotonicClock()</h3>
+
+      <p>Convenience method that packs this clock in a
+      <code>base::MonotonicClock</code> holder.</p>
+    </section>
+  </article>
+
+  <nav id="navbar">
+    <p>Waiting for JavaScript...</p>
+  </nav>
+</body>
+</html>
