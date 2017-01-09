@@ -68,10 +68,10 @@ blockquote { border-left: 4px solid #00f; padding-left: 8px; }
   border: 1px solid #888;
   padding: 7px;
   background-color: #eee;
+  font-family: 'Roboto Mono', monospace;
   line-height: 1;
   overflow: auto;
 }
-.codebox { color: #060; font-family: 'Roboto Mono', monospace; }
 .hoverlink { display: none; }
 p:hover > .hoverlink {
   display: inline;
