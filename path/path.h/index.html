@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>base/mutex.h : Mojo</title>
+  <link rel="sitemap" type="text/xml" href="../../sitemap.xml">
+  <link rel="icon" type="image/png" href="../../.img/favicon.png">
+  <link rel="stylesheet" type="text/css" href="../../.css/lity-1.6.6.min.css">
+  <link rel="stylesheet" type="text/css" href="../../.css/style.css">
+  <script src="../../.js/jquery-3.1.0.slim.min.js" defer></script>
+  <script src="../../.js/lity-1.6.6.min.js" defer></script>
+  <script src="../../.js/nav.js" defer></script>
+</head>
+<body>
+  <article id="main">
+    <header>
+      <p><a href="/">Mojo</a> &gt; <a href="../">base</a> &gt;</p>
+      <h1>mutex.h</h1>
+    </header>
+
+    <p>GitHub:
+    <a href="https://github.com/chronos-tachyon/mojo/blob/master/base/mutex.h">base/mutex.h</a>
+    <a href="https://github.com/chronos-tachyon/mojo/blob/master/base/mutex.cc">base/mutex.cc</a>
+    </p>
+
+    <div id="toc">
+      Waiting on JavaScript...
+    </div>
+
+    <section>
+      <h2 id="functions">Top-level Functions</h2>
+
+      <h3 id="syntactic">Pure Syntax</h3>
+
+      <p>Functions in this category operate purely on a syntactic level, never
+      needing to touch a filesystem. They are appropriate for general path
+      manipulation, including for such things as paths on remote machines and
+      URLs.</p>
+
+      <h4 id="is_abs">is_abs()</h4>
+
+<pre class="codebox">
+namespace path {
+
+bool <strong>is_abs</strong>(const std::string&amp; path);
+
+}
+</pre>
+
+      <p>RC. Returns true iff the provided path name is an absolute one.</p>
+
+      <h4 id="partial_clean">partial_clean()</h4>
+
+<pre class="codebox">
+namespace path {
+
+std::string <strong>partial_clean</strong>(const std::string&amp; path);
+
+}
+</pre>
+
+      <p>RC. Cleans a path.<p>
+
+      <p>This function performs the following actions:</p>
+
+      <ul>
+        <li>
+          It consolidates multiple consecutive slashes into a single slash.
+        </li>
+        <li>
+          It removes useless <code>"."</code> components.
+        </li>
+        <li>
+          It <strong>DOES NOT</strong> process <code>".."</code> components,
+          as the meaning of <code>".."</code> changes in the face of symlinks
+          to directories.
+        </li>
+      </ul>
+
+      <h4 id="clean">clean()</h4>
+
+<pre class="codebox">
+namespace path {
+
+std::string <strong>clean</strong>(const std::string&amp; path);
+
+}
+</pre>
+
+      <p>RC. Cleans a path thoroughly. NOT SYMLINK SAFE.</p>
+
+      <p>This function performs the following actions:</p>
+
+      <ul>
+        <li>
+          It consolidates multiple consecutive slashes into a single slash.
+        </li>
+        <li>
+          It removes useless <code>"."</code> components.
+        </li>
+        <li>
+          It replaces "<code>foo/..</code>" with <code>"."</code>, and removes
+          that if redundant.<br>
+          <strong>WARNING</strong>: If "<code>foo</code>" is a symlink to a
+          directory, then this processing changes the meaning of the path!
+        </li>
+      </ul>
+
+      <h4 id="explode">explode()</h4>
+
+<pre class="codebox">
+namespace path {
+
+std::vector&lt;std::string&gt; <strong>explode</strong>(const std::string&amp; path);
+
+}
+</pre>
+
+      <p>RC. Splits a path name into its components.</p>
+
+      <ul>
+        <li>
+          Multiple consecutive slashes are treated the same way as a single
+          slash.
+        </li>
+        <li>
+          Useless <code>"."</code> components are dropped.
+        </li>
+        <li>
+          All <code>".."</code> components are retained.
+        </li>
+        <li>
+          Absolute paths are exploded such that the first exploded component
+          is <code>"/"</code>. The character <code>'/'</code> never appears in
+          an exploded component otherwise.<br>
+          For example, <code>"/foo/bar"</code> becomes
+          <code>{"/", "foo", "bar"}</code>.
+        </li>
+      </ul>
+
+      <h4 id="split">split()</h4>
+
+<pre class="codebox">
+namespace path {
+
+std::pair&lt;std::string, std::string&gt; <strong>split</strong>(const std::string&amp; path);
+
+}
+</pre>
+
+      <p>RC. Splits a path name into a parent directory path name and a final
+      component. Emulates the behavior of
+      <a href="http://man7.org/linux/man-pages/man1/dirname.1.html"><code>dirname(1)</code></a>
+      and
+      <a href="http://man7.org/linux/man-pages/man1/basename.1.html"><code>basename(1)</code></a>.</p>
+
+      <ul>
+        <li>
+          Trailing slashes are ignored.
+        </li>
+        <li>
+          Multiple consecutive slashes between the final and penultimate
+          componenents are treated the same way as a single slash.
+        </li>
+        <li>
+          If the path is empty, then a single component of <code>""</code> is
+          inferred.
+        </li>
+        <li>
+          If the path contains only a single component, then the parent
+          directory is inferred as <code>"."</code>.
+        </li>
+      </ul>
+
+      <h4 id="dirname">dirname()</h4>
+
+<pre class="codebox">
+namespace path {
+
+std::string <strong>dirname</strong>(const std::string&amp; path);
+
+}
+</pre>
+
+      <p>RC. Shorthand for <code>split(path).first</code>.</p>
+
+      <h4 id="basename">basename()</h4>
+
+<pre class="codebox">
+namespace path {
+
+std::string <strong>basename</strong>(const std::string&amp; path);
+
+}
+</pre>
+
+      <p>RC. Shorthand for <code>split(path).second</code>.</p>
+
+      <h4 id="join">join()</h4>
+
+<pre class="codebox">
+namespace path {
+
+void <strong>join</strong>(std::string* head, const std::string&amp; tail);
+
+template &lt;typename... Rest&gt;
+void <strong>join</strong>(std::string* head, const std::string&amp; first,
+          const std::string&amp; second, const Rest&amp;... rest);
+
+template &lt;typename... Rest&gt;
+std::string <strong>join</strong>(const std::string&amp; first, const std::string&amp; second,
+                 const Rest&amp;... rest);
+
+std::string <strong>join</strong>(const std::vector&lt;std::string&gt;&amp; vec);
+
+}
+</pre>
+
+      <p>RC. Joins path segments into a single path name.</p>
+
+      <ul>
+        <li>
+          The 2-arg version appends <code>tail</code> to head, ensuring that
+          there is at least one slash.
+        </li>
+        <li>
+          The templated version that takes a pointer as its 1<sup>st</sup>
+          argument appends each of <code>first</code>, <code>second</code>,
+          and so on.
+        </li>
+        <li>
+          The templated version that takes only references is a convenience
+          function that is equivalent to calling the previous overload with
+          <code>head</code> initially set to an empty string.
+        </li>
+        <li>
+          The 1-arg version taking a vector is equivalent to the templated
+          version taking only references, except that the number of path
+          segments to join need not be determined at compile time.
+        </li>
+      </ul>
+
+      <h4 id="abspath">abspath()</h4>
+
+<pre class="codebox">
+namespace path {
+
+std::string <strong>abspath</strong>(const std::string&amp; path, const std::string&amp; root);
+
+}
+</pre>
+
+      <p>BETA. Converts a relative path name into an absolute one. NOT SYMLINK
+      SAFE, as this function calls
+      <a href="#clean"><code>path::clean</code></a>.</p>
+
+      <h4 id="relpath">relpath()</h4>
+
+<pre class="codebox">
+namespace path {
+
+std::string <strong>relpath</strong>(const std::string&amp; path, const std::string&amp; root);
+
+}
+</pre>
+
+      <p>BETA. Converts an absolute path name into a relative one. NOT SYMLINK
+      SAFE, as this function calls
+      <a href="#clean"><code>path::clean</code></a> and also generates
+      <code>".."</code> components without regard for symlinks.</p>
+
+      <h3 id="filesystem">Local Filesystem</h3>
+
+      <p>These functions are intimately tied to the local filesystem, and are
+      not appropriate for other purposes.</p>
+
+      <h4 id="cwd">cwd()</h4>
+
+<pre class="codebox">
+namespace path {
+
+<a href="../../base/result.h/#Result">base::Result</a> <strong>cwd</strong>(std::string* out);
+
+}
+</pre>
+
+      <p>RC. Retrieves the current working directory for this process.</p>
+
+      <h4 id="canonicalize">canonicalize()</h4>
+
+<pre class="codebox">
+namespace path {
+
+<a href="../../base/result.h/#Result">base::Result</a> <strong>canonicalize</strong>(std::string* path);
+
+}
+</pre>
+
+      <p>RC. Turns <code>path</code> into an absolute pathname, clean and free
+      of <code>".."</code> components.</p>
+
+      <p>This function is symlink aware: if it encounters
+      "<code>foo/..</code>", it determines if "<code>foo</code>" is a symlink
+      and, if so, resolves it before attempting to process the
+      "<code>..</code>" component. This processing can yield surprising, yet
+      correct, results.</p>
+
+      <h4 id="make_abs">make_abs()</h4>
+
+<pre class="codebox">
+namespace path {
+
+<a href="../../base/result.h/#Result">base::Result</a> <strong>make_abs</strong>(std::string* path,
+                      const std::string&amp; root = std::string());
+
+}
+</pre>
+
+      <p>RC. Turns <code>path</code> into an absolute pathname.</p>
+      <p>This function is broadly similar to
+      <a href="#canonicalize"><code>path::canonicalize</code></a>; however, it
+      allows specifying the root from which a relative path should be
+      interpreted. If <code>root</code> is not specified, it defaults to the
+      current working directory, in which case this function is
+      indistinguishable from <code>path::canonicalize</code>.</p>
+
+      <h4 id="make_rel">make_rel()</h4>
+
+<pre class="codebox">
+namespace path {
+
+<a href="../../base/result.h/#Result">base::Result</a> <strong>make_rel</strong>(std::string* path,
+                      const std::string&amp; root = std::string());
+
+}
+</pre>
+
+      <p>BETA. Turns <code>path</code> into a relative pathname.</p>
+
+      <p>This function is the logical inverse of
+      <a href="#make_abs"><code>path::make_abs</code></a>:
+      it traces symlinks to chart a course through the filesystem, yielding a
+      relative path that, when interpreted relative to <code>root</code>, will
+      lead to the same destination as the original absolute path.</p>
+    </section>
+  </article>
+
+  <nav id="navbar">
+    <p>Waiting for JavaScript...</p>
+  </nav>
+</body>
+</html>

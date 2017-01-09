@@ -65,6 +65,13 @@ var sitemap = [{
   }, {
     url: '/net/',
     title: 'net',
+  }, {
+    url: '/path/',
+    title: 'path',
+    children: [{
+      url: '/path/path.h/',
+      title: 'path.h',
+    }],
   }]
 }];
 
