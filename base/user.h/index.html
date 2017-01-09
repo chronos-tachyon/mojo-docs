@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>base/user.h : Mojo</title>
+  <link rel="sitemap" type="text/xml" href="../../sitemap.xml">
+  <link rel="icon" type="image/png" href="../../.img/favicon.png">
+  <link rel="stylesheet" type="text/css" href="../../.css/lity-1.6.6.min.css">
+  <link rel="stylesheet" type="text/css" href="../../.css/style.css">
+  <script src="../../.js/jquery-3.1.0.slim.min.js" defer></script>
+  <script src="../../.js/lity-1.6.6.min.js" defer></script>
+  <script src="../../.js/nav.js" defer></script>
+</head>
+<body>
+  <article id="main">
+    <header>
+      <p><a href="/">Mojo</a> &gt; <a href="../">base</a> &gt;</p>
+      <h1>user.h</h1>
+    </header>
+
+    <p>GitHub:
+    <a href="https://github.com/chronos-tachyon/mojo/blob/master/base/user.h">base/user.h</a>
+    <a href="https://github.com/chronos-tachyon/mojo/blob/master/base/user.cc">base/user.cc</a>
+    </p>
+
+    <div id="toc">
+      Waiting on JavaScript...
+    </div>
+
+    <section>
+      <h2 id="functions">Top-level Functions</h2>
+
+      <h3 id="user_by_id">user_by_id()</h3>
+
+<pre class="codebox">
+namespace base {
+
+<a href="../result.h/#Result">base::Result</a> <b>user_by_id</b>(<a href="#User">User</a>* out, int32_t id);
+
+}
+</pre>
+
+      <p>RC. Retrieves a local system user by user ID.</p>
+
+      <h3 id="user_by_name">user_by_name()</h3>
+
+<pre class="codebox">
+namespace base {
+
+<a href="../result.h/#Result">base::Result</a> <b>user_by_name</b>(<a href="#User">User</a>* out, const <a href="http://en.cppreference.com/w/cpp/string/basic_string">std::string</a>&amp; name);
+
+}
+</pre>
+
+      <p>RC. Retrieves a local system user by user login name.</p>
+
+      <h3 id="group_by_id">group_by_id()</h3>
+
+<pre class="codebox">
+namespace base {
+
+<a href="../result.h/#Result">base::Result</a> <b>group_by_id</b>(<a href="#Group">Group</a>* out, int32_t id);
+
+}
+</pre>
+
+      <p>RC. Retrieves a local system group by group ID.</p>
+
+      <h3 id="group_by_name">group_by_name()</h3>
+
+<pre class="codebox">
+namespace base {
+
+<a href="../result.h/#Result">base::Result</a> <b>group_by_name</b>(<a href="#Group">Group</a>* out, const <a href="http://en.cppreference.com/w/cpp/string/basic_string">std::string</a>&amp; name);
+
+}
+</pre>
+
+      <p>RC. Retrieves a local system group by group name.</p>
+    </section>
+    <hr>
+    <section>
+      <h2 id="User">User</h2>
+
+<pre class="codebox">
+namespace base {
+
+struct <b>User</b> {
+  int32_t uid;
+  int32_t gid;
+  <a href="http://en.cppreference.com/w/cpp/string/basic_string">std::string</a> name;
+  <a href="http://en.cppreference.com/w/cpp/string/basic_string">std::string</a> gecos;
+  <a href="http://en.cppreference.com/w/cpp/string/basic_string">std::string</a> homedir;
+  <a href="http://en.cppreference.com/w/cpp/string/basic_string">std::string</a> shell;
+
+  <a href="#User-ctor">User</a>(int32_t uid = -1,
+       int32_t gid = -1,
+       <a href="http://en.cppreference.com/w/cpp/string/basic_string">std::string</a> name = std::string(),
+       <a href="http://en.cppreference.com/w/cpp/string/basic_string">std::string</a> gecos = std::string(),
+       <a href="http://en.cppreference.com/w/cpp/string/basic_string">std::string</a> homedir = std::string(),
+       <a href="http://en.cppreference.com/w/cpp/string/basic_string">std::string</a> shell = std::string()) noexcept;
+  <a href="#User-ctor">User</a>(const User&amp; other);
+  <a href="#User-ctor">User</a>(User&amp;&amp; other) noexcept;
+  User&amp; <a href="#User-opeq">operator=</a>(const User&amp; other);
+  User&amp; <a href="#User-opeq">operator=</a>(User&amp;&amp; other) noexcept;
+
+  void <a href="#User-reset">reset</a>() noexcept;
+  void <a href="#User-swap">swap</a>(User&amp; other) noexcept;
+
+  void <a href="#User-append_to">append_to</a>(<a href="http://en.cppreference.com/w/cpp/string/basic_string">std::string</a>* out) const;
+  std::size_t <a href="#User-length_hint">length_hint</a>() const noexcept;
+  <a href="http://en.cppreference.com/w/cpp/string/basic_string">std::string</a> <a href="#User-as_string">as_string</a>() const;
+};
+
+void <a href="#User-swap">swap</a>(User&amp; a, User&amp; b) noexcept;
+bool <a href="#User-opeqeq">operator==</a>(const User&amp; a, const User&amp; b) noexcept;
+bool <a href="#User-opnoteq">operator!=</a>(const User&amp; a, const User&amp; b) noexcept;
+
+}
+</pre>
+
+      <p>RC. User is a value type which holds metadata about a Unix user,
+      typically a local system user.</p>
+
+      <h3 id="User-ctor">User::User()</h3>
+
+      <p>Constructs a User value.</p>
+
+      <ul>
+        <li>
+          The 6-arg constructor with all args optional sets the fields to the
+          values provided, or else to the defaults listed above. When all six
+          args are omitted, this constructor doubles as the default
+          constructor.
+        </li>
+        <li>
+          The copy constructor works in the usual way.
+        </li>
+        <li>
+          The move constructor works in the usual way, and leaves the
+          moved-from object in the default-constructed state.
+        </li>
+      </ul>
+
+      <h3 id="User-opeq">User::operator=()</h3>
+
+      <p>Assigns to a User value. The copy and move assignment operators work
+      analogously to the respective constructors.</p>
+
+      <h3 id="User-reset">User::reset()</h3>
+
+      <p>Resets this User value to the default-constructed state.</p>
+
+      <h3 id="User-swap">User::swap()</h3>
+
+      <p>Swaps two User values.</p>
+
+      <h3 id="User-append_to">User::append_to()</h3>
+
+      <p>Stringifies this User and appends it to the given string.</p>
+
+      <h3 id="User-length_hint">User::length_hint()</h3>
+
+      <p>Returns the estimated length of this User's stringification.</p>
+
+      <h3 id="User-as_string">User::as_string()</h3>
+
+      <p>Stringifies this User and returns it.</p>
+
+      <h3 id="User-opeqeq">User::operator==()</h3>
+      <h3 id="User-opnoteq">User::operator!=()</h3>
+
+      <p>Compares two User values for (in)equality, field-by-field.</p>
+    </section>
+    <hr>
+    <section>
+      <h2 id="Group">Group</h2>
+
+<pre class="codebox">
+namespace base {
+
+struct <b>Group</b> {
+  int32_t gid;
+  <a href="http://en.cppreference.com/w/cpp/string/basic_string">std::string</a> name;
+  <a href="http://en.cppreference.com/w/cpp/container/vector">std::vector</a>&lt;<a href="http://en.cppreference.com/w/cpp/string/basic_string">std::string</a>&gt; members;
+
+  <a href="#Group-ctor">Group</a>(int32_t gid = -1,
+       <a href="http://en.cppreference.com/w/cpp/string/basic_string">std::string</a> name = std::string(),
+       <a href="http://en.cppreference.com/w/cpp/container/vector">std::vector</a>&lt;<a href="http://en.cppreference.com/w/cpp/string/basic_string">std::string</a>&gt; members = std::vector&lt;std::string&gt;()) noexcept;
+  <a href="#Group-ctor">Group</a>(const Group&amp; other);
+  <a href="#Group-ctor">Group</a>(Group&amp;&amp; other) noexcept;
+  Group&amp; <a href="#Group-opeq">operator=</a>(const Group&amp; other);
+  Group&amp; <a href="#Group-opeq">operator=</a>(Group&amp;&amp; other) noexcept;
+
+  void <a href="#Group-reset">reset</a>() noexcept;
+  void <a href="#Group-swap">swap</a>(Group&amp; other) noexcept;
+
+  void <a href="#Group-append_to">append_to</a>(<a href="http://en.cppreference.com/w/cpp/string/basic_string">std::string</a>* out) const;
+  std::size_t <a href="#Group-length_hint">length_hint</a>() const noexcept;
+  <a href="http://en.cppreference.com/w/cpp/string/basic_string">std::string</a> <a href="#Group-as_string">as_string</a>() const;
+};
+
+void <a href="#Group-swap">swap</a>(Group&amp; a, Group&amp; b) noexcept;
+bool <a href="#Group-opeqeq">operator==</a>(const Group&amp; a, const Group&amp; b) noexcept;
+bool <a href="#Group-opnoteq">operator!=</a>(const Group&amp; a, const Group&amp; b) noexcept;
+
+}
+</pre>
+
+      <p>RC. Group is a value type which holds metadata about a Unix group,
+      typically a local system group.</p>
+
+      <h3 id="Group-ctor">Group::Group()</h3>
+
+      <p>Constructs a Group value.</p>
+
+      <ul>
+        <li>
+          The 3-arg constructor with all args optional sets the fields to the
+          values provided, or else to the defaults listed above. When all
+          three args are omitted, this constructor doubles as the default
+          constructor.
+        </li>
+        <li>
+          The copy constructor works in the usual way.
+        </li>
+        <li>
+          The move constructor works in the usual way, and leaves the
+          moved-from object in the default-constructed state.
+        </li>
+      </ul>
+
+      <h3 id="Group-opeq">Group::operator=()</h3>
+
+      <p>Assigns to a Group value. The copy and move assignment operators work
+      analogously to the respective constructors.</p>
+
+      <h3 id="Group-reset">Group::reset()</h3>
+
+      <p>Resets this Group value to the default-constructed state.</p>
+
+      <h3 id="Group-swap">Group::swap()</h3>
+
+      <p>Swaps two Group values.</p>
+
+      <h3 id="Group-append_to">Group::append_to()</h3>
+
+      <p>Stringifies this Group and appends it to the given string.</p>
+
+      <h3 id="Group-length_hint">Group::length_hint()</h3>
+
+      <p>Returns the estimated length of this Group's stringification.</p>
+
+      <h3 id="Group-as_string">Group::as_string()</h3>
+
+      <p>Stringifies this Group and returns it.</p>
+
+      <h3 id="Group-opeqeq">Group::operator==()</h3>
+      <h3 id="Group-opnoteq">Group::operator!=()</h3>
+
+      <p>Compares two Group values for (in)equality, field-by-field.</p>
+    </section>
+  </article>
+
+  <nav id="navbar">
+    <p>Waiting for JavaScript...</p>
+  </nav>
+</body>
+</html>

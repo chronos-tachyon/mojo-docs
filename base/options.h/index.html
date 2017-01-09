@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>base/options.h : Mojo</title>
+  <link rel="sitemap" type="text/xml" href="../../sitemap.xml">
+  <link rel="icon" type="image/png" href="../../.img/favicon.png">
+  <link rel="stylesheet" type="text/css" href="../../.css/lity-1.6.6.min.css">
+  <link rel="stylesheet" type="text/css" href="../../.css/style.css">
+  <script src="../../.js/jquery-3.1.0.slim.min.js" defer></script>
+  <script src="../../.js/lity-1.6.6.min.js" defer></script>
+  <script src="../../.js/nav.js" defer></script>
+</head>
+<body>
+  <article id="main">
+    <header>
+      <p><a href="/">Mojo</a> &gt; <a href="../">base</a> &gt;</p>
+      <h1>options.h</h1>
+    </header>
+
+    <p>GitHub:
+    <a href="https://github.com/chronos-tachyon/mojo/blob/master/base/options.h">base/options.h</a>
+    <a href="https://github.com/chronos-tachyon/mojo/blob/master/base/options.cc">base/options.cc</a>
+    </p>
+
+    <div id="toc">
+      Waiting on JavaScript...
+    </div>
+
+    <section>
+      <h2 id="functions">Top-level Functions</h2>
+
+      <h3 id="default_options">default_options()</h3>
+
+<pre class="codebox">
+namespace base {
+
+<a href="#Options">Options</a> <b>default_options</b>();
+
+}
+</pre>
+
+      <p>RC. Returns the global default options. Thread-safe.</p>
+
+      <h3 id="set_default_options">set_default_options()</h3>
+
+<pre class="codebox">
+namespace base {
+
+void <b>set_default_options</b>(<a href="#Options">Options</a> opts);
+
+}
+</pre>
+
+      <p>RC. Replaces the global default options. Thread-safe, although
+      there's no means provided to do atomic read-modify-writes.</p>
+    </section>
+    <hr>
+    <section>
+      <h2 id="OptionsType">OptionsType</h2>
+
+<pre class="codebox">
+namespace base {
+
+struct <b>OptionsType</b> {};
+
+}
+</pre>
+
+      <p>RC. Inheriting from this empty base class marks the subclass as being
+      safe and appropriate to store in a <code>base::Options</code>.</p>
+
+      <p>In the strictest sense, there are only two hard requirements for
+      inheriting from this class: your subclass is default constructible, and
+      your subclass is copy constructible.</p>
+    </section>
+    <hr>
+    <section>
+      <h2 id="Options">Options</h2>
+
+<pre class="codebox">
+namespace base {
+
+class <b>Options</b> {
+ public:
+  <a href="#Options-ctor">Options</a>();
+  <a href="#Options-ctor">Options</a>(const Options&amp; other);
+  <a href="#Options-ctor">Options</a>(Options&amp;&amp; other) noexcept;
+  Options&amp; <a href="#Options-opeq">operator=</a>(const Options&amp; other);
+  Options&amp; <a href="#Options-opeq">operator=</a>(Options&amp;&amp; other) noexcept;
+
+  template &lt;typename <a href="#OptionsType">T</a>&gt;
+  T&amp; <a href="#Options-get">get</a>();
+
+  template &lt;typename <a href="#OptionsType">T</a>&gt;
+  const T&amp; <a href="#Options-get">get</a>() const;
+
+  template &lt;typename <a href="#OptionsType">T</a>&gt;
+  <a href="#Options-opT">operator T&amp;</a>();
+
+  template &lt;typename <a href="#OptionsType">T</a>&gt;
+  <a href="#Options-opT">operator const T&amp;</a>() const;
+};
+
+}
+</pre>
+
+      <p>RC. Holds <a href="#OptionsType">various option classes</a> in a
+      type-safe extensible container. It can hold one instance of each option
+      class.</p>
+
+      <h3 id="Options-ctor">Options::Options()</h3>
+
+      <p>Constructs a <code>base::Options</code> value.</p>
+
+      <ul>
+        <li>
+          The default constructor creates a new set of options, all with their
+          default values.
+        </li>
+        <li>
+          The copy constructor creates a new set of options, initially having
+          the same values as the copied-from options but thereafter
+          independent.
+        </li>
+        <li>
+          The move constructor creates a new set of options, taking on the
+          values of the moved-from options, and leaving the moved-from options
+          in the default-constructed state.
+        </li>
+      </ul>
+
+      <h3 id="Options-opeq">Options::operator=()</h3>
+
+      <p>Assigns to a <code>base::Options</code> value. The copy and move
+      assignment operators work analogously to their respective
+      constructors.</p>
+
+      <h3 id="Options-get">Options::get()</h3>
+
+      <p>Retrieves the value for the template-provided
+      <code>base::OptionsType</code> subclass.</p>
+
+      <p>(If no such subclass is yet known to this instance, then a subclass
+      instance is transparently constructed and returned.)</p>
+
+      <h3 id="Options-opT">Options::operator T&amp;()</h3>
+
+      <p>Convenience alias for <a href="#Options-get">Options::get()</a>.</p>
+    </section>
+  </article>
+
+  <nav id="navbar">
+    <p>Waiting for JavaScript...</p>
+  </nav>
+</body>
+</html>

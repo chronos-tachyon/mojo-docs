@@ -35,6 +35,9 @@ var sitemap = [{
       url: '/base/mutex.h/',
       title: 'mutex.h',
     }, {
+      url: '/base/options.h/',
+      title: 'options.h',
+    }, {
       url: '/base/result.h/',
       title: 'result.h',
     }, {
@@ -49,6 +52,9 @@ var sitemap = [{
     }, {
       url: '/base/token.h/',
       title: 'token.h',
+    }, {
+      url: '/base/user.h/',
+      title: 'user.h',
     }]
   }, {
     url: '/event/',
@@ -161,6 +167,13 @@ var sitemap = [{
   raw += as_html(linktree, 0);
   toc.html(raw);
 })();
+
+$('li.parent').click(function(ev) {
+  ev.stopPropagation();
+  var li = $(this);
+  li.toggleClass('open');
+  li.toggleClass('closed');
+})
 
 $('h2[id], h3[id], h4[id], h5[id], h6[id]').wrapInner(function() {
   var id = $(this).attr('id');
