@@ -69,7 +69,6 @@ blockquote { border-left: 4px solid #00f; padding-left: 8px; }
   padding: 7px;
   background-color: #eee;
   font-family: 'Roboto Mono', monospace;
-  line-height: 1;
   overflow: auto;
 }
 .cautionbox {
