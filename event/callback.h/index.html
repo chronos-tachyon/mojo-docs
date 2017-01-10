@@ -36,10 +36,10 @@
 <pre class="codebox">
 namespace event {
 
-<a href="#Callback">CallbackPtr</a> callback(<a href="http://en.cppreference.com/w/cpp/utility/functional/function">std::function</a>&lt;<a href="../../base/result.h/#Result">base::Result</a>()&gt; f);
+<a href="#Callback">CallbackPtr</a> <strong>callback</strong>(<a href="http://en.cppreference.com/w/cpp/utility/functional/function">std::function</a>&lt;<a href="../../base/result.h/#Result">base::Result</a>()&gt; f);
 
 template &lt;typename Function, typename... Args&gt;
-<a href="#Callback">CallbackPtr</a> callback(Function&amp;&amp; f, Args&amp;&amp;... args);
+<a href="#Callback">CallbackPtr</a> <strong>callback</strong>(Function&amp;&amp; f, Args&amp;&amp;... args);
 
 }
 </pre>
@@ -56,7 +56,7 @@ template &lt;typename Function, typename... Args&gt;
 <pre class="codebox">
 namespace event {
 
-class Callback {
+class <strong>Callback</strong> {
  public:
   virtual ~Callback() noexcept = default;
   virtual <a href="../../base/result.h/#Result">base::Result</a> <a href="#Callback-run">run</a>() = 0;
@@ -67,7 +67,7 @@ class Callback {
   <s>Callback&amp; operator=(Callback&amp;&amp;) = delete;</s>
 };
 
-using CallbackPtr = <a href="http://en.cppreference.com/w/cpp/memory/unique_ptr">std::unique_ptr</a>&lt;Callback&gt;;
+using <strong>CallbackPtr</strong> = <a href="http://en.cppreference.com/w/cpp/memory/unique_ptr">std::unique_ptr</a>&lt;Callback&gt;;
 
 }
 </pre>
