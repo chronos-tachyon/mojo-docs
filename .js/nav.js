@@ -121,6 +121,31 @@ var sitemap = [{
   }, {
     url: '/io/',
     title: 'io',
+    children: [{
+      url: '/io/buffer.h/',
+      title: 'buffer.h',
+    }, {
+      url: '/io/common.h/',
+      title: 'common.h',
+    }, {
+      url: '/io/options.h/',
+      title: 'options.h',
+    }, {
+      url: '/io/pipe.h/',
+      title: 'pipe.h',
+    }, {
+      url: '/io/reader.h/',
+      title: 'reader.h',
+    }, {
+      url: '/io/testing.h/',
+      title: 'testing.h',
+    }, {
+      url: '/io/util.h/',
+      title: 'util.h',
+    }, {
+      url: '/io/writer.h/',
+      title: 'writer.h',
+    }],
   }, {
     url: '/net/',
     title: 'net',
@@ -239,7 +264,11 @@ $('li.parent').click(function(ev) {
   var li = $(this);
   li.toggleClass('open');
   li.toggleClass('closed');
-})
+});
+
+$('li.parent a[href]').click(function(ev) {
+  ev.stopPropagation();
+});
 
 $('h2[id], h3[id], h4[id], h5[id], h6[id]').wrapInner(function() {
   var id = $(this).attr('id');
