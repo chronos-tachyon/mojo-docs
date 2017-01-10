@@ -149,6 +149,46 @@ var sitemap = [{
   }, {
     url: '/net/',
     title: 'net',
+    children: [{
+      url: '/net/addr.h/',
+      title: 'addr.h',
+    }, {
+      url: '/net/conn.h/',
+      title: 'conn.h',
+    }, {
+      url: '/net/connfd.h/',
+      title: 'connfd.h',
+    }, {
+      url: '/net/fake.h/',
+      title: 'fake.h',
+    }, {
+      url: '/net/inet.h/',
+      title: 'inet.h',
+    }, {
+      url: '/net/ip.h/',
+      title: 'ip.h',
+    }, {
+      url: '/net/net.h/',
+      title: 'net.h',
+    }, {
+      url: '/net/options.h/',
+      title: 'options.h',
+    }, {
+      url: '/net/protocol.h/',
+      title: 'protocol.h',
+    }, {
+      url: '/net/registry.h/',
+      title: 'registry.h',
+    }, {
+      url: '/net/sockopt.h/',
+      title: 'sockopt.h',
+    }, {
+      url: '/net/testing.h/',
+      title: 'testing.h',
+    }, {
+      url: '/net/unix.h/',
+      title: 'unix.h',
+    }],
   }, {
     url: '/path/',
     title: 'path',
