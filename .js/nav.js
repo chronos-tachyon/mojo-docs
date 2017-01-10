@@ -59,6 +59,31 @@ var sitemap = [{
   }, {
     url: '/event/',
     title: 'event',
+    children: [{
+      url: '/event/callback.h/',
+      title: 'callback.h',
+    }, {
+      url: '/event/data.h/',
+      title: 'data.h',
+    }, {
+      url: '/event/dispatcher.h/',
+      title: 'dispatcher.h',
+    }, {
+      url: '/event/handler.h/',
+      title: 'handler.h',
+    }, {
+      url: '/event/manager.h/',
+      title: 'manager.h',
+    }, {
+      url: '/event/poller.h/',
+      title: 'poller.h',
+    }, {
+      url: '/event/set.h/',
+      title: 'set.h',
+    }, {
+      url: '/event/task.h/',
+      title: 'task.h',
+    }],
   }, {
     url: '/file/',
     title: 'file',
