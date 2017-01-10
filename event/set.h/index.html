@@ -29,7 +29,351 @@
     </div>
 
     <section>
-      <p>TODO: fill this in.</p>
+      <h2 id="Set">Set</h2>
+
+<pre class="codebox">
+namespace event {
+
+class <strong>Set</strong> {
+ public:
+  static constexpr Set <a href="#Set-no_bits">no_bits</a>() noexcept;
+  static constexpr Set <a href="#Set-all_bits">all_bits</a>() noexcept;
+  static constexpr Set <a href="#Set-readable_bit">readable_bit</a>() noexcept;
+  static constexpr Set <a href="#Set-writable_bit">writable_bit</a>() noexcept;
+  static constexpr Set <a href="#Set-priority_bit">priority_bit</a>() noexcept;
+  static constexpr Set <a href="#Set-hangup_bit">hangup_bit</a>() noexcept;
+  static constexpr Set <a href="#Set-error_bit">error_bit</a>() noexcept;
+  static constexpr Set <a href="#Set-signal_bit">signal_bit</a>() noexcept;
+  static constexpr Set <a href="#Set-timer_bit">timer_bit</a>() noexcept;
+  static constexpr Set <a href="#Set-generic_bit">generic_bit</a>() noexcept;
+
+  constexpr <a href="#Set-ctor">Set</a>() noexcept;
+  constexpr <a href="#Set-ctor">Set</a>(const Set&amp;) noexcept;
+  constexpr <a href="#Set-ctor">Set</a>(Set&amp;&amp;) noexcept;
+  Set&amp; <a href="#Set-opeq">operator=</a>(const Set&amp;) noexcept;
+  Set&amp; <a href="#Set-opeq">operator=</a>(Set&amp;&amp;) noexcept;
+
+  void <a href="#Set-clear">clear</a>();
+  void <a href="#Set-swap">swap</a>(Set&amp; b) noexcept;
+  constexpr bool <a href="#Set-empty">empty</a>() const noexcept;
+  constexpr <a href="#Set-opbool">explicit operator bool</a>() const noexcept;
+
+  Set&amp; <a href="#Set-opandeq">operator&amp;=</a>(Set b) noexcept;
+  Set&amp; <a href="#Set-oporeq">operator|=</a>(Set b) noexcept;
+  Set&amp; <a href="#Set-opxoreq">operator^=</a>(Set b) noexcept;
+
+  Set&amp; <a href="#Set-set_readable">set_readable</a>(bool value = true) noexcept;
+  Set&amp; <a href="#Set-set_writable">set_writable</a>(bool value = true) noexcept;
+  Set&amp; <a href="#Set-set_priority">set_priority</a>(bool value = true) noexcept;
+  Set&amp; <a href="#Set-set_hangup">set_hangup</a>(bool value = true) noexcept;
+  Set&amp; <a href="#Set-set_error">set_error</a>(bool value = true) noexcept;
+  Set&amp; <a href="#Set-set_signal">set_signal</a>(bool value = true) noexcept;
+  Set&amp; <a href="#Set-set_timer">set_timer</a>(bool value = true) noexcept;
+  Set&amp; <a href="#Set-set_generic">set_generic</a>(bool value = true) noexcept;
+
+  constexpr Set <a href="#Set-opnot">operator~</a>() const noexcept;
+  constexpr Set <a href="#Set-opand">operator&amp;</a>(Set b) const noexcept;
+  constexpr Set <a href="#Set-opor">operator|</a>(Set b) const noexcept;
+  constexpr Set <a href="#Set-opxor">operator^</a>(Set b) const noexcept;
+
+  constexpr Set <a href="#Set-with_readable">with_readable</a>(bool value = true) const noexcept;
+  constexpr Set <a href="#Set-with_writable">with_writable</a>(bool value = true) const noexcept;
+  constexpr Set <a href="#Set-with_priority">with_priority</a>(bool value = true) const noexcept;
+  constexpr Set <a href="#Set-with_hangup">with_hangup</a>(bool value = true) const noexcept;
+  constexpr Set <a href="#Set-with_error">with_error</a>(bool value = true) const noexcept;
+  constexpr Set <a href="#Set-with_signal">with_signal</a>(bool value = true) const noexcept;
+  constexpr Set <a href="#Set-with_timer">with_timer</a>(bool value = true) const noexcept;
+  constexpr Set <a href="#Set-with_generic">with_generic</a>(bool value = true) const noexcept;
+
+  constexpr bool <a href="#Set-readable">readable</a>() const noexcept;
+  constexpr bool <a href="#Set-writable">writable</a>() const noexcept;
+  constexpr bool <a href="#Set-priority">priority</a>() const noexcept;
+  constexpr bool <a href="#Set-hangup">hangup</a>() const noexcept;
+  constexpr bool <a href="#Set-error">error</a>() const noexcept;
+  constexpr bool <a href="#Set-signal">signal</a>() const noexcept;
+  constexpr bool <a href="#Set-timer">timer</a>() const noexcept;
+  constexpr bool <a href="#Set-generic">generic</a>() const noexcept;
+
+  void <a href="#Set-append_to">append_to</a>(std::string* out) const;
+  std::size_t <a href="#Set-length_hint">length_hint</a>() const noexcept;
+  std::string <a href="#Set-as_string">as_string</a>() const;
+};
+
+void <a href="#Set-swap">swap</a>(Set&amp; a, Set&amp; b) noexcept
+
+constexpr bool <a href="#Set-opeqeq">operator==</a>(const Set&amp; a, const Set&amp; b) noexcept;
+constexpr bool <a href="#Set-opnoteq">operator!=</a>(const Set&amp; a, const Set&amp; b) noexcept;
+
+std::ostream&amp; <a href="#Set-opltlt">operator&lt;&lt;</a>(std::ostream&amp; os, Set x);
+
+}
+</pre>
+
+      <p>RC. <code>event::Set</code> is a value type that acts as a container
+      for a fixed list of one-bit flags. Its primary purpose is to indicate
+      which events an event handler is interested in, and to inform the event
+      handler of which events actually occurred. These flags are:</p>
+
+      <ul>
+        <li>
+          <strong>readable</strong>: There is data available to read on a
+          pipe or socket.
+        </li>
+        <li>
+          <strong>writable</strong>: There is room in the buffer to write data
+          to a pipe or socket.
+        </li>
+        <li>
+          <strong>priority</strong>: There is high-priority data available to
+          read on a socket.
+        </li>
+        <li>
+          <strong>hangup</strong>: The remote end of a socket has closed.
+        </li>
+        <li>
+          <strong>error</strong>: An error has occurred on a socket.
+        </li>
+        <li>
+          <strong>signal</strong>: The process has received a signal.
+        </li>
+        <li>
+          <strong>timer</strong>: A timer has elapsed.
+        </li>
+        <li>
+          <strong>generic</strong>: A "generic event" (see
+          <a href="../manager.h/">event/manager.h</a>) has been triggered.
+        </li>
+      </ul>
+
+      <h3 id="static-ctors">Static Constructors</h3>
+
+      <h4 id="Set-no_bits">Set::no_bits()</h4>
+
+      <p>Returns an empty Set. Equivalent to the default constructor.</p>
+
+      <h4 id="Set-all_bits">Set::all_bits()</h4>
+
+      <p>Returns a Set that contains all possible bits.</p>
+
+      <h4 id="Set-readable_bit">Set::readable_bit()</h4>
+
+      <p>Returns a Set that contains only the "readable" bit.</p>
+
+      <h4 id="Set-writable_bit">Set::writable_bit()</h4>
+
+      <p>Returns a Set that contains only the "writable" bit.</p>
+
+      <h4 id="Set-priority_bit">Set::priority_bit()</h4>
+
+      <p>Returns a Set that contains only the "priority" bit.</p>
+
+      <h4 id="Set-hangup_bit">Set::hangup_bit()</h4>
+
+      <p>Returns a Set that contains only the "hangup" bit.</p>
+
+      <h4 id="Set-error_bit">Set::error_bit()</h4>
+
+      <p>Returns a Set that contains only the "error" bit.</p>
+
+      <h4 id="Set-signal_bit">Set::signal_bit()</h4>
+
+      <p>Returns a Set that contains only the "signal" bit.</p>
+
+      <h4 id="Set-timer_bit">Set::timer_bit()</h4>
+
+      <p>Returns a Set that contains only the "timer" bit.</p>
+
+      <h4 id="Set-generic_bit">Set::generic_bit()</h4>
+
+      <p>Returns a Set that contains only the "generic" bit.</p>
+
+      <h3 id="Set-ctor">Set::Set()</h3>
+
+      <p>Constructs a Set.</p>
+
+      <ul>
+        <li>
+          The default constructor creates an empty Set.
+        </li>
+        <li>
+          The copy constructor creates a Set containing the same bits that the
+          copied-from Set contains.
+        </li>
+        <li>
+          The move constructor is indistinguishable from the copy constructor.
+        </li>
+      </ul>
+
+      <h3 id="Set-opeq">Set::operator=()</h3>
+
+      <p>Assigns to a Set. The copy and move assignment operators function
+      analogously to the copy constructor.</p>
+
+      <h3 id="Set-clear">Set::clear()</h3>
+
+      <p>Removes all bits from this Set, returning it to the
+      default-constructed state.</p>
+
+      <h3 id="Set-swap">Set::swap()</h3>
+
+      <p>Swaps two Sets.</p>
+
+      <h3 id="Set-empty">Set::empty()</h3>
+
+      <p>Returns true iff this Set contains no bits.</p>
+
+      <h3 id="Set-opbool">Set::operator bool()</h3>
+
+      <p>Returns true iff this Set contains at least one bit.</p>
+
+      <h3 id="modify">Bitwise Modifications</h3>
+
+      <h4 id="Set-opandeq">Set::operator&amp;=()</h4>
+
+      <p>Modifies this Set to the set intersection (AND) of itself and the
+      other Set.</p>
+
+      <h4 id="Set-oporeq">Set::operator|=()</h4>
+
+      <p>Modifies this Set to the set union (OR) of itself and the other
+      Set.</p>
+
+      <h4 id="Set-opxoreq">Set::operator^=()</h4>
+
+      <p>Modifies this Set to the set symmetric difference (XOR) of itself and
+      the other Set.</p>
+
+      <h4 id="Set-set_readable">Set::set_readable()</h4>
+      <h4 id="Set-set_writable">Set::set_writable()</h4>
+      <h4 id="Set-set_priority">Set::set_priority()</h4>
+      <h4 id="Set-set_hangup">Set::set_hangup()</h4>
+      <h4 id="Set-set_error">Set::set_error()</h4>
+      <h4 id="Set-set_signal">Set::set_signal()</h4>
+      <h4 id="Set-set_timer">Set::set_timer()</h4>
+      <h4 id="Set-set_generic">Set::set_generic()</h4>
+
+      <p>Modifies this Set to contain (<code>value</code> true) or to not
+      contain (<code>value</code> false) the named bit.</p>
+
+      <h3 id="bitops">Bitwise Operations</h3>
+
+      <h4 id="Set-opnot">Set::operator~()</h3>
+
+      <p>Returns the set complement (NOT) of this Set as a new Set.</p>
+
+      <h4 id="Set-opand">Set::operator&amp;()</h3>
+
+      <p>Returns the set intersection (AND) of this Set and the other as a new
+      Set.</p>
+
+      <h4 id="Set-opor">Set::operator|()</h3>
+
+      <p>Returns the set union (OR) of this Set and the other as a new Set.</p>
+
+      <h4 id="Set-opxor">Set::operator^()</h3>
+
+      <p>Returns the set symmetric difference (XOR) of this Set and the
+      other as a new Set.</p>
+
+      <h4 id="Set-with_readable">Set::with_readable()</h4>
+
+      <p>Returns a copy of this Set that contains (<code>value</code> true) or
+      does not contain (<code>value</code> false) the "readable" bit.</p>
+
+      <h4 id="Set-with_writable">Set::with_writable()</h4>
+
+      <p>Returns a copy of this Set that contains (<code>value</code> true) or
+      does not contain (<code>value</code> false) the "writable" bit.</p>
+
+      <h4 id="Set-with_priority">Set::with_priority()</h4>
+
+      <p>Returns a copy of this Set that contains (<code>value</code> true) or
+      does not contain (<code>value</code> false) the "priority" bit.</p>
+
+      <h4 id="Set-with_hangup">Set::with_hangup()</h4>
+
+      <p>Returns a copy of this Set that contains (<code>value</code> true) or
+      does not contain (<code>value</code> false) the "hangup" bit.</p>
+
+      <h4 id="Set-with_error">Set::with_error()</h4>
+
+      <p>Returns a copy of this Set that contains (<code>value</code> true) or
+      does not contain (<code>value</code> false) the "error" bit.</p>
+
+      <h4 id="Set-with_signal">Set::with_signal()</h4>
+
+      <p>Returns a copy of this Set that contains (<code>value</code> true) or
+      does not contain (<code>value</code> false) the "signal" bit.</p>
+
+      <h4 id="Set-with_timer">Set::with_timer()</h4>
+
+      <p>Returns a copy of this Set that contains (<code>value</code> true) or
+      does not contain (<code>value</code> false) the "timer" bit.</p>
+
+      <h4 id="Set-with_generic">Set::with_generic()</h4>
+
+      <p>Returns a copy of this Set that contains (<code>value</code> true) or
+      does not contain (<code>value</code> false) the "generic" bit.</p>
+
+      <h3 id="membership">Bit Membership Tests</h3>
+
+      <h4 id="Set-readable">Set::readable()</h4>
+
+      <p>Returns true iff this set contains the "readable" bit.</p>
+
+      <h4 id="Set-writable">Set::writable()</h4>
+
+      <p>Returns true iff this set contains the "writable" bit.</p>
+
+      <h4 id="Set-priority">Set::priority()</h4>
+
+      <p>Returns true iff this set contains the "priority" bit.</p>
+
+      <h4 id="Set-hangup">Set::hangup()</h4>
+
+      <p>Returns true iff this set contains the "hangup" bit.</p>
+
+      <h4 id="Set-error">Set::error()</h4>
+
+      <p>Returns true iff this set contains the "error" bit.</p>
+
+      <h4 id="Set-signal">Set::signal()</h4>
+
+      <p>Returns true iff this set contains the "signal" bit.</p>
+
+      <h4 id="Set-timer">Set::timer()</h4>
+
+      <p>Returns true iff this set contains the "timer" bit.</p>
+
+      <h4 id="Set-generic">Set::generic()</h4>
+
+      <p>Returns true iff this set contains the "generic" bit.</p>
+
+      <h3 id="stringification">Stringification</h3>
+
+      <h4 id="Set-append_to">Set::append_to()</h4>
+
+      <p>Stringifies this Set and appends it to the given string.</p>
+
+      <h4 id="Set-length_hint">Set::length_hint()</h4>
+
+      <p>Returns the estimated length of this Set's stringification.</p>
+
+      <h4 id="Set-as_string">Set::as_string()</h4>
+
+      <p>Stringifies this Set and returns it.</p>
+
+      <h4 id="Set-opltlt">operator&lt;&lt;()</h4>
+
+      <p>Outputs this Set's stringification to the given
+      <code>std::ostream</code>.</p>
+
+      <h3 id="comparison">Comparison Operators</h3>
+
+      <h4 id="Set-opeqeq">operator==()</h4>
+      <h4 id="Set-opnoteq">operator!=()</h4>
+
+      <p>Compares two Sets for (in)equality.</p>
     </section>
   </article>
 
