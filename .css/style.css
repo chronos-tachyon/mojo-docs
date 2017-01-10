@@ -72,6 +72,12 @@ blockquote { border-left: 4px solid #00f; padding-left: 8px; }
   line-height: 1;
   overflow: auto;
 }
+.cautionbox {
+  margin: 7px 26px;
+  border-left: 8px solid #f70;
+  padding: 7px;
+  font-weight: bold;
+}
 .hoverlink { display: none; }
 p:hover > .hoverlink {
   display: inline;

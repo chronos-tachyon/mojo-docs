@@ -60,6 +60,40 @@ var sitemap = [{
     url: '/event/',
     title: 'event',
   }, {
+    url: '/file/',
+    title: 'file',
+    children: [{
+      url: '/file/fd.h/',
+      title: 'fd.h',
+    }, {
+      url: '/file/file.h/',
+      title: 'file.h',
+    }, {
+      url: '/file/fs.h/',
+      title: 'fs.h',
+    }, {
+      url: '/file/local.h/',
+      title: 'local.h',
+    }, {
+      url: '/file/mem.h/',
+      title: 'mem.h',
+    }, {
+      url: '/file/mode.h/',
+      title: 'mode.h',
+    }, {
+      url: '/file/options.h/',
+      title: 'options.h',
+    }, {
+      url: '/file/perm.h/',
+      title: 'perm.h',
+    }, {
+      url: '/file/registry.h/',
+      title: 'registry.h',
+    }, {
+      url: '/file/stat.h/',
+      title: 'stat.h',
+    }],
+  }, {
     url: '/io/',
     title: 'io',
   }, {

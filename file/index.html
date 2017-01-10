@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>file : Mojo</title>
+  <link rel="sitemap" type="text/xml" href="../sitemap.xml">
+  <link rel="icon" type="image/png" href="../.img/favicon.png">
+  <link rel="stylesheet" type="text/css" href="../.css/lity-1.6.6.min.css">
+  <link rel="stylesheet" type="text/css" href="../.css/style.css">
+  <script src="../.js/jquery-3.1.0.slim.min.js" defer></script>
+  <script src="../.js/lity-1.6.6.min.js" defer></script>
+  <script src="../.js/nav.js" defer></script>
+</head>
+<body>
+  <article id="main">
+    <header>
+      <p><a href="..">Mojo</a> &gt;</p>
+      <h1>file</h1>
+      <h2>Files and Filesystems</h2>
+    </header>
+
+    <aside class="cautionbox">
+      <p>CAUTION: HARD HAT AREA</p>
+      <p>The File API is very much under active construction.</p>
+    </aside>
+
+    <div id="toc">
+      Waiting on JavaScript...
+    </div>
+
+    <section>
+      <h2 id="filesystems">File and Filesystem APIs</h2>
+
+      <ul>
+        <li><a href="file.h/">file/file.h</a></li>
+        <li><a href="fs.h/">file/fs.h</a></li>
+        <li><a href="options.h/">file/options.h</a></li>
+        <li><a href="registry.h/">file/registry.h</a></li>
+      </ul>
+
+      <p>Provides:</p>
+
+      <ul>
+        <li>
+          <code>file::Options</code>, which offers knobs relating to opening
+          files and other filesystem-level operations;
+        </li>
+        <li>
+          The filesystem API, which consists of top-level functions that
+          thunk to <code>file::FileSystemImpl</code> via the
+          <code>file::system_registry()</code>;
+        </li>
+        <li>
+          The file API <code>file::File</code>, which thunks to
+          <code>file::FileImpl</code>; and
+        </li>
+        <li>
+          <code>file::Registry</code>, a prioritized collection of available
+          filesystems.
+        </li>
+      </ul>
+    </section>
+    <hr>
+    <section>
+      <h2 id="impls">Concrete Implementations</h2>
+
+      <ul>
+        <li><a href="fd.h/">file/fd.h</a></li>
+        <li><a href="local.h/">file/local.h</a></li>
+        <li><a href="mem.h/">file/mem.h</a></li>
+      </ul>
+
+      <p>These headers provide:</p>
+
+      <ul>
+        <li>
+          Functions to convert between OS stat structs and Mojo stat structs;
+        </li>
+        <li>
+          <code>file::fdfile()</code>, a function that turns any open file
+          descriptor into a <code>file::File</code>;
+        </li>
+        <li>
+          <code>file::local_filesystem()</code>, a function which returns the
+          singleton implementation of the <code>"local"</code> filesystem; and
+        </li>
+        <li>
+          <code>file::mem_filesystem()</code>, a function which creates and
+          returns new in-process RAM-based filesystems.
+        </li>
+      </ul>
+
+      <p>These headers are rarely needed by end-user programs, as the
+      <code>"local"</code> and <code>"mem"</code> filesystems both
+      self-register with the <code>file::system_registry()</code> at
+      application startup.</p>
+    </section>
+    <hr>
+    <section>
+      <h2 id="utility">Utility Classes</h2>
+
+      <ul>
+        <li><a href="mode.h/">file/mode.h</a></li>
+        <li><a href="perm.h/">file/perm.h</a></li>
+        <li><a href="stat.h/">file/stat.h</a></li>
+      </ul>
+
+      <p>These headers provide:</p>
+
+      <ul>
+        <li>
+          <a href="mode.h/#Mode"><code>file::Mode</code></a>, which represents
+          the modes in which a file can be opened;
+        </li>
+        <li>
+          <a href="perm.h/#Perm"><code>file::Perm</code></a>, which represents
+          the standard Unix permission bits;
+        </li>
+        <li>
+          <a href="perm.h/#UserPerm"><code>file::UserPerm</code></a>, which
+          represents the permission bits for just one user, group, or other
+          role;
+        </li>
+        <li>
+          <a href="stat.h/#StatFS"><code>file::StatFS</code></a>, which holds
+          information about an entire filesystem;
+        </li>
+        <li>
+          <a href="stat.h/#Stat"><code>file::Stat</code></a>, which holds
+          information about a single file; and
+        </li>
+        <li>
+          <a href="stat.h/#SetStat"><code>file::SetStat</code></a>, which
+          holds the changes which a caller wishes to make to a file's
+          <code>Stat</code>.
+        </li>
+      </ul>
+    </section>
+  </article>
+
+  <nav id="navbar">
+    <p>Waiting for JavaScript...</p>
+  </nav>
+</body>
+</html>
