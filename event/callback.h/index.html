@@ -29,7 +29,63 @@
     </div>
 
     <section>
-      <p>TODO: fill this in.</p>
+      <h2 id="functions">Top-level Functions</h2>
+
+      <h3 id="callback">callback()</h3>
+
+<pre class="codebox">
+namespace event {
+
+<a href="#Callback">CallbackPtr</a> callback(<a href="http://en.cppreference.com/w/cpp/utility/functional/function">std::function</a>&lt;<a href="../../base/result.h/#Result">base::Result</a>()&gt; f);
+
+template &lt;typename Function, typename... Args&gt;
+<a href="#Callback">CallbackPtr</a> callback(Function&amp;&amp; f, Args&amp;&amp;... args);
+
+}
+</pre>
+
+      <p>STABLE. Allocates and constructs a new <code>event::Callback</code>
+      value. The first variant accepts a <code>std::function</code> object;
+      the second variant captures the given functor and arguments, which may
+      be of move-only types.</p>
+    </section>
+    <hr>
+    <section>
+      <h2 id="Callback">Callback</h2>
+
+<pre class="codebox">
+namespace event {
+
+class Callback {
+ public:
+  virtual ~Callback() noexcept = default;
+  virtual <a href="../../base/result.h/#Result">base::Result</a> <a href="#Callback-run">run</a>() = 0;
+
+  <s>Callback(const Callback&amp;) = delete;</s>
+  <s>Callback(Callback&amp;&amp;) = delete;</s>
+  <s>Callback&amp; operator=(const Callback&amp;) = delete;</s>
+  <s>Callback&amp; operator=(Callback&amp;&amp;) = delete;</s>
+};
+
+using CallbackPtr = <a href="http://en.cppreference.com/w/cpp/memory/unique_ptr">std::unique_ptr</a>&lt;Callback&gt;;
+
+}
+</pre>
+
+      <p>STABLE. <code>event::Callback</code> is an abstract base class for
+      one-shot callbacks having the function signature
+      <code>base::Result(void)</code>.</p>
+
+      <p>Why have <code>event::Callback</code>, when C++11's
+      <a href="http://en.cppreference.com/w/cpp/utility/functional/function"><code>std::function</code></a>
+      already exists? Since <code>Callback</code> is specialized for the case
+      of one-shot callbacks, it becomes possible to build closures over
+      move-only values, which is not possible with standard C++11 function
+      objects.</p>
+
+      <h3 id="Callback-run">Callback::run()</h3>
+
+      <p>Invokes the callback. May be called no more than once.</p>
     </section>
   </article>
 
