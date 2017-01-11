@@ -30,7 +30,589 @@
     </div>
 
     <section>
-      <p>TODO: fill this in.</p>
+      <h2 id="functions">Top-level Functions</h2>
+
+      <h3 id="new_dispatcher">new_dispatcher()</h3>
+
+<pre class="codebox">
+namespace event {
+
+<a href="../../base/result.h/#Result">base::Result</a> <strong>new_dispatcher</strong>(<a href="#Dispatcher">DispatcherPtr</a>* out, const <a href="#DispatcherOptions">DispatcherOptions</a>&amp; opts);
+
+}
+</pre>
+
+      <p>RC. Constructs a new Dispatcher with the specified properties, or
+      reuses the
+      <a href="#system_dispatcher"><code>system_dispatcher()</code></a> if
+      <a href="#DispatcherType-system_dispatcher">that behavior was specified</a>.</p>
+
+      <h3 id="system_inline_dispatcher">system_inline_dispatcher()</h3>
+
+<pre class="codebox">
+namespace event {
+
+<a href="#Dispatcher">DispatcherPtr</a> <strong>system_inline_dispatcher</strong>();
+
+}
+</pre>
+
+      <p>RC. Returns a shared singleton instance of an
+      <a href="#DispatcherType-inline_dispatcher">inline</a> Dispatcher.</p>
+
+      <p>Thread-safety: this function is thread-safe.</p>
+
+      <h3 id="system_dispatcher">system_dispatcher()</h3>
+
+<pre class="codebox">
+namespace event {
+
+<a href="#Dispatcher">DispatcherPtr</a> <strong>system_dispatcher</strong>();
+
+}
+</pre>
+
+      <p>RC. Returns a shared singleton instance of a Dispatcher.</p>
+
+      <p>Thread-safety: this function is thread-safe.</p>
+
+      <h3 id="set_system_dispatcher">set_system_dispatcher()</h3>
+
+<pre class="codebox">
+namespace event {
+
+void <strong>set_system_dispatcher</strong>(<a href="#Dispatcher">DispatcherPtr</a> ptr);
+
+}
+</pre>
+
+      <p>RC. Replaces the shared singleton Dispatcher that will be returned by
+      <a href="#system_Dispatcher"><code>system_dispatcher()</code></a>.
+
+      <p>Thread-safety: this function is thread-safe.</p>
+
+      <h3 id="num_cores">num_cores()</h3>
+
+<pre class="codebox">
+namespace event {
+
+std::size_t <strong>num_cores</strong>();
+
+}
+</pre>
+
+      <p>BETA. Returns the number of cores on the local machine.</p>
+    </section>
+    <hr>
+    <section>
+      <h2 id="Dispatcher">Dispatcher</h2>
+
+<pre class="codebox">
+namespace event {
+
+class <strong>Dispatcher</strong> {
+ public:
+  virtual ~Dispatcher() noexcept = default;
+
+  virtual <a href="#DispatcherType">DispatcherType</a> <a href="#Dispatcher-type">type</a>() const noexcept = 0;
+
+  virtual void <a href="#Dispatcher-dispatch">dispatch</a>(<a href="../task.h/#Task">Task</a>* <em>/*nullable*/</em> task, <a href="../callback.h/#Callback">CallbackPtr</a> callback) = 0;
+  void <a href="#Dispatcher-dispatch">dispatch</a>(<a href="../callback.h/#Callback">CallbackPtr</a> callback);
+
+  virtual void <a href="#Dispatcher-dispose">dispose</a>(<a href="../callback.h/#Callback">CallbackPtr</a> finalizer) = 0;
+  template &lt;typename T&gt; void <a href="#Dispatcher-dispose">dispose</a>(T* ptr);
+
+  virtual <a href="#DispatcherStats">DispatcherStats</a> <a href="#Dispatcher-stats">stats</a>() const noexcept = 0;
+
+  virtual <a href="../../base/result.h/#Result">base::Result</a> <a href="#Dispatcher-adjust">adjust</a>(const <a href="#DispatcherOptions">DispatcherOptions</a>&amp; opts) noexcept;
+  virtual void <a href="#Dispatcher-cork">cork</a>() noexcept;
+  virtual void <a href="#Dispatcher-uncork">uncork</a>() noexcept;
+  virtual void <a href="#Dispatcher-donate">donate</a>(bool forever) noexcept;
+  virtual void <a href="#Dispatcher-shutdown">shutdown</a>() noexcept;
+
+  <s>Dispatcher(const Dispatcher&amp;) = delete;</s>
+  <s>Dispatcher(Dispatcher&amp;&amp;) = delete;</s>
+  <s>Dispatcher&amp; operator=(const Dispatcher&amp;) = delete;</s>
+  <s>Dispatcher&amp; operator=(Dispatcher&amp;&amp;) = delete;</s>
+};
+
+}
+</pre>
+
+      <p>RC. Dispatcher is an abstract base class for
+      <a href="../callback.h/#Callback">Callback</a>-running strategies. The
+      core reason for its existence is the
+      <a href="#Dispatcher-dispatch"><code>dispatch()</code></a> method.</p>
+
+      <p>Thread-safety: all methods on this class are thread-safe.</p>
+
+      <p>Reentrancy: all methods except
+      <a href="#Dispatcher-donate"><code>donate()</code></a>
+      may be called from within a callback.</p>
+
+      <h3 id="Dispatcher-type">Dispatcher::type()</h3>
+
+      <p>Returns an enum value indicating which of the three Dispatcher
+      families this Dispatcher belongs to:
+      <a href="#DispatcherType-inline_dispatcher">inline</a>,
+      <a href="#DispatcherType-async_dispatcher">async</a>, or
+      <a href="#DispatcherType-threaded_dispatcher">threaded</a>.</p>
+
+      <h3 id="Dispatcher-dispatch">Dispatcher::dispatch()</h3>
+
+      <p>Arranges for the provided callback to be run. The callback should
+      never block, and must never call
+      <a href="#Dispatcher-donate"><code>donate()</code></a>.</p>
+
+      <ul>
+        <li>
+          <strong>inline</strong>: runs the callback immediately.
+        </li>
+        <li>
+          <strong>async</strong>: defers the callback until the next time
+          <code>donate()</code> is called.
+        </li>
+        <li>
+          <strong>threaded</strong>: places the callback in a work queue,
+          which is processed by a pool of worker threads.
+        </li>
+      </ul>
+
+      <p>The 2-arg overload takes an optional
+      <a href="../task.h/#Task">Task</a>,
+      which must begin in the "ready" state. If <code>task</code> was
+      provided, then <code>task-&gt;start()</code> will be called when the
+      callback is about to execute, and <code>task-&gt;finish()</code> will be
+      called with the callback's return value when it completes.</p>
+
+      <p>The 1-arg overload is a convenience wrapper that always specifies a
+      <code>NULL</code> Task.</p>
+
+      <h3 id="Dispatcher-dispose">Dispatcher::dispose()</h3>
+
+      <p>Arranges for a finalizer to run. Finalizers are executed at very low
+      priority, but they are allowed to break the usual rule that callbacks
+      may not block or call
+      <a href="#Dispatcher-donate"><code>donate()</code></a>.</p>
+
+      <ul>
+        <li>
+          <strong>inline</strong>: runs the finalizer immediately.
+        </li>
+        <li>
+          <strong>async</strong>: defers the finalizer until the next time
+          <code>donate()</code> is called. Steps are taken by
+          <code>donate()</code> to make reentrancy safe.
+        </li>
+        <li>
+          <strong>threaded</strong>: defers the finalizer until the next time
+          a worker thread finds that the work queue is empty.
+        </li>
+      </ul>
+
+      <p>The non-templated overload directly accepts a finalizer.</p>
+
+      <p>The templated overload accepts a pointer to an object of arbitrary
+      type, and schedules a finalizer that will delete the pointer. This is
+      useful for objects whose destructors may block.</p>
+
+      <h3 id="Dispatcher-stats">Dispatcher::stats()</h3>
+
+      <p>Obtains statistics about this Dispatcher. Not all fields are relevant
+      to all Dispatcher types.</p>
+
+      <h3 id="Dispatcher-adjust">Dispatcher::adjust()</h3>
+
+      <p>Changes the Dispatcher's options at runtime.</p>
+
+      <p>This function is <strong>OPTIONAL</strong>: a valid implementation is
+      to immediately return <code>NOT_IMPLEMENTED</code>.</p>
+
+      <p>When the caller calls <code>adjust()</code> after having previously
+      invoked <a href="#Dispatcher-shutdown"><code>shutdown()</code></a>, the
+      implementation of <code>adjust()</code> MUST have one of the following
+      behaviors:</p>
+
+      <ul>
+        <li>
+          All calls to <code>adjust()</code> after <code>shutdown()</code> will
+          fail; OR
+        </li>
+        <li>
+          The first call after <code>shutdown()</code> will undo its effects,
+          bringing this Dispatcher back to life.
+        </li>
+      </ul>
+
+      <p><strong>NOTE</strong>: this function may block. In particular, if
+      reducing the number of threads, this function may block waiting on the
+      completion of callbacks (both
+      <a href="#Dispatcher-dispose">finalizers</a>,
+      and also <a href="#Dispatcher-dispatch">regular callbacks</a> that
+      ignore the admonishment against blocking).</p>
+
+      <h3 id="Dispatcher-cork">Dispatcher::cork()</h3>
+
+      <p>Corks the Dispatcher, pausing the processing of callbacks.</p>
+
+      <p>This function is <strong>OPTIONAL</strong>: the no-op function is a
+      valid implementation.</p>
+
+      <p>It is an <strong>error</strong> to call <code>cork()</code> on a
+      Dispatcher that is already corked. Implementations may throw an
+      exception or abort the program under these circumstances.</p>
+
+      <h3 id="Dispatcher-uncork">Dispatcher::uncork()</h3>
+
+      <p>Uncorks the Dispatcher, resuming the processing of callbacks.</p>
+
+      <p>This function is <strong>OPTIONAL</strong>: the no-op function is a
+      valid implementation.</p>
+
+      <p>It is an <strong>error</strong> to call <code>uncork()</code> on a
+      Dispatcher that is not corked. Implementations may throw an exception or
+      abort the program under these circumstances.</p>
+
+      <h3 id="Dispatcher-donate">Dispatcher::donate()</h3>
+
+      <p>Donates the current thread to the Dispatcher, if supported.</p>
+
+      <ul>
+        <li>
+          If <code>forever</code> is false, then the Dispatcher may return
+          control of the thread at certain times, such as when the work queue
+          is empty.<br>
+          If the thing you were waiting for is ready, great! If it's not, feel
+          free to do some housekeeping then call <code>donate()</code> again.
+        </li>
+        <li>
+          If <code>forever</code> is true, then the Dispatcher need not return
+          control of the thread until
+          <a href="#Dispatcher-shutdown"><code>shutdown()</code></a> is
+          called.
+        </li>
+      </ul>
+
+      <p>This function is <strong>OPTIONAL</strong>: the no-op function is a
+      valid implementation.</p>
+
+      <p>Reentrancy: <code>donate()</code> <strong>MUST NOT</strong> be called
+      from within a callback invoked through
+      <a href="#Dispatcher-dispatch"><code>dispatch()</code></a>.</p>
+
+      <h3 id="Dispatcher-shutdown">Dispatcher::shutdown()</h3>
+
+      <p>Requests that the Dispatcher free all resources.</p>
+
+      <p><strong>NOTE</strong>: this function may block. In particular,
+      this function may block waiting on the completion of callbacks (both
+      <a href="#Dispatcher-dispose">finalizers</a>,
+      and also <a href="#Dispatcher-dispatch">regular callbacks</a> that
+      ignore the admonishment against blocking).</p>
+
+      <p>This function is <strong>OPTIONAL</strong>: the no-op function is a
+      valid implementation.</p>
+    </section>
+    <hr>
+    <section>
+      <h2 id="DispatcherType">DispatcherType</h2>
+
+<pre class="codebox">
+namespace event {
+
+enum class <strong>DispatcherType</strong> : uint8_t {
+  <a href="#DispatcherType-unspecified">unspecified</a> = 0,
+  <a href="#DispatcherType-inline_dispatcher">inline_dispatcher</a> = 1,
+  <a href="#DispatcherType-async_dispatcher">async_dispatcher</a> = 2,
+  <a href="#DispatcherType-threaded_dispatcher">threaded_dispatcher</a> = 3,
+  <a href="#DispatcherType-system_dispatcher">system_dispatcher</a> = 255,
+};
+
+}
+</pre>
+
+      <p>RC. Enumeration of the available behaviors which can be requested of
+      <a href="#new_dispatcher"><code>new_dispatcher()</code></a>.</p>
+
+      <h3 id="DispatcherType-unspecified">DispatcherType::unspecified</h3>
+
+      <p>Requests that
+      <a href="#new_dispatcher"><code>new_dispatcher()</code></a>
+      should create a new Dispatcher instance, but that instance may be of any
+      type.</p>
+
+      <h3 id="DispatcherType-inline_dispatcher">DispatcherType::inline_dispatcher</h3>
+
+      <p>Requests that
+      <a href="#new_dispatcher"><code>new_dispatcher()</code></a>
+      should create a new inline Dispatcher instance. An inline Dispatcher
+      uses the caller's thread to immediately execute its callbacks.</p>
+
+      <h3 id="DispatcherType-async_dispatcher">DispatcherType::async_dispatcher</h3>
+
+      <p>Requests that
+      <a href="#new_dispatcher"><code>new_dispatcher()</code></a>
+      should create a new async Dispatcher instance. An async Dispatcher
+      collects callbacks into a work queue, then sits on them until someone
+      calls the <code>donate()</code> method.</p>
+
+      <h3 id="DispatcherType-threaded_dispatcher">DispatcherType::threaded_dispatcher</h3>
+
+      <p>Requests that
+      <a href="#new_dispatcher"><code>new_dispatcher()</code></a>
+      should create a new threaded Dispatcher instance. A threaded Dispatcher
+      collects callbacks into a work queue, and has one or more threads
+      dedicated to processing the queue. Threaded Dispatchers vary from a
+      single worker thread to heuristically self-resizing thread pools.</p>
+
+      <h3 id="DispatcherType-system_dispatcher">DispatcherType::system_dispatcher</h3>
+
+      <p>Requests that
+      <a href="#new_dispatcher"><code>new_dispatcher()</code></a>
+      should re-use the shared Dispatcher instance provided by
+      <code>system_dispatcher()</code>.</p>
+    </section>
+    <hr>
+    <section>
+      <h2 id="DispatcherOptions">DispatcherOptions</h2>
+
+<pre class="codebox">
+namespace event {
+
+class <strong>DispatcherOptions</strong> {
+ public:
+  <a href="#DispatcherOptions-ctor">DispatcherOptions</a>() noexcept;
+  <a href="#DispatcherOptions-ctor">DispatcherOptions</a>(const DispatcherOptions&amp;);
+  <a href="#DispatcherOptions-ctor">DispatcherOptions</a>(DispatcherOptions&amp;&amp;);
+  DispatcherOptions&amp; <a href="#DispatcherOptions-opeq">operator=</a>(const DispatcherOptions&amp;);
+  DispatcherOptions&amp; <a href="#DispatcherOptions-opeq">operator=</a>(DispatcherOptions&amp;&amp;) noexcept;
+
+  void <a href="#DispatcherOptions-reset">reset</a>() noexcept;
+
+  <a href="#DispatcherType">DispatcherType</a> <a href="#DispatcherOptions-type">type</a>() const noexcept;
+  void <a href="#DispatcherOptions-reset_type">reset_type</a>() noexcept;
+  void <a href="#DispatcherOptions-set_type">set_type</a>(<a href="#DispatcherType">DispatcherType</a> type) noexcept;
+
+  std::pair&lt;bool, std::size_t&gt; <a href="#DispatcherOptions-min_workers">min_workers</a>() const noexcept;
+  void <a href="#DispatcherOptions-reset_min_workers">reset_min_workers</a>() noexcept;
+  void <a href="#DispatcherOptions-set_min_workers">set_min_workers</a>(std::size_t min) noexcept;
+
+  std::pair&lt;bool, std::size_t&gt; <a href="#DispatcherOptions-max_workers">max_workers</a>() const noexcept;
+  void <a href="#DispatcherOptions-reset_max_workers">reset_max_workers</a>() noexcept;
+  void <a href="#DispatcherOptions-set_max_workers">set_max_workers</a>(std::size_t max) noexcept;
+
+  void <a href="#DispatcherOptions-reset_num_workers">reset_num_workers</a>() noexcept;
+  void <a href="#DispatcherOptions-set_num_workers">set_num_workers</a>(std::size_t min, std::size_t max) noexcept;
+  void <a href="#DispatcherOptions-set_num_workers">set_num_workers</a>(std::size_t n) noexcept;
+};
+
+}
+</pre>
+
+      <p>RC. DispatcherOptions holds user-configurable knobs for selecting a
+      Dispatcher type and tuning the resulting instance.</p>
+
+      <h3 id="DispatcherOptions-ctor">DispatcherOptions::DispatcherOptions()</h3>
+
+      <p>Constructs a DispatcherOptions instance.</p>
+
+      <ul>
+        <li>
+          The default constructor initializes the DispatcherOptions to the
+          defaults: use <code>system_dispatcher()</code> and do not specify
+          the number of threads.
+        </li>
+        <li>
+          The copy constructor works in the usual way.
+        </li>
+        <li>
+          The move constructor is indistinguishable from the copy constructor.
+        </li>
+      </ul>
+
+      <h3 id="DispatcherOptions-opeq">DispatcherOptions::operator=()</h3>
+
+      <p>Assigns to a DispatcherOptions instance. The copy and move assignment
+      operators work analogously to the copy constructor.</p>
+
+      <h3 id="DispatcherOptions-reset">DispatcherOptions::reset()</h3>
+
+      <p>Resets this DispatcherOptions instance to the default-constructed
+      state.</p>
+
+      <h3 id="DispatcherOptions-type">DispatcherOptions::type()</h3>
+
+      <p>Returns the configured <code>DispatcherType</code>.</p>
+
+      <h3 id="DispatcherOptions-reset_type">DispatcherOptions::reset_type()</h3>
+
+      <p>Resets the configured <code>DispatcherType</code> to the default.</p>
+
+      <h3 id="DispatcherOptions-set_type">DispatcherOptions::set_type()</h3>
+
+      <p>Configures the <code>DispatcherType</code>.</p>
+
+      <h3 id="DispatcherOptions-min_workers">DispatcherOptions::min_workers()</h3>
+
+      <p>Returns <code>{true, <em>N</em>}</code>, where
+      <code><em>N</em></code> is the configured minimum number of worker
+      threads, or <code>{false, 0}</code> if no such number has been
+      configured.</p>
+
+      <h3 id="DispatcherOptions-reset_min_workers">DispatcherOptions::reset_min_workers()</h3>
+
+      <p>Resets the minimum number of worker threads to the unconfigured
+      state.</p>
+
+      <h3 id="DispatcherOptions-set_min_workers">DispatcherOptions::set_min_workers()</h3>
+
+      <p>Configures the minimum number of worker threads.</p>
+
+      <h3 id="DispatcherOptions-max_workers">DispatcherOptions::max_workers()</h3>
+
+      <p>Returns <code>{true, <em>N</em>}</code>, where
+      <code><em>N</em></code> is the configured maximum number of worker
+      threads, or <code>{false, 0}</code> if no such number has been
+      configured.</p>
+
+      <h3 id="DispatcherOptions-reset_max_workers">DispatcherOptions::reset_max_workers()</h3>
+
+      <p>Resets the maximum number of worker threads to the unconfigured
+      state.</p>
+
+      <h3 id="DispatcherOptions-set_max_workers">DispatcherOptions::set_max_workers()</h3>
+
+      <p>Configures the maximum number of worker threads.</p>
+
+      <h3 id="DispatcherOptions-reset_num_workers">DispatcherOptions::reset_num_workers()</h3>
+
+      <p>Resets both the minimum and maximum numbers of worker threads to
+      their unconfigured states.</p>
+
+      <h3 id="DispatcherOptions-set_num_workers">DispatcherOptions::set_num_workers()</h3>
+
+      <p>Configures both the minimum and maximum numbers of worker threads.
+      The 2-arg method configures them to the separate specified values, while
+      the 1-arg method configures them to the same value.</p>
+    </section>
+    <hr>
+    <section>
+      <h2 id="DispatcherStats">DispatcherStats</h2>
+
+<pre class="codebox">
+namespace event {
+
+struct <strong>DispatcherStats</strong> {
+  std::size_t <a href="#DispatcherStats-min_workers">min_workers</a>;
+  std::size_t <a href="#DispatcherStats-max_workers">max_workers</a>;
+  std::size_t <a href="#DispatcherStats-desired_num_workers">desired_num_workers</a>;
+  std::size_t <a href="#DispatcherStats-current_num_workers">current_num_workers</a>;
+  std::size_t <a href="#DispatcherStats-pending_count">pending_count</a>;
+  std::size_t <a href="#DispatcherStats-active_count">active_count</a>;
+  std::size_t <a href="#DispatcherStats-completed_count">completed_count</a>;
+  std::size_t <a href="#DispatcherStats-caught_exceptions">caught_exceptions</a>;
+  bool <a href="#DispatcherStats-corked">corked</a>;
+
+  <a href="#DispatcherStats-ctor">DispatcherStats</a>() noexcept;
+  <a href="#DispatcherStats-ctor">DispatcherStats</a>(const DispatcherStats&amp;) noexcept;
+  <a href="#DispatcherStats-ctor">DispatcherStats</a>(DispatcherStats&amp;&amp;) noexcept;
+  DispatcherStats&amp; <a href="#DispatcherStats-opeq">operator=</a>(const DispatcherStats&amp;) noexcept;
+  DispatcherStats&amp; <a href="#DispatcherStats-opeq">operator=</a>(DispatcherStats&amp;&amp;) noexcept;
+
+  std::size_t <a href="#DispatcherStats-incomplete_count">incomplete_count</a>() const noexcept;
+};
+
+}
+</pre>
+
+      <p>RC. DispatcherStats holds statistics about a running Dispatcher
+      instance.</p>
+
+      <h3 id="DispatcherStats-min_workers">DispatcherStats::min_workers</h3>
+
+      <p><code>min_workers</code> is the lower limit on the number of worker
+      threads that the Dispatcher instance will attempt to maintain.</p>
+
+      <p>Applicability: threaded Dispatchers.</p>
+
+      <h3 id="DispatcherStats-max_workers">DispatcherStats::max_workers</h3>
+
+      <p><code>max_workers</code> is the upper limit on the number of worker
+      threads that the Dispatcher instance will attempt to maintain.</p>
+
+      <p>Applicability: threaded Dispatchers.</p>
+
+      <h3 id="DispatcherStats-desired_num_workers">DispatcherStats::desired_num_workers</h3>
+
+      <p><code>desired_num_workers</code> is the number of worker threads
+      which the Dispatcher instance currently believes to be optimal for the
+      workload.</p>
+
+      <p>Applicability: threaded Dispatchers.</p>
+
+      <h3 id="DispatcherStats-current_num_workers">DispatcherStats::current_num_workers</h3>
+
+      <p><code>current_num_workers</code> is the actual number of worker
+      threads currently maintained by the Dispatcher instance.</p>
+
+      <p>Applicability: threaded Dispatchers.</p>
+
+      <h3 id="DispatcherStats-pending_count">DispatcherStats::pending_count</h3>
+
+      <p><code>pending_count</code> is the number of items waiting in the work
+      queue.</p>
+
+      <p>Applicability: async &amp; threaded Dispatchers.</p>
+
+      <h3 id="DispatcherStats-active_count">DispatcherStats::active_count</h3>
+
+      <p><code>active_count</code> is the number of callbacks currently
+      executing.</p>
+
+      <p>Applicability: all Dispatchers.</p>
+
+      <h3 id="DispatcherStats-completed_count">DispatcherStats::completed_count</h3>
+
+      <p><code>completed_count</code> is the number of callbacks that have
+      been executed. This includes successful, failed, cancelled, and throwing
+      callbacks.</p>
+
+      <p>Applicability: all Dispatchers.</p>
+
+      <h3 id="DispatcherStats-caught_exceptions">DispatcherStats::caught_exceptions</h3>
+
+      <p><code>caught_exceptions</code> is the number of exceptions thrown by
+      callbacks that were caught and discarded.</p>
+
+      <p>Applicability: all Dispatchers.</p>
+
+      <h3 id="DispatcherStats-corked">DispatcherStats::corked</h3>
+
+      <p><code>corked</code> is true iff the Dispatcher instance is currently
+      corked.</p>
+
+      <p>Applicability: threaded Dispatchers.</p>
+
+      <h3 id="DispatcherStats-ctor">DispatcherStats::DispatcherStats()</h3>
+
+      <p>Constructs a DispatcherStats struct.</p>
+
+      <ul>
+        <li>The default constructor zeroes out all fields.</li>
+        <li>The copy constructor works in the usual way.</li>
+        <li>
+          The move constructor is indistinguishable from the copy constructor.
+        </li>
+      </ul>
+
+      <h3 id="DispatcherStats-opeq">DispatcherStats::operator=()</h3>
+
+      <p>Assigns to a DispatcherStats struct. The copy and move assignment
+      operators work analogously to the copy constructor.</p>
+
+      <h3 id="DispatcherStats-incomplete_count">DispatcherStats::incomplete_count()</h3>
+
+      <p>Returns the sum <code>pending_count + active_count</code>.</p>
     </section>
   </article>
 
