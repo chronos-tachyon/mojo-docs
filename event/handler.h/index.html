@@ -29,7 +29,58 @@
     </div>
 
     <section>
-      <p>TODO: fill this in.</p>
+      <h2 id="functions">Top-level Functions</h2>
+
+      <h3 id="handler-fn">handler()</h3>
+
+<pre class="codebox">
+namespace event {
+
+<a href="#Handler">HandlerPtr</a> <strong>handler</strong>(<a href="http://en.cppreference.com/w/cpp/utility/functional/function">std::function</a>&lt;<a href="../../base/result.h/#Result">base::Result</a>(<a href="../data.h/#Data">Data</a>)&gt; f);
+
+template &lt;typename Function, typename... Args&gt;
+<a href="#Handler">HandlerPtr</a> <strong>handler</strong>(Function&amp;&amp; f, Args&amp;&amp;... args);
+
+}
+</pre>
+
+      <p>STABLE. Allocates and constructs a new <code>event::Handler</code>
+      value. The first variant accepts a <code>std::function</code> object;
+      the second variant captures the given functor and arguments, which may
+      be of move-only types.</p>
+    </section>
+    <hr>
+    <section>
+      <h2 id="Handler">Handler</h2>
+
+<pre class="codebox">
+namespace event {
+
+class <strong>Handler</strong> {
+ public:
+  virtual ~Handler() noexcept = default;
+  virtual <a href="../../base/result.h/#Result">base::Result</a> <a href="#Handler-run">run</a>(<a href="../data.h/#Data">Data</a> data) const = 0;
+
+  <s>Handler(const Handler&amp;) = delete;</s>
+  <s>Handler(Handler&amp;&amp;) = delete;</s>
+  <s>Handler&amp; operator=(const Handler&amp;) = delete;</s>
+  <s>Handler&amp; operator=(Handler&amp;&amp;) = delete;</s>
+};
+
+using <strong>HandlerPtr</strong> = <a href="http://en.cppreference.com/w/cpp/memory/shared_ptr">std::shared_ptr</a>&lt;Handler&gt;;
+
+}
+</pre>
+
+      <p>STABLE. <code>event::Handler</code> is an abstract base class for
+      multi-shot callbacks having the function signature
+      <code>base::Result(event::Data)</code>. Handlers are typically invoked
+      in response to asynchronous events, often on a different thread from
+      that of the main application.</p>
+
+      <h3 id="Handler-run">Handler::run()</h3>
+
+      <p>Invokes the handler. May be called more than once.</p>
     </section>
   </article>
 
