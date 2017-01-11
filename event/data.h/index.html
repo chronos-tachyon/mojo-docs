@@ -29,7 +29,43 @@
     </div>
 
     <section>
-      <p>TODO: fill this in.</p>
+      <h2 id="Data">Data</h2>
+
+<pre class="codebox">
+namespace event {
+
+struct Data {
+  <a href="../../base/token.h/#token_t">base::token_t</a> <a href="#Data-token">token</a>;
+  int <a href="#Data-fd">fd</a>;
+  int <a href="#Data-signal_number">signal_number</a>;
+  int <a href="#Data-signal_code">signal_code</a>;
+  int <a href="#Data-int_value">int_value</a>;
+  int <a href="#Data-wait_status">wait_status</a>;
+  int32_t <a href="#Data-pid">pid</a>;
+  int32_t <a href="#Data-uid">uid</a>;
+  <a href="../set.h/#Set">Set</a> <a href="#Data-events">events</a>;
+
+  <a href="#Data-ctor">Data</a>() noexcept;
+  <a href="#Data-ctor">Data</a>(const Data&amp;) noexcept;
+  <a href="#Data-ctor">Data</a>(Data&amp;&amp;) noexcept;
+  Data&amp; <a href="#Data-opeq">operator=</a>(const Data&amp;) noexcept;
+  Data&amp; <a href="#Data-opeq">operator=</a>(Data&amp;&amp;) noexcept;
+};
+
+}
+</pre>
+
+      <h3 id="Data-token">Data::token</h3>
+      <h3 id="Data-fd">Data::fd</h3>
+      <h3 id="Data-signal_number">Data::signal_number</h3>
+      <h3 id="Data-signal_code">Data::signal_code</h3>
+      <h3 id="Data-int_value">Data::int_value</h3>
+      <h3 id="Data-wait_status">Data::wait_status</h3>
+      <h3 id="Data-pid">Data::pid</h3>
+      <h3 id="Data-uid">Data::uid</h3>
+      <h3 id="Data-events">Data::events</h3>
+      <h3 id="Data-ctor">Data::Data()</h3>
+      <h3 id="Data-opeq">Data::operator=()</h3>
     </section>
   </article>
 
