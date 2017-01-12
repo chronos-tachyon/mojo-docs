@@ -45,6 +45,101 @@ namespace event {
     </section>
     <hr>
     <section>
+      <h2 id="Poller">Poller</h2>
+
+<pre class="codebox">
+namespace event {
+
+class <strong>Poller</strong> {
+ public:
+  using Event = <a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a>&lt;<a href="../../base/token.h/#token_t">base::token_t</a>, <a href="../set.h/#Set">Set</a>&gt;;
+  using EventVec = <a href="http://en.cppreference.com/w/cpp/container/vector">std::vector</a>&lt;Event&gt;;
+
+  virtual ~Poller() noexcept = default;
+  virtual <a href="#PollerType">PollerType</a> <a href="#Poller-type">type</a>() const noexcept = 0;
+  virtual <a href="../../base/result.h/#Result">base::Result</a> <a href="#Poller-add">add</a>(<a href="../../base/fd.h/#FDHolder">base::FD</a> fd, <a href="../../base/token.h/#token_t">base::token_t</a> t, <a href="../set.h/#Set">Set</a> set) = 0;
+  virtual <a href="../../base/result.h/#Result">base::Result</a> <a href="#Poller-modify">modify</a>(<a href="../../base/fd.h/#FDHolder">base::FD</a> fd, <a href="../../base/token.h/#token_t">base::token_t</a> t, <a href="../set.h/#Set">Set</a> set) = 0;
+  virtual <a href="../../base/result.h/#Result">base::Result</a> <a href="#Poller-remove">remove</a>(<a href="../../base/fd.h/#FDHolder">base::FD</a> fd) = 0;
+  virtual <a href="../../base/result.h/#Result">base::Result</a> <a href="#Poller-wait">wait</a>(EventVec* out, int timeout_ms) const = 0;
+
+  <s>Poller(const Poller&amp;) = delete;</s>
+  <s>Poller(Poller&amp;&amp;) = delete;</s>
+  <s>Poller&amp; operator=(const Poller&amp;) = delete;</s>
+  <s>Poller&amp; operator=(Poller&amp;&amp;) = delete;</s>
+};
+
+using PollerPtr = <a href="http://en.cppreference.com/w/cpp/memory/shared_ptr">std::shared_ptr</a>&lt;Poller&gt;;
+
+}
+</pre>
+
+      <p>RC. Poller is an abstract base class for I/O polling mechanisms.</p>
+
+      <p>Poller is a little low-level for most people's tastes;
+      <a href="../manager.h/#Manager"><code>event::Manager</code></a> provides
+      a higher-level interface with much more extensive multiplexing
+      support.</p>
+
+      <h3 id="Poller-type">Poller::type()</h3>
+
+      <p>Returns an enum value indicating which of the possible Poller
+      implementations this Poller is an instance of.</p>
+
+      <h3 id="Poller-add">Poller::add()</h3>
+
+      <p>Registers a file descriptor and a set of events. If an event occurs
+      on the file descriptor <code>fd</code>, then the next call to
+      <code>wait()</code> will populate its <code>EventVec*</code> argument
+      with <code>{t,&nbsp;set&nbsp;&amp;&nbsp;ev}</code>, where
+      <code>ev</code> is the set of events that actually occurred on
+      <code>fd</code>.</p>
+
+      <p>Compare to <code>epoll_ctl(EPOLL_CTL_ADD)</code>.</p>
+
+      <h3 id="Poller-modify">Poller::modify()</h3>
+
+      <p>Modifies the registration for a file descriptor that was already
+      registered via <code>add()</code>. Changes may be made to the token, to
+      the set of interesting events, or to both.</p>
+
+      <p>Compare to <code>epoll_ctl(EPOLL_CTL_MOD)</code>.</p>
+
+      <h3 id="Poller-remove">Poller::remove()</h3>
+
+      <p>Removes the registration for a file descriptor that was previously
+      registered via <code>add()</code>.</p>
+
+      <p>Compare to <code>epoll_ctl(EPOLL_CTL_DEL)</code>.</p>
+
+      <h3 id="Poller-wait">Poller::wait()</h3>
+
+      <p>Waits for events to arrive on file descriptors.</p>
+
+      <ul>
+        <li>
+          If <code>timeout_ms &lt; 0</code>,
+          blocks indefinitely until an event comes in.
+        </li>
+        <li>
+          If <code>timeout_ms &gt; 0</code>,
+          blocks for at most the specified number of milliseconds.
+        </li>
+        <li>
+          If <code>timeout_ms == 0</code>, does not block.
+        </li>
+      </ul>
+
+      <p>Upon return, the pending events (if any) have been appended to
+      <code>out</code>, in the form of <code>{token, eventset}</code>
+      pairs.</p>
+
+      <p><strong>NOTE</strong>: <code>out</code> is not cleared by this
+      function before appending events.</p>
+
+      <p>Compare to <code>epoll_wait()</code>.</p>
+    </section>
+    <hr>
+    <section>
       <h2 id="PollerType">PollerType</h2>
 
 <pre class="codebox">
@@ -145,101 +240,6 @@ class <strong>PollerOptions</strong> {
       <h3 id="PollerOptions-set_type">PollerOptions::set_type()</h3>
 
       <p>Configures the <code>PollerType</code>.</p>
-    </section>
-    <hr>
-    <section>
-      <h2 id="Poller">Poller</h2>
-
-<pre class="codebox">
-namespace event {
-
-class <strong>Poller</strong> {
- public:
-  using Event = <a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a>&lt;<a href="../../base/token.h/#token_t">base::token_t</a>, <a href="../set.h/#Set">Set</a>&gt;;
-  using EventVec = <a href="http://en.cppreference.com/w/cpp/container/vector">std::vector</a>&lt;Event&gt;;
-
-  virtual ~Poller() noexcept = default;
-  virtual <a href="#PollerType">PollerType</a> <a href="#Poller-type">type</a>() const noexcept = 0;
-  virtual <a href="../../base/result.h/#Result">base::Result</a> <a href="#Poller-add">add</a>(<a href="../../base/fd.h/#FDHolder">base::FD</a> fd, <a href="../../base/token.h/#token_t">base::token_t</a> t, Set set) = 0;
-  virtual <a href="../../base/result.h/#Result">base::Result</a> <a href="#Poller-modify">modify</a>(<a href="../../base/fd.h/#FDHolder">base::FD</a> fd, <a href="../../base/token.h/#token_t">base::token_t</a> t, Set set) = 0;
-  virtual <a href="../../base/result.h/#Result">base::Result</a> <a href="#Poller-remove">remove</a>(<a href="../../base/fd.h/#FDHolder">base::FD</a> fd) = 0;
-  virtual <a href="../../base/result.h/#Result">base::Result</a> <a href="#Poller-wait">wait</a>(EventVec* out, int timeout_ms) const = 0;
-
-  <s>Poller(const Poller&amp;) = delete;</s>
-  <s>Poller(Poller&amp;&amp;) = delete;</s>
-  <s>Poller&amp; operator=(const Poller&amp;) = delete;</s>
-  <s>Poller&amp; operator=(Poller&amp;&amp;) = delete;</s>
-};
-
-using PollerPtr = <a href="http://en.cppreference.com/w/cpp/memory/shared_ptr">std::shared_ptr</a>&lt;Poller&gt;;
-
-}
-</pre>
-
-      <p>RC. Poller is an abstract base class for I/O polling mechanisms.</p>
-
-      <p>Poller is a little low-level for most people's tastes;
-      <a href="../manager.h/#Manager"><code>event::Manager</code></a> provides
-      a higher-level interface with much more extensive multiplexing
-      support.</p>
-
-      <h3 id="Poller-type">Poller::type()</h3>
-
-      <p>Returns an enum value indicating which of the possible Poller
-      implementations this Poller is an instance of.</p>
-
-      <h3 id="Poller-add">Poller::add()</h3>
-
-      <p>Registers a file descriptor and a set of events. If an event occurs
-      on the file descriptor <code>fd</code>, then the next call to
-      <code>wait()</code> will populate its <code>EventVec*</code> argument
-      with <code>{t,&nbsp;set&nbsp;&amp;&nbsp;ev}</code>, where
-      <code>ev</code> is the set of events that actually occurred on
-      <code>fd</code>.</p>
-
-      <p>Compare to <code>epoll_ctl(EPOLL_CTL_ADD)</code>.</p>
-
-      <h3 id="Poller-modify">Poller::modify()</h3>
-
-      <p>Modifies the registration for a file descriptor that was already
-      registered via <code>add()</code>. Changes may be made to the token, to
-      the set of interesting events, or to both.</p>
-
-      <p>Compare to <code>epoll_ctl(EPOLL_CTL_MOD)</code>.</p>
-
-      <h3 id="Poller-remove">Poller::remove()</h3>
-
-      <p>Removes the registration for a file descriptor that was previously
-      registered via <code>add()</code>.</p>
-
-      <p>Compare to <code>epoll_ctl(EPOLL_CTL_DEL)</code>.</p>
-
-      <h3 id="Poller-wait">Poller::wait()</h3>
-
-      <p>Waits for events to arrive on file descriptors.</p>
-
-      <ul>
-        <li>
-          If <code>timeout_ms &lt; 0</code>,
-          blocks indefinitely until an event comes in.
-        </li>
-        <li>
-          If <code>timeout_ms &gt; 0</code>,
-          blocks for at most the specified number of milliseconds.
-        </li>
-        <li>
-          If <code>timeout_ms == 0</code>, does not block.
-        </li>
-      </ul>
-
-      <p>Upon return, the pending events (if any) have been appended to
-      <code>out</code>, in the form of <code>{token, eventset}</code>
-      pairs.</p>
-
-      <p><strong>NOTE</strong>: <code>out</code> is not cleared by this
-      function before appending events.</p>
-
-      <p>Compare to <code>epoll_wait()</code>.</p>
     </section>
   </article>
 
