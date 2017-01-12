@@ -24,72 +24,22 @@
     <code>event::Manager</code> API.</p>
 
     <p><strong>NOTE</strong>: These APIs are frequently used with
-    <a href="/io/">the I/O APIs</a>.</p>
+    <a href="../io/">the I/O APIs</a>.</p>
 
     <div id="toc">
       Waiting on JavaScript...
     </div>
 
     <section>
-      <h2 id="callback.h">event/callback.h</h2>
-      <h2 id="task.h">event/task.h</h2>
-      <h2 id="dispatcher.h">event/dispatcher.h</h2>
-
-      <p>RC.  Defines the following:</p>
+      <h2 id="managing">Managing Events</h2>
 
       <ul>
-        <li><code>event::Callback</code>, a base class for oneshot callback functions;</li>
-        <li><code>event::Task</code>, a class that allows observers to watch an operation; and</li>
-        <li><code>event::Dispatcher</code>, a base class for running callbacks.</li>
+        <li><a href="data.h/">event/data.h</a></li>
+        <li><a href="handler.h/">event/handler.h</a></li>
+        <li><a href="manager.h/">event/manager.h</a></li>
       </ul>
 
-      <p>Three basic models of <code>event::Dispatcher</code> are provided:
-      <strong>inline</strong> dispatchers run their callbacks immediately;
-      <strong>async</strong> dispatchers defer their callbacks until the next
-      turn of the event loop; and <strong>threaded</strong> dispatchers run
-      their callbacks ASAP on a thread pool.</p>
-
-      <p>Quick example:</p>
-
-<pre class="codebox">
-// Create a new asynchronous dispatcher.
-event::DispatcherPtr dispatcher;
-event::DispatcherOptions do;
-do.set_type(event::DispatcherType::async_dispatcher);
-CHECK_OK(event::new_dispatcher(&amp;dispatcher, do));
-
-// Start an asynchronous operation.
-event::Task task;
-operation(&amp;task, dispatcher);
-
-// Schedules an action to run when the operation completes.
-bool done = false;
-task-&gt;on_finish(event::callback([&amp;task, &amp;done] {
-  CHECK_OK(task.result());
-  done = true;
-  return base::Result();
-});
-
-// Spin the event loop.
-while (!done) dispatcher-&gt;donate(false);
-</pre>
-    </section>
-
-    <section>
-      <h2 id="set.h">event/set.h</h2>
-      <h2 id="poller.h">event/poller.h</h2>
-
-      <p>RC.  Provides <code>event::Poller</code>, a base class that abstracts
-      over event polling techniques, and helper class <code>event::Set</code>,
-      a value type representing a set of events.</p>
-    </section>
-
-    <section>
-      <h2 id="data.h">event/data.h</h2>
-      <h2 id="handler.h">event/handler.h</h2>
-      <h2 id="manager.h">event/manager.h</h2>
-
-      <p>RC.  Defines the following:</p>
+      <p>Provides the following:</p>
 
       <ul>
         <li><code>event::Data</code>, an aggregate struct containing data about an event;</li>
@@ -135,6 +85,60 @@ CHECK_OK(m.fd(&amp;evt, fd, event::Set::all_bits(), event::handler(closure)));
 // Spin the event loop.
 while (!done) m.donate(false);
 </pre>
+    </section>
+    <hr>
+    <section>
+      <h2 id="callbacks">Running Callbacks</h2>
+
+      <ul>
+        <li><a href="callback.h/">event/callback.h</a></li>
+        <li><a href="dispatcher.h/">event/dispatcher.h</a></li>
+        <li><a href="task.h/">event/task.h</a></li>
+      </ul>
+
+      <p>Provides <code>event::Callback</code>, an abstract base class for
+      one-shot callback functions, as well as <code>event::Dispatcher</code>,
+      an interface for queueing and running those callbacks asynchronously.
+      Also provides <code>event::Task</code>, a class that allows a consumer
+      and a producer to asynchronously interact.</p>
+
+      <p>Quick example:</p>
+
+<pre class="codebox">
+// Create a new asynchronous d.
+event::DispatcherPtr d;
+event::DispatcherOptions do;
+do.set_type(event::DispatcherType::async_dispatcher);
+CHECK_OK(event::new_dispatcher(&amp;d, do));
+
+// Start an asynchronous operation.
+event::Task task;
+operation(&amp;task, d);
+
+// Schedules an action to run when the operation completes.
+bool done = false;
+task-&gt;on_finish(event::callback([&amp;task, &amp;done] {
+  CHECK_OK(task.result());
+  done = true;
+  return base::Result();
+});
+
+// Spin the event loop.
+while (!done) d-&gt;donate(false);
+</pre>
+    </section>
+    <hr>
+    <section>
+      <h2 id="polling">Event Polling</h2>
+
+      <ul>
+        <li><a href="set.h/">event/set.h</a></li>
+        <li><a href="poller.h/">event/poller.h</a></li>
+      </ul>
+
+      <p>Provides <code>event::Poller</code>, an interface that abstracts over
+      event polling techniques, as well as <code>event::Set</code>, a value
+      type representing a set of events.</p>
     </section>
   </article>
 
