@@ -81,6 +81,10 @@ using <strong>HandlerPtr</strong> = <a href="http://en.cppreference.com/w/cpp/me
       <h3 id="Handler-run">Handler::run()</h3>
 
       <p>Invokes the handler. May be called more than once.</p>
+
+      <p><strong>CAUTION</strong>: Depending on the flavor of
+      <code>event::Manager</code> in use, implementations of this method
+      should be prepared to be called concurrently from multiple threads.</p>
     </section>
   </article>
 
