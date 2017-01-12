@@ -29,7 +29,466 @@
     </div>
 
     <section>
-      <p>TODO: fill this in.</p>
+      <h2 id="TaskState">TaskState</h2>
+
+<pre class="codebox">
+namespace event {
+
+enum class <strong>TaskState</strong> : uint8_t {
+  <a href="#TaskState-ready">ready</a> = 0,
+  <a href="#TaskState-running">running</a> = 1,
+  <a href="#TaskState-expiring">expiring</a> = 2,
+  <a href="#TaskState-cancelling">cancelling</a> = 3,
+  <a href="#TaskState-unstarted">unstarted</a> = 4,
+  <a href="#TaskState-done">done</a> = 5,
+};
+
+}
+</pre>
+
+      <h3 id="TaskState-ready">TaskState::ready</h3>
+
+      <p>The Task has not yet started.</p>
+
+      <p>NEXT STATES:</p>
+      <ul>
+        <li>
+          <a href="#TaskState-running"><code>running</code></a>: producer
+          calls <a href="#Task-start"><code>start()</code></a>
+        </li>
+        <li>
+          <a href="#TaskState-unstarted"><code>unstarted</code></a>: consumer
+          calls <a href="#Task-expire"><code>expire()</code></a> or
+          <a href="#Task-cancel"><code>cancel()</code></a>
+        </li>
+      </ul>
+
+      <h3 id="TaskState-running">TaskState::running</h3>
+
+      <p>The Task is currently running, its deadline has not expired, and it
+      has not been cancelled.</p>
+
+      <p>NEXT STATES:</p>
+      <ul>
+        <li>
+          <a href="#TaskState-expiring"><code>expiring</code></a>: consumer
+          calls <a href="#Task-expire"><code>expire()</code></a>
+        </li>
+        <li>
+          <a href="#TaskState-cancelling"><code>cancelling</code></a>:
+          consumer calls <a href="#Task-cancel"><code>cancel()</code></a>
+        </li>
+        <li>
+          <a href="#TaskState-done"><code>done</code></a>: producer calls any
+          method from the <a href="#Task-finish"><code>finish()</code></a>
+          family
+        </li>
+      </ul>
+
+      <h3 id="TaskState-expiring">TaskState::expiring</h3>
+
+      <p>The Task is currently running, but it has exceeded its deadline. It
+      SHOULD acknowledge the expiration, but it MAY run to completion.</p>
+
+      <p>NEXT STATES:</p>
+      <ul>
+        <li>
+          <a href="#TaskState-cancelling"><code>cancelling</code></a>:
+          consumer calls <a href="#Task-cancel"><code>cancel()</code></a>
+        </li>
+        <li>
+          <a href="#TaskState-done"><code>done</code></a>: producer calls any
+          method from the <a href="#Task-finish"><code>finish()</code></a>
+          family
+        </li>
+      </ul>
+
+      <h3 id="TaskState-cancelling">TaskState::cancelling</h3>
+
+      <p>The Task is currently running, but it has been cancelled. It SHOULD
+      acknowledge the cancellation, but it MAY run to completion.</p>
+
+      <p>NEXT STATES:</p>
+      <ul>
+        <li>
+          <a href="#TaskState-done"><code>done</code></a>: producer calls any
+          method from the <a href="#Task-finish"><code>finish()</code></a>
+          family
+        </li>
+      </ul>
+
+      <h3 id="TaskState-unstarted">TaskState::unstarted</h3>
+
+      <p>The Task exceeded its deadline or was cancelled before
+      <a href="#Task-start"><code>start()</code></a> could be called.</p>
+
+      <p>NEXT STATES:</p>
+      <ul>
+        <li>
+          <a href="#TaskState-done"><code>done</code></a>: producer calls
+          <a href="#Task-start"><code>start()</code></a>
+        </li>
+      </ul>
+
+      <h3 id="TaskState-done">TaskState::done</h3>
+
+      <p>The Task has completed. This does not mean it was successful: check
+      its outcome with
+      <a href="#Task-result"><code>event::Task::result()</code></a>.</p>
+
+      <p>NEXT STATES: N/A (terminal)</p>
+    </section>
+    <section>
+      <h2 id="Task">Task</h2>
+
+<pre class="codebox">
+namespace event {
+
+class <strong>Task</strong> {
+ public:
+  <a href="#Task-ctor">Task</a>();
+  <a href="#Task-dtor">~Task</a>();
+
+  void <a href="#Task-reset">reset</a>();
+
+  <a href="#TaskState">TaskState</a> <a href="#Task-state">state</a>() const noexcept;
+  bool <a href="#Task-is_running">is_running</a>() const noexcept;
+  bool <a href="#Task-is_finished">is_finished</a>() const noexcept;
+  void <a href="#Task-on_cancelled">on_cancelled</a>(<a href="../dispatcher.h/#Dispatcher">DispatcherPtr</a> <em>/*nullable*/</em> dispatcher,
+                    <a href="../callback.h/#Callback">CallbackPtr</a> callback);
+  void <a href="#Task-on_cancelled">on_cancelled</a>(<a href="../callback.h/#Callback">CallbackPtr</a> callback);
+  void <a href="#Task-on_finished">on_finished</a>(<a href="../dispatcher.h/#Dispatcher">DispatcherPtr</a> <em>/*nullable*/</em> dispatcher,
+                   <a href="../callback.h/#Callback">CallbackPtr</a> callback);
+  void <a href="#Task-on_finished">on_finished</a>(<a href="../callback.h/#Callback">CallbackPtr</a> callback);
+
+  void <a href="#Task-expire">expire</a>() noexcept;
+  void <a href="#Task-cancel">cancel</a>() noexcept;
+  <a href="../../base/result.h/#Result">base::Result</a> <a href="#Task-result">result</a>() const;
+  bool <a href="#Task-result_will_throw">result_will_throw</a>() const noexcept;
+
+  bool <a href="#Task-start">start</a>();
+  void <a href="#Task-add_subtask">add_subtask</a>(Task* task);
+  void <a href="#Task-finish">finish</a>(<a href="../../base/result.h/#Result">base::Result</a> result);
+  void <a href="#Task-finish_ok">finish_ok</a>();
+  void <a href="#Task-finish_cancel">finish_cancel</a>();
+  void <a href="#Task-finish_exception">finish_exception</a>(<a href="http://en.cppreference.com/w/cpp/error/exception_ptr">std::exception_ptr</a> eptr);
+
+  <s>Task(const Task&amp;) = delete;</s>
+  <s>Task(Task&amp;&amp;) = delete;</s>
+  <s>Task&amp; operator=(const Task&amp;) = delete;</s>
+  <s>Task&amp; operator=(Task&amp;&amp;) = delete;</s>
+};
+
+}
+</pre>
+
+      <p>RC. Task is used by asynchronous and/or concurrent functions as an
+      output parameter for returning a base::Result, with the side effect of
+      notifying the caller of completion in the process. Task is commonly used
+      in conjunction with an
+      <a href="../manager.h/#Manager"><code>event::Manager</code></a>.</p>
+
+      <p>Task supports deadlines. Deadlines can be used to abort operations
+      that get stuck waiting on a resource, e.g. because a networked host is
+      down. Task deadlines are strictly advisory: the async operation must
+      check for them. Deadlines are normally enforced by
+      <a href="../manager.h/#Manager-set_deadline"><code>event::Manager::set_deadline()</code></a>.</p>
+
+      <p>Task also supports asynchronous cancellation: the caller can call
+      <a href="#Task-cancel"><code>Task::cancel()</code></a>, and the
+      asynchronous callee can observe this request and cancel the long-running
+      operation. As with deadlines, cancellations are strictly advisory: the
+      async operation must check for them.</p>
+
+      <p>Compare and contrast with C++11's
+      <a href="http://en.cppreference.com/w/cpp/thread/future"><code>std::future</code></a>
+      +
+      <a href="http://en.cppreference.com/w/cpp/thread/promise"><code>std::promise</code></a>:
+      <code>std::future</code> supports arbitrary value types, but has no
+      concept either of deadlines or of cancellation, and does not support
+      callback notifications (only blocking or polling).</p>
+
+      <p><strong>CAUTION</strong>: Consumers must ensure that Tasks are
+      neither destroyed nor <a href="#Task-reset"><code>reset()</code></a>
+      until the respective producers are done with the Task.<br>
+      Effectively, this means limiting oneself to "observer" methods until the
+      Task reaches the <a href="#TaskState-done"><code>done</code></a>
+      state.</p>
+
+      <p><strong>CAUTION</strong>: Producers must ensure that they do not
+      call any methods on a Task that is in the
+      <a href="#TaskState-done"><code>done</code></a> state.<br>
+      This means not touching the Task after
+      <a href="#Task-start"><code>start()</code></a> returns false, nor
+      touching it after calling any method in the
+      <a href="#Task-finish"><code>finish()</code></a> family.</p>
+
+      <h3 id="Task-ctor">Task::Task()</h3>
+
+      <p>Constructs a Task. The only constructor is the default constructor,
+      which places the Task in the
+      <a href="#TaskState-ready"><code>ready</code></a> state.</p>
+
+      <h3 id="Task-dtor">Task::~Task()</h3>
+
+      <p>Destroys a Task.</p>
+
+      <p>PRECONDITION: state is
+      <a href="#TaskState-ready"><code>ready</code></a> or
+      <a href="#TaskState-done"><code>done</code></a></p>
+
+      <h3 id="Task-reset">Task::reset()</h3>
+
+      <p>Returns a finished task to the default-constructed
+      <a href="#TaskState-ready"><code>ready</code></a> state, allowing it to
+      be reused.</p>
+
+      <p>PRECONDITION: state is
+      <a href="#TaskState-ready"><code>ready</code></a> or
+      <a href="#TaskState-done"><code>done</code></a></p>
+
+      <h3 id="observers">Methods for Consumers, Producers, and Observers</h3>
+
+      <h4 id="Task-state">Task::state()</h4>
+
+      <p>Returns an atomic snapshot of the current state of the Task.</p>
+
+      <h4 id="Task-is_running">Task::is_running()</h4>
+
+      <p>Returns true iff the Task is in the
+      <a href="#TaskState-running"><code>running</code></a> state, i.e.
+      it has been started, its deadline has not expired, AND it has not been
+      cancelled.</p>
+
+      <p>Example use:</p>
+
+<pre class="codebox">
+while (!done) {
+  if (!task-&gt;is_running()) {
+    task-&gt;finish_cancel();
+    return;
+  }
+  ...;  // incremental long-running operation
+}
+</pre>
+
+      <h4 id="Task-is_finished">Task::is_finished()</h4>
+
+      <p>Returns true iff the Task is in the terminal state,
+      <a href="#TaskState-done"><code>done</code></a>.</p>
+
+      <h4 id="Task-on_cancelled">Task::on_cancelled()</h4>
+
+      <p>Registers a Callback to execute if the Task reaches the
+      <a href="#TaskState-expiring"><code>expiring</code></a> state, the
+      <a href="#TaskState-cancelling"><code>cancelling</code></a> state, or
+      the <a href="#TaskState-unstarted"><code>unstarted</code></a> /
+      <a href="#TaskState-done"><code>done</code></a> states with a
+      <code>DEADLINE_EXCEEDED</code> or <code>CANCELLED</code> result.</p>
+
+      <ul>
+        <li>
+          If this Task is already in one of those states, then this method
+          will call its argument immediately.
+        </li>
+        <li>
+          If a DispatcherPtr is provided and is not <code>NULL</code>, then
+          the callback will be scheduled on the provided
+          <a href="../dispatcher.h/#Dispatcher">Dispatcher</a> instead of
+          being called directly.
+        </li>
+      </ul>
+
+      <h4 id="Task-on_finished">Task::on_finished()</h4>
+
+      <p>Registers a Callback to execute when the Task reaches the
+      <a href="#TaskState-done"><code>done</code></a> state.</p>
+
+      <ul>
+        <li>
+          If this Task is already in the <code>done</code> state, then this
+          method will call its argument immediately.
+        </li>
+        <li>
+          If a DispatcherPtr is provided and is not <code>NULL</code>, then
+          the callback will be scheduled on the provided
+          <a href="../dispatcher.h/#Dispatcher">Dispatcher</a> instead of
+          being called directly.
+        </li>
+      </ul>
+
+      <h3 id="consumers">Methods for Consumers</h3>
+
+      <h4 id="Task-expire">Task::expire()</h4>
+
+      <p>Marks the task as having exceeded its deadline.</p>
+
+      <ul>
+        <li>
+          Changes <a href="#TaskState-ready"><code>ready</code></a> to
+          <a href="#TaskState-unstarted"><code>unstarted</code></a> with
+          pending result <code>DEADLINE_EXCEEDED</code>;
+        </li>
+        <li>
+          Changes <a href="#TaskState-running"><code>running</code></a> to
+          <a href="#TaskState-expiring"><code>expiring</code></a>; OR
+        </li>
+        <li>
+          Has no effect otherwise.
+        </li>
+      </ul>
+
+      <p><strong>NOTE</strong>: This method is not normally called directly.
+      Instead, it is normally invoked by
+      <a href="../manager.h/#Manager-set_deadline"><code>event::Manager::set_deadline()</code></a>
+      or
+      <a href="../manager.h/#Manager-set_timeout"><code>event::Manager::set_timeout()</code></a>.</p>
+
+      <h4 id="Task-cancel">Task::cancel()</h4>
+
+      <p>Requests that the Task be cancelled.</p>
+
+      <ul>
+        <li>
+          Changes <a href="#TaskState-ready"><code>ready</code></a> to
+          <a href="#TaskState-unstarted"><code>unstarted</code></a> with
+          pending result <code>CANCELLED</code>;
+        </li>
+        <li>
+          Changes <a href="#TaskState-running"><code>running</code></a> to
+          <a href="#TaskState-cancelling"><code>cancelling</code></a>;
+        </li>
+        <li>
+          Changes <a href="#TaskState-expiring"><code>expiring</code></a> to
+          <a href="#TaskState-cancelling"><code>cancelling</code></a>; OR
+        </li>
+        <li>
+          Has no effect otherwise.
+        </li>
+      </ul>
+
+      <h4 id="Task-result">Task::result()</h4>
+
+      <p>Returns the result of the Task. If the Task finished with an
+      exception, rethrows the exception.</p>
+
+      <p>PRECONDITION: state is
+      <a href="#TaskState-done"><code>done</code></a></p>
+
+      <h4 id="Task-result_will_throw">Task::result_will_throw()</h4>
+
+      <p>Returns true if <code>result()</code> will throw an exception.</p>
+
+      <p>PRECONDITION: state is
+      <a href="#TaskState-done"><code>done</code></a></p>
+
+      <h3 id="producers">Methods for Producers</h3>
+
+      <h4 id="Task-start">Task::start()</h4>
+
+      <p>Marks the Task as started.</p>
+
+      <p>PRECONDITION: state is
+      <a href="#TaskState-ready"><code>ready</code></a> or
+      <a href="#TaskState-unstarted"><code>unstarted</code></a></p>
+
+      <ul>
+        <li>
+          Changes <a href="#TaskState-ready"><code>ready</code></a> to
+          <a href="#TaskState-running"><code>running</code></a> and returns
+          true; OR
+        </li>
+        <li>
+          Changes <a href="#TaskState-unstarted"><code>unstarted</code></a> to
+          <a href="#TaskState-done"><code>done</code></a> and returns false.
+        </li>
+      </ul>
+
+      <h4 id="Task-add_subtask">Task::add_subtask()</h4>
+
+      <p>Registers another Task as a subtask of this Task.</p>
+
+      <p>PRECONDITION: state is
+      <a href="#TaskState-running"><code>running</code></a>,
+      <a href="#TaskState-expiring"><code>expiring</code></a>,
+      <a href="#TaskState-cancelling"><code>cancelling</code></a>, or
+      <a href="#TaskState-done"><code>done</code></a></p>
+
+      <ul>
+        <li>
+          If this Task reaches the
+          <a href="#TaskState-expiring"><code>expiring</code></a>,
+          <a href="#TaskState-cancelling"><code>cancelling</code></a>, or
+          <a href="#TaskState-done"><code>done</code></a> states, then all
+          subtasks will be cancelled.
+        </li>
+        <li>
+          If this Task is already in one of those states, then this method
+          will cancel its argument immediately.
+        </li>
+      </ul>
+
+      <h4 id="Task-finish">Task::finish()</h4>
+
+      <p>Marks the task as finished with a result.</p>
+
+      <p>PRECONDITION: state is
+      <a href="#TaskState-running"><code>running</code></a>,
+      <a href="#TaskState-expiring"><code>expiring</code></a>, or
+      <a href="#TaskState-cancelling"><code>cancelling</code></a></p>
+
+      <ul>
+        <li>
+          Changes <a href="#TaskState-running"><code>running</code></a> to
+          <a href="#TaskState-done"><code>done</code></a>;
+        </li>
+        <li>
+          Changes <a href="#TaskState-expiring"><code>expiring</code></a> to
+          <a href="#TaskState-done"><code>done</code></a>; OR
+        </li>
+        <li>
+          Changes <a href="#TaskState-cancelling"><code>cancelling</code></a>
+          to <a href="#TaskState-done"><code>done</code></a>.
+        </li>
+      </ul>
+
+      <h4 id="Task-finish_ok">Task::finish_ok()</h4>
+
+      <p>Convenience method for finishing with an <code>OK</code> result.</p>
+
+      <p>PRECONDITION: state is
+      <a href="#TaskState-running"><code>running</code></a>,
+      <a href="#TaskState-expiring"><code>expiring</code></a>, or
+      <a href="#TaskState-cancelling"><code>cancelling</code></a></p>
+
+      <h4 id="Task-finish_cancel">Task::finish_cancel()</h4>
+
+      <p>Convenience method for finishing with a
+      <code>DEADLINE_EXCEEDED</code> or a <code>CANCELLED</code> result:</p>
+      <ul>
+        <li>
+          If the state is
+          <a href="#TaskState-expiring"><code>expiring</code></a>, finishes
+          with <code>DEADLINE_EXCEEDED</code>;
+        </li>
+        <li>
+          Otherwise, finishes with <code>CANCELLED</code>.
+        </li>
+      </ul>
+
+      <p>PRECONDITION: state is
+      <a href="#TaskState-running"><code>running</code></a>,
+      <a href="#TaskState-expiring"><code>expiring</code></a>, or
+      <a href="#TaskState-cancelling"><code>cancelling</code></a></p>
+
+      <h4 id="Task-finish_exception">Task::finish_exception()</h4>
+
+      <p>Marks the task as finished with an exception.</p>
+
+      <p>PRECONDITION: state is
+      <a href="#TaskState-running"><code>running</code></a>,
+      <a href="#TaskState-expiring"><code>expiring</code></a>, or
+      <a href="#TaskState-cancelling"><code>cancelling</code></a></p>
     </section>
   </article>
 
