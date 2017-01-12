@@ -29,7 +29,224 @@
     </div>
 
     <section>
+      <h2 id="functions">Top-level Functions</h2>
+
+      <h3 id="new_manager">new_manager()</h3>
+
       <p>TODO: fill this in.</p>
+
+      <h3 id="set_system_manager">set_system_manager()</h3>
+
+      <p>TODO: fill this in.</p>
+
+      <h3 id="wait_n">wait_n()</h3>
+
+      <p>TODO: fill this in.</p>
+
+      <h3 id="wait_any">wait_any()</h3>
+
+      <p>TODO: fill this in.</p>
+
+      <h3 id="wait_all">wait_all()</h3>
+
+      <p>TODO: fill this in.</p>
+
+      <h3 id="wait">wait()</h3>
+
+      <p>TODO: fill this in.</p>
+    </section>
+    <hr>
+    <section>
+      <h2 id="Manager">Manager</h2>
+
+<pre class="codebox">
+namespace event {
+
+class <strong>Manager</strong> {
+ public:
+  <a href="#Manager-ctor">Manager</a>() noexcept;
+  <a href="#Manager-ctor">Manager</a>(const Manager&amp;) noexcept;
+  <a href="#Manager-ctor">Manager</a>(Manager&amp;&amp;) noexcept;
+  Manager&amp; <a href="#Manager-opeq">operator=</a>(const Manager&amp;) noexcept;
+  Manager&amp; <a href="#Manager-opeq">operator=</a>(Manager&amp;&amp;) noexcept;
+
+  void <a href="#Manager-reset">reset</a>() noexcept;
+  void <a href="#Manager-swap">swap</a>(Manager&amp; x) noexcept;
+
+  <a href="#Manager-opbool">explicit operator bool</a>() const noexcept;
+  void <a href="#Manager-assert_valid">assert_valid</a>() const noexcept;
+  Manager <a href="#Manager-or_system_manager">or_system_manager</a>() const;
+
+  PollerPtr <a href="#Manager-poller">poller</a>() const noexcept;
+  DispatcherPtr <a href="#Manager-dispatcher">dispatcher</a>() const noexcept;
+
+  void <a href="#Manager-dispatch">dispatch</a>(Task* <em>/*nullable*/</em> task,
+                CallbackPtr callback) const;
+  void <a href="#Manager-dispatch">dispatch</a>(CallbackPtr callback) const;
+  void <a href="#Manager-dispose">dispose</a>(CallbackPtr finalizer) const;
+  template &lt;typename T&gt; void <a href="#Manager-dispose">dispose</a>(T* ptr) const;
+
+  <a href="../../base/result.h/#Result">base::Result</a> <a href="#Manager-fd">fd</a>(Handle* out, base::FD fd, Set set, HandlerPtr handler) const;
+  <a href="../../base/result.h/#Result">base::Result</a> <a href="#Manager-signal">signal</a>(Handle* out, int signo, HandlerPtr handler) const;
+  <a href="../../base/result.h/#Result">base::Result</a> <a href="#Manager-timer">timer</a>(Handle* out, HandlerPtr handler) const;
+  <a href="../../base/result.h/#Result">base::Result</a> <a href="#Manager-generic">generic</a>(Handle* out, HandlerPtr handler) const;
+
+  <a href="../../base/result.h/#Result">base::Result</a> <a href="#Manager-set_deadline">set_deadline</a>(Task* task, base::MonotonicTime at);
+  <a href="../../base/result.h/#Result">base::Result</a> <a href="#Manager-set_deadline">set_deadline</a>(Task* task, base::Time at);
+  <a href="../../base/result.h/#Result">base::Result</a> <a href="#Manager-set_timeout">set_timeout</a>(Task* task, base::Duration delay);
+
+  void <a href="#Manager-donate">donate</a>(bool forever) const noexcept;
+  void <a href="#Manager-shutdown">shutdown</a>() const noexcept;
+};
+
+}
+</pre>
+
+      <p>TODO: fill this in.</p>
+
+      <h3 id="Manager-ctor">Manager::Manager()</h3>
+      <h3 id="Manager-opeq">Manager::operator=()</h3>
+      <h3 id="Manager-reset">Manager::reset()</h3>
+      <h3 id="Manager-swap">Manager::swap()</h3>
+      <h3 id="Manager-opbool">Manager::operator bool()</h3>
+      <h3 id="Manager-assert_valid">Manager::assert_valid()</h3>
+      <h3 id="Manager-or_system_manager">Manager::or_system_manager()</h3>
+      <h3 id="Manager-poller">Manager::poller()</h3>
+      <h3 id="Manager-dispatcher">Manager::dispatcher()</h3>
+      <h3 id="Manager-donate">Manager::donate()</h3>
+      <h3 id="Manager-shutdown">Manager::shutdown()</h3>
+      <h3 id="convenience">Convenience Methods</h3>
+      <h4 id="Manager-dispatch">Manager::dispatch()</h4>
+      <h4 id="Manager-dispose">Manager::dispose()</h4>
+      <h3 id="registration">Event Registration</h3>
+      <h4 id="Manager-fd">Manager::fd()</h4>
+      <h4 id="Manager-signal">Manager::signal()</h4>
+      <h4 id="Manager-timer">Manager::timer()</h4>
+      <h4 id="Manager-generic">Manager::generic()</h4>
+      <h3 id="deadlines">Task Deadlines</h3>
+      <h4 id="Manager-set_deadline">Manager::set_deadline()</h4>
+      <h4 id="Manager-set_timeout">Manager::set_timeout()</h4>
+    </section>
+    <hr>
+    <section>
+      <h2 id="ManagerOptions">ManagerOptions</h2>
+
+<pre class="codebox">
+namespace event {
+
+class <strong>ManagerOptions</strong> {
+ public:
+  <a href="#ManagerOptions-ctor">ManagerOptions</a>() noexcept;
+  <a href="#ManagerOptions-ctor">ManagerOptions</a>(const ManagerOptions&amp;);
+  <a href="#ManagerOptions-ctor">ManagerOptions</a>(ManagerOptions&amp;&amp;);
+  ManagerOptions&amp; <a href="#ManagerOptions-opeq">operator=</a>(const ManagerOptions&amp;);
+  ManagerOptions&amp; <a href="#ManagerOptions-opeq">operator=</a>(ManagerOptions&amp;&amp;);
+
+  void <a href="#ManagerOptions-reset">reset</a>();
+
+  const <a href="../poller.h/#PollerOptions">PollerOptions</a>&amp; <a href="#ManagerOptions-poller">poller</a>() const noexcept;
+  <a href="../poller.h/#PollerOptions">PollerOptions</a>&amp; <a href="#ManagerOptions-poller">poller</a>() noexcept;
+
+  const <a href="../dispatcher.h/#DispatcherOptions">DispatcherOptions</a>&amp; <a href="#ManagerOptions-dispatcher">dispatcher</a>() const noexcept;
+  <a href="../dispatcher.h/#DispatcherOptions">DispatcherOptions</a>&amp; <a href="#ManagerOptions-dispatcher">dispatcher</a>() noexcept;
+
+  <a href="http://en.cppreference.com/w/cpp/utility/pair">std::pair</a>&lt;bool, std::size_t&gt; <a href="#ManagerOptions-num_pollers">num_pollers</a>() const;
+  void <a href="#ManagerOptions-reset_num_pollers">reset_num_pollers</a>() noexcept;
+  void <a href="#ManagerOptions-set_num_pollers">set_num_pollers</a>(std::size_t num) noexcept;
+
+  void <a href="#ManagerOptions-set_inline_mode">set_inline_mode</a>() noexcept;
+  void <a href="#ManagerOptions-set_async_mode">set_async_mode</a>() noexcept;
+  void <a href="#ManagerOptions-set_minimal_threaded_mode">set_minimal_threaded_mode</a>() noexcept;
+  void <a href="#ManagerOptions-set_threaded_mode">set_threaded_mode</a>() noexcept;
+};
+
+}
+</pre>
+
+      <p>TODO: fill this in.</p>
+
+      <h3 id="ManagerOptions-ctor">ManagerOptions::ManagerOptions()</h3>
+      <h3 id="ManagerOptions-opeq">ManagerOptions::operator=()</h3>
+      <h3 id="ManagerOptions-reset">ManagerOptions::reset()</h3>
+      <h3 id="knobs">Knobs</h3>
+      <h4 id="ManagerOptions-poller">ManagerOptions::poller()</h4>
+      <h4 id="ManagerOptions-dispatcher">ManagerOptions::dispatcher()</h4>
+      <h4 id="ManagerOptions-num_pollers">ManagerOptions::num_pollers()</h4>
+      <h4 id="ManagerOptions-reset_num_pollers">ManagerOptions::reset_num_pollers()</h4>
+      <h4 id="ManagerOptions-set_num_pollers">ManagerOptions::set_num_pollers()</h4>
+      <h3 id="modes">Composite Modes</h3>
+      <h4 id="ManagerOptions-set_inline_mode">ManagerOptions::set_inline_mode()</h4>
+      <h4 id="ManagerOptions-set_async_mode">ManagerOptions::set_async_mode()</h4>
+      <h4 id="ManagerOptions-set_minimal_threaded_mode">ManagerOptions::set_minimal_threaded_mode()</h4>
+      <h4 id="ManagerOptions-set_threaded_mode">ManagerOptions::set_threaded_mode()</h4>
+    </section>
+    <hr>
+    <section>
+      <h2 id="Handle">Handle</h2>
+
+<pre class="codebox">
+namespace event {
+
+class <strong>Handle</strong> {
+ public:
+  <a href="#Handle-ctor">Handle</a>() noexcept = default;
+  <a href="#Handle-ctor">Handle</a>(Handle&amp;&amp;) noexcept = default;
+  Handle&amp; <a href="#Handle-opeq">operator=</a>(Handle&amp;&amp;) noexcept = default;
+
+  void <a href="#Handle-swap">swap</a>(Handle&amp; x) noexcept;
+
+  <a href="#Handle-opbool">explicit operator bool</a>() const noexcept;
+  void <a href="#Handle-assert_valid">assert_valid</a>() const;
+
+  <a href="../../base/result.h/#Result">base::Result</a> <a href="#Handle-get">get</a>(<a href="../set.h/#Set">Set</a>* out) const;
+
+  <a href="../../base/result.h/#Result">base::Result</a> <a href="#Handle-modify">modify</a>(<a href="../set.h/#Set">Set</a> set);
+
+  <a href="../../base/result.h/#Result">base::Result</a> <a href="#Handle-set_at">set_at</a>(<a href="../../base/time.h/#MonotonicTime">base::MonotonicTime</a> at);
+  <a href="../../base/result.h/#Result">base::Result</a> <a href="#Handle-set_at">set_at</a>(<a href="../../base/time.h/#Time">base::Time</a> at);
+  <a href="../../base/result.h/#Result">base::Result</a> <a href="#Handle-set_delay">set_delay</a>(<a href="../../base/duration.h/#Duration">base::Duration</a> delay);
+  <a href="../../base/result.h/#Result">base::Result</a> <a href="#Handle-set_periodic">set_periodic</a>(<a href="../../base/duration.h/#Duration">base::Duration</a> period);
+  <a href="../../base/result.h/#Result">base::Result</a> <a href="#Handle-set_periodic_at">set_periodic_at</a>(<a href="../../base/duration.h/#Duration">base::Duration</a> period, <a href="../../base/time.h/#MonotonicTime">base::MonotonicTime</a> at);
+  <a href="../../base/result.h/#Result">base::Result</a> <a href="#Handle-set_periodic_at">set_periodic_at</a>(<a href="../../base/duration.h/#Duration">base::Duration</a> period, <a href="../../base/time.h/#Time">base::Time</a> at);
+  <a href="../../base/result.h/#Result">base::Result</a> <a href="#Handle-set_periodic_delay">set_periodic_delay</a>(<a href="../../base/duration.h/#Duration">base::Duration</a> period, base::Duration delay);
+  <a href="../../base/result.h/#Result">base::Result</a> <a href="#Handle-cancel">cancel</a>();
+
+  <a href="../../base/result.h/#Result">base::Result</a> <a href="#Handle-fire">fire</a>(int value = 0) const;
+
+  <a href="../../base/result.h/#Result">base::Result</a> <a href="#Handle-disable">disable</a>();
+  void <a href="#Handle-wait">wait</a>();
+  void <a href="#Handle-disown">disown</a>();
+  <a href="../../base/result.h/#Result">base::Result</a> <a href="#Handle-release">release</a>();
+
+  <s>Handle(const Handle&amp;) = delete;</s>
+  <s>Handle&amp; operator=(const Handle&amp;) = delete;</s>
+}
+</pre>
+
+      <p>TODO: fill this in.</p>
+
+      <h3 id="Handle-ctor">Handle::Handle()</h3>
+      <h3 id="Handle-opeq">Handle::operator=()</h3>
+      <h3 id="Handle-swap">Handle::swap()</h3>
+      <h3 id="Handle-opbool">Handle::operator bool()</h3>
+      <h3 id="Handle-assert_valid">Handle::assert_valid()</h3>
+      <h3 id="fds">FDs</h3>
+      <h4 id="Handle-get">Handle::get()</h4>
+      <h4 id="Handle-modify">Handle::modify()</h4>
+      <h3 id="timers">Timers</h3>
+      <h4 id="Handle-set_at">Handle::set_at()</h4>
+      <h4 id="Handle-set_delay">Handle::set_delay()</h4>
+      <h4 id="Handle-set_periodic">Handle::set_periodic()</h4>
+      <h4 id="Handle-set_periodic_at">Handle::set_periodic_at()</h4>
+      <h4 id="Handle-set_periodic_delay">Handle::set_periodic_delay()</h4>
+      <h4 id="Handle-cancel">Handle::cancel()</h4>
+      <h3 id="generics">Generic Events</h3>
+      <h4 id="Handle-fire">Handle::fire()</h4>
+      <h3 id="disabling">Disabling Events</h3>
+      <h4 id="Handle-disable">Handle::disable()</h4>
+      <h4 id="Handle-wait">Handle::wait()</h4>
+      <h4 id="Handle-disown">Handle::disown()</h4>
+      <h4 id="Handle-release">Handle::release()</h4>
     </section>
   </article>
 
