@@ -29,12 +29,20 @@
 
       <ul>
         <li><a href="concat.h/">base/concat.h</a></li>
+        <li><a href="strings.h/">base/strings.h</a></li>
       </ul>
 
       <p>Provides <code>base::concat(...)</code> and
       <code>base::concat_to(&amp;str, ...)</code> functions for building
       strings through concatenation of pieces. Also defines an interface for
       objects to declare themselves stringable.</p>
+
+      <p>Provides <code>base::StringPiece</code>, a value type class for
+      cheaply referencing an existing string while performing zero-copy string
+      manipulation.</p>
+
+      <p>Provides <code>base::Splitter</code> and <code>base::Joiner</code>,
+      fluent classes for performing splits and joins on strings.</p>
     </section>
     <hr>
     <section>
@@ -145,6 +153,14 @@
 
       <p>Provides <code>base::Cleanup</code>, a RAII class to call a functor
       upon leaving a scope.</p>
+
+      <ul>
+        <li><a href="cpu.h/">base/cpu.h</a></li>
+      </ul>
+
+      <p>Provides <code>base::cached_cpuinfo()</code>, a function that gathers
+      information about the CPUs installed on the local machine, plus tools
+      for setting CPU affinity.</p>
 
       <ul>
         <li><a href="mutex.h/">base/mutex.h</a></li>

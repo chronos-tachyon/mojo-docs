@@ -20,6 +20,9 @@ var sitemap = [{
       url: '/base/concat.h/',
       title: 'concat.h',
     }, {
+      url: '/base/cpu.h/',
+      title: 'cpu.h',
+    }, {
       url: '/base/debug.h/',
       title: 'debug.h',
     }, {
@@ -46,6 +49,9 @@ var sitemap = [{
     }, {
       url: '/base/stopwatch.h/',
       title: 'stopwatch.h',
+    }, {
+      url: '/base/strings.h/',
+      title: 'strings.h',
     }, {
       url: '/base/time.h/',
       title: 'time.h',
