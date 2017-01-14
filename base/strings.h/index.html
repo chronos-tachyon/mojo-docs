@@ -555,33 +555,113 @@ class <strong>Splitter</strong> {
 
   Splitter&amp; <a href="#Splitter-trim">trim</a>(Predicate pred);
   Splitter&amp; <a href="#Splitter-trim">trim</a>(char ch);
-  Splitter&amp; <a href="#Splitter-trim_whitespace">trim_whitespace</a>();
+  Splitter&amp; <a href="#Splitter-trim">trim_whitespace</a>();
   Splitter&amp; <a href="#Splitter-limit">limit</a>(std::size_t n) noexcept;
   Splitter&amp; <a href="#Splitter-unlimited">unlimited</a>() noexcept;
   Splitter&amp; <a href="#Splitter-omit_empty">omit_empty</a>(bool value = true) noexcept;
 
   <a href="http://en.cppreference.com/w/cpp/container/vector">std::vector</a>&lt;<a href="#StringPiece">StringPiece</a>&gt; <a href="#Splitter-split">split</a>(StringPiece sp) const;
-  <a href="http://en.cppreference.com/w/cpp/container/vector">std::vector</a>&lt;<a href="http://en.cppreference.com/w/cpp/string/basic_string">std::string</a>&gt; <a href="#Splitter-split_strings">split_strings</a>(StringPiece sp) const;
+  <a href="http://en.cppreference.com/w/cpp/container/vector">std::vector</a>&lt;<a href="http://en.cppreference.com/w/cpp/string/basic_string">std::string</a>&gt; <a href="#Splitter-split">split_strings</a>(StringPiece sp) const;
 };
 
 }
 </pre>
 
       <p>TODO: fill this in.</p>
+
       <h3 id="Splitter-ctor">Splitter::Splitter()</h3>
+
+      <p>Constructs a Splitter.</p>
+
+      <ul>
+        <li>
+          The default constructor creates an empty Splitter.
+        </li>
+        <li>
+          The <code>Pointer</code> constructor creates a non-empty Splitter.
+        </li>
+        <li>
+          The copy constructor creates a Splitter with the same implementation
+          and knobs as the copied-from Splitter.
+        </li>
+        <li>
+          The move constructor creates a Splitter with the same implementation
+          and knobs as the moved-from Splitter. The moved-from Splitter is
+          left as an empty Splitter.
+        </li>
+      </ul>
+
       <h3 id="Splitter-opeq">Splitter::operator=()</h3>
+
+      <p>Assigns to this Splitter. The copy and move assignment operators
+      function analogously to their respective constructors.</p>
+
       <h3 id="simplementation">Implementation</h3>
+
       <h4 id="Splitter-opbool">Splitter::operator bool()</h4>
+
+      <p>Returns true iff this Splitter is non-empty.</p>
+
       <h4 id="Splitter-assert_valid">Splitter::assert_valid()</h4>
+
+      <p>Asserts that this Splitter is non-empty.</p>
+
       <h4 id="Splitter-implementation">Splitter::implementation()</h4>
+
+      <p>Returns the pointer to this Splitter's implementation.</p>
+
       <h3 id="sfluent">Fluent Setters</h3>
-      <h4 id="Splitter-trim">Splitter::trim()</h4>
-      <h4 id="Splitter-trim_whitespace">Splitter::trim_whitespace()</h4>
+
+      <h4 id="Splitter-trim">Splitter::trim() / Splitter::trim_whitespace()</h4>
+
+      <p>Configures this Splitter to remove all matching bytes from both the
+      beginning and the end of each output item.</p>
+
+      <p>Variant #1: takes <code>std::function&lt;bool(char)&gt;</code></p>
+
+      <p>Removes all initial and final bytes for which <code>pred</code>
+      returns true.</p>
+
+      <p>Variant #2: takes <code>char</code></p>
+
+      <p>Removes all initial and final occurrences of <code>ch</code>.</p>
+
+      <p>Variant #3: <code>trim_whitespace()</code></p>
+
+      <p>Removes all initial and final occurrences of ASCII HT, LF, VT, FF,
+      CR, and/or SP.</p>
+
+      <p>The default is not to trim.</p>
+
       <h4 id="Splitter-limit">Splitter::limit()</h4>
+
+      <p>Places an upper limit on the number of items which can be produced in
+      a single split.</p>
+
+      <p><strong>NOTE</strong>: The value 0 is impossible; it is treated as if
+      it were the value 1.</p>
+
+      <p>The default is no upper limit.</p>
+
       <h4 id="Splitter-unlimited">Splitter::unlimited()</h4>
+
+      <p>Removes any upper limit on the number of items which can be produced
+      in a single split.</p>
+
+      <p>The default is no upper limit.</p>
+
       <h4 id="Splitter-omit_empty">Splitter::omit_empty()</h4>
-      <h3 id="Splitter-split">Splitter::split()</h3>
-      <h3 id="Splitter-split_strings">Splitter::split_strings()</h3>
+
+      <p>Iff <code>value</code> is true, configures this Splitter to omit any
+      output item whose trimmed value is an empty string.</p>
+
+      <p>The default is to yield any empty output items.</p>
+
+      <h3 id="Splitter-split">Splitter::split() / Splitter::split_strings()</h3>
+
+      <p>Splits a <a href="#StringPiece">StringPiece</a> into StringPiece or
+      <code>std::string</code> values. In the StringPiece case, each
+      StringPiece is a substring of the initial StringPiece.</p>
     </section>
     <hr>
     <section>
@@ -632,7 +712,17 @@ class <strong>Joiner</strong> {
 
   Joiner&amp; <a href="#Joiner-skip_empty">skip_empty</a>(bool value = true) noexcept;
 
-  <a href="http://en.cppreference.com/w/cpp/string/basic_string">std::string</a> <a href="#Joiner-join">join</a>(const <a href="http://en.cppreference.com/w/cpp/container/vector">std::vector</a>&lt;<a href="#StringPiece">StringPiece</a>&gt;&amp; vec) const;
+  <a href="#Join">Join</a> <a href="#Joiner-join">join</a>(const <a href="http://en.cppreference.com/w/cpp/container/vector">std::vector</a>&lt;<a href="#StringPiece">StringPiece</a>&gt;&amp; vec) const;
+  <a href="#Join">Join</a> <a href="#Joiner-join">join</a>(const <a href="http://en.cppreference.com/w/cpp/container/vector">std::vector</a>&lt;<a href="http://en.cppreference.com/w/cpp/string/basic_string">std::string</a>&gt;&amp; vec) const;
+  template &lt;typename... Args&gt; <a href="#Join">Join</a> <a href="#Joiner-join">join</a>(Args&amp;&amp;... args) const;
+
+  <a href="http://en.cppreference.com/w/cpp/string/basic_string">std::string</a> <a href="#Joiner-join_string">join_string</a>(const <a href="http://en.cppreference.com/w/cpp/container/vector">std::vector</a>&lt;<a href="#StringPiece">StringPiece</a>&gt;&amp; vec) const;
+  <a href="http://en.cppreference.com/w/cpp/string/basic_string">std::string</a> <a href="#Joiner-join_string">join_string</a>(const <a href="http://en.cppreference.com/w/cpp/container/vector">std::vector</a>&lt;<a href="http://en.cppreference.com/w/cpp/string/basic_string">std::string</a>&gt;&amp; vec) const;
+  template &lt;typename... Args&gt; <a href="http://en.cppreference.com/w/cpp/string/basic_string">std::string</a> <a href="#Joiner-join_string">join_string</a>(Args&amp;&amp;... args) const;
+
+  void <a href="#Joiner-join_append">join_append</a>(std::string* out, const <a href="http://en.cppreference.com/w/cpp/container/vector">std::vector</a>&lt;<a href="#StringPiece">StringPiece</a>&gt;&amp; vec) const;
+  void <a href="#Joiner-join_append">join_append</a>(std::string* out, const <a href="http://en.cppreference.com/w/cpp/container/vector">std::vector</a>&lt;<a href="http://en.cppreference.com/w/cpp/string/basic_string">std::string</a>&gt;&amp; vec) const;
+  template &lt;typename... Args&gt; void <a href="#Joiner-join_append">join_append</a>(std::string* out, Args&amp;&amp;... args) const;
 };
 
 }
@@ -641,14 +731,112 @@ class <strong>Joiner</strong> {
       <p>TODO: fill this in.</p>
 
       <h3 id="Joiner-ctor">Joiner::Joiner()</h3>
+
+      <p>Constructs a Joiner.</p>
+
+      <ul>
+        <li>
+          The default constructor creates an empty Joiner.
+        </li>
+        <li>
+          The <code>Pointer</code> constructor creates a non-empty Joiner.
+        </li>
+        <li>
+          The copy constructor creates a Joiner with the same implementation
+          and knobs as the copied-from Joiner.
+        </li>
+        <li>
+          The move constructor creates a Joiner with the same implementation
+          and knobs as the moved-from Joiner. The moved-from Joiner is left as
+          an empty Joiner.
+        </li>
+      </ul>
+
       <h3 id="Joiner-opeq">Joiner::operator=()</h3>
+
+      <p>Assigns to this Joiner. The copy and move assignment operators
+      function analogously to their respective constructors.</p>
+
       <h3 id="jimplementation">Implementation</h3>
+
       <h4 id="Joiner-opbool">Joiner::operator bool()</h4>
+
+      <p>Returns true iff this Joiner is non-empty.</p>
+
       <h4 id="Joiner-assert_valid">Joiner::assert_valid()</h4>
+
+      <p>Asserts that this Joiner is non-empty.</p>
+
       <h4 id="Joiner-implementation">Joiner::implementation()</h4>
+
+      <p>Returns the pointer to this Joiner's implementation.</p>
+
       <h3 id="jfluent">Fluent Setters</h3>
+
       <h4 id="Joiner-skip_empty">Joiner::skip_empty()</h4>
+
+      <p>Iff <code>value</code> is true, configures this Joiner to skip any
+      input item which is an empty string.</p>
+
+      <p>The default is to preserve any empty input items.</p>
+
       <h3 id="Joiner-join">Joiner::join()</h3>
+
+      <p>Creates a lazy <a href="#Join">Join</a> object.</p>
+
+      <h3 id="Joiner-join_string">Joiner::join_string()</h3>
+
+      <p>Joins its arguments to create a <code>std::string</code> value.</p>
+
+      <h3 id="Joiner-join_append">Joiner::join_append()</h3>
+
+      <p>Joins its arguments and appends them to an existing
+      <code>std::string</code> value.</p>
+    </section>
+    <hr>
+    <section>
+      <h2 id="Join">Join</h2>
+
+<pre class="codebox">
+namespace base {
+
+class Join {
+ public:
+  <a href="#Join-ctor">Join</a>(const Join&amp;) = default;
+  <a href="#Join-ctor">Join</a>(Join&amp;&amp;) noexcept = default;
+  Join&amp; <a href="#Join-opeq">operator=</a>(const Join&amp;) = default;
+  Join&amp; <a href="#Join-opeq">operator=</a>(Join&amp;&amp;) noexcept = default;
+
+  void <a href="#Join-append_to">append_to</a>(std::string* out) const;
+  std::size_t <a href="#Join-length_hint">length_hint</a>() const noexcept;
+  <a href="#Join-opstring">operator std::string</a>() const;
+};
+
+}
+</pre>
+
+      <p>TODO: fill this in.</p>
+
+      <h3 id="Join-ctor">Join::Join()</h3>
+
+      <p>Constructs a Join object. Join is copyable and moveable.</p>
+
+      <h3 id="Join-opeq">Join::operator=()</h3>
+
+      <p>Assigns to a Join object. Join is copyable and moveable.</p>
+
+      <h3 id="Join-append_to">Join::append_to()</h3>
+
+      <p>Computes this Join's output and appends its to the given
+      <code>std::string</code> value.</p>
+
+      <h3 id="Join-length_hint">Join::length_hint()</h3>
+
+      <p>Computes the approximate length of this Join's output.</p>
+
+      <h3 id="Join-opstring">Join::operator std::string()</h3>
+
+      <p>Computes this Join's output and returns it.</p>
     </section>
     <hr>
     <section>
