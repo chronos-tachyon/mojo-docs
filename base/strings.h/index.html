@@ -29,7 +29,352 @@
     </div>
 
     <section>
+      <h2 id="functions">Top-level Functions</h2>
+
+      <h3 id="helpers">StringPiece Helpers</h3>
+
+      <h4 id="compare">compare()</h4>
       <p>TODO: fill this in.</p>
+
+      <h4 id="substring">substring()</h4>
+      <p>TODO: fill this in.</p>
+
+      <h4 id="prefix">prefix()</h4>
+      <p>TODO: fill this in.</p>
+
+      <h4 id="suffix">suffix()</h4>
+      <p>TODO: fill this in.</p>
+
+      <h4 id="has_prefix">has_prefix()</h4>
+      <p>TODO: fill this in.</p>
+
+      <h4 id="has_suffix">has_suffix()</h4>
+      <p>TODO: fill this in.</p>
+
+      <h4 id="strip_prefix">strip_prefix()</h4>
+      <p>TODO: fill this in.</p>
+
+      <h4 id="strip_suffix">strip_suffix()</h4>
+      <p>TODO: fill this in.</p>
+
+      <h3 id="split-and-join">Splitters and Joiners</h3>
+
+      <h4 id="split-fixed_length">split::fixed_length()</h4>
+      <p>TODO: fill this in.</p>
+
+      <h4 id="split-on">split::on()</h4>
+      <p>TODO: fill this in.</p>
+
+      <h4 id="split-on_pattern">split::on_pattern()</h4>
+      <p>TODO: fill this in.</p>
+
+      <h4 id="join-on">join::on()</h4>
+      <p>TODO: fill this in.</p>
+    </section>
+    <hr>
+    <section>
+      <h2 id="StringPiece">StringPiece</h2>
+
+<pre class="codebox">
+namespace base {
+
+class <strong>StringPiece</strong> {
+ public:
+  using value_type = char;
+  using const_reference = const char&amp;;
+  using const_pointer = const char*;
+  using const_iterator = const char*;
+  using const_reverse_iterator = <a href="http://en.cppreference.com/w/cpp/iterator/reverse_iterator">std::reverse_iterator</a>&lt;const_iterator&gt;;
+  using reference = const_reference;
+  using pointer = const_pointer;
+  using iterator = const_iterator;
+  using reverse_iterator = const_reverse_iterator;
+  using size_type = std::size_t;
+  using difference_type = std::ptrdiff_t;
+
+  static constexpr size_type npos;
+
+  constexpr <a href="#StringPiece-ctor">StringPiece</a>() noexcept;
+  constexpr <a href="#StringPiece-ctor">StringPiece</a>(const StringPiece&amp;) noexcept;
+  constexpr <a href="#StringPiece-ctor">StringPiece</a>(StringPiece&amp;&amp;) noexcept;
+  constexpr <a href="#StringPiece-ctor">StringPiece</a>(const_pointer ptr, size_type len) noexcept;
+  constexpr <a href="#StringPiece-ctor">StringPiece</a>(const_pointer ptr) noexcept;
+  template &lt;std::size_t N&gt; constexpr <a href="#StringPiece-ctor">StringPiece</a>(const char arr[N]) noexcept;
+  <a href="#StringPiece-ctor">StringPiece</a>(const <a href="http://en.cppreference.com/w/cpp/string/basic_string">std::string</a>&amp; str) noexcept;
+  <a href="#StringPiece-ctor">StringPiece</a>(const <a href="http://en.cppreference.com/w/cpp/container/vector">std::vector</a>&lt;char&gt;&amp; vec) noexcept;
+  <a href="#StringPiece-ctor">StringPiece</a>(re2::StringPiece sp) noexcept;
+
+  StringPiece&amp; <a href="#StringPiece-opeq">operator=</a>(const StringPiece&amp;) noexcept;
+  StringPiece&amp; <a href="#StringPiece-opeq">operator=</a>(StringPiece&amp;&amp;) noexcept;
+
+  constexpr bool <a href="#StringPiece-empty">empty</a>() const noexcept;
+  constexpr const_pointer <a href="#StringPiece-data">data</a>() const noexcept;
+  constexpr size_type <a href="#StringPiece-size">size</a>() const noexcept;
+
+  constexpr const_iterator <a href="#StringPiece-begin-end">begin</a>() const noexcept;
+  constexpr const_iterator <a href="#StringPiece-begin-end">end</a>() const noexcept;
+  constexpr const_iterator <a href="#StringPiece-cbegin-cend">cbegin</a>() const noexcept;
+  constexpr const_iterator <a href="#StringPiece-cbegin-cend">cend</a>() const noexcept;
+
+  const_reverse_iterator <a href="#StringPiece-rbegin-rend">rbegin</a>() const noexcept;
+  const_reverse_iterator <a href="#StringPiece-rbegin-rend">rend</a>() const noexcept;
+  const_reverse_iterator <a href="#StringPiece-crbegin-crend">crbegin</a>() const noexcept;
+  const_reverse_iterator <a href="#StringPiece-crbegin-crend">crend</a>() const noexcept;
+
+  constexpr const_reference <a href="#StringPiece-front">front</a>() const noexcept;
+  constexpr const_reference <a href="#StringPiece-back">back</a>() const noexcept;
+  constexpr const_reference <a href="#StringPiece-opindex">operator[]</a>(size_type i) const noexcept;
+
+  constexpr int <a href="#StringPiece-compare">compare</a>(StringPiece other) const noexcept;
+
+  constexpr StringPiece <a href="#StringPiece-substring">substring</a>(size_type pos, size_type len = npos) const noexcept;
+  constexpr StringPiece <a href="#StringPiece-prefix">prefix</a>(size_type n) const noexcept;
+  constexpr StringPiece <a href="#StringPiece-suffix">suffix</a>(size_type n) const noexcept;
+  constexpr StringPiece <a href="#StringPiece-strip_prefix">strip_prefix</a>(size_type len) const noexcept;
+  constexpr StringPiece <a href="#StringPiece-strip_suffix">strip_suffix</a>(size_type len) const noexcept;
+  constexpr StringPiece <a href="#StringPiece-strip_prefix">strip_prefix</a>(StringPiece sp) const noexcept;
+  constexpr StringPiece <a href="#StringPiece-strip_suffix">strip_suffix</a>(StringPiece sp) const noexcept;
+
+  void <a href="#StringPiece-remove_prefix">remove_prefix</a>(size_type n) noexcept;
+  void <a href="#StringPiece-remove_suffix">remove_suffix</a>(size_type n) noexcept;
+  bool <a href="#StringPiece-remove_prefix">remove_prefix</a>(StringPiece sp) noexcept;
+  bool <a href="#StringPiece-remove_suffix">remove_suffix</a>(StringPiece sp) noexcept;
+  template &lt;typename Func&gt; void <a href="#StringPiece-ltrim">ltrim</a>(Func func);
+  void <a href="#StringPiece-ltrim">ltrim</a>(char ch);
+  void <a href="#StringPiece-ltrim">ltrim_whitespace</a>();
+  template &lt;typename Func&gt; void <a href="#StringPiece-rtrim">rtrim</a>(Func func);
+  void <a href="#StringPiece-rtrim">rtrim</a>(char ch);
+  void <a href="#StringPiece-rtrim">rtrim_whitespace</a>();
+  template &lt;typename Func&gt; void <a href="#StringPiece-trim">trim</a>(Func func);
+  void <a href="#StringPiece-trim">trim</a>(char ch);
+  void <a href="#StringPiece-trim">trim_whitespace</a>();
+
+  constexpr bool <a href="#StringPiece-contains">contains</a>(StringPiece sp) const noexcept;
+  constexpr bool <a href="#StringPiece-has_prefix">has_prefix</a>(StringPiece sp) const noexcept;
+  constexpr bool <a href="#StringPiece-has_suffix">has_suffix</a>(StringPiece sp) const noexcept;
+  constexpr size_type <a href="#StringPiece-find">find</a>(char ch, size_type pos = 0) const noexcept;
+  constexpr size_type <a href="#StringPiece-find">find</a>(StringPiece sp, size_type pos = 0) const noexcept;
+  constexpr size_type <a href="#StringPiece-rfind">rfind</a>(char ch, size_type pos = npos) const noexcept;
+  constexpr size_type <a href="#StringPiece-rfind">rfind</a>(StringPiece sp, size_type pos = npos) const noexcept;
+
+  void <a href="#StringPiece-append_to">append_to</a>(<a href="http://en.cppreference.com/w/cpp/string/basic_string">std::string</a>* out) const;
+  std::size_t <a href="#StringPiece-length_hint">length_hint</a>() const noexcept;
+  <a href="http://en.cppreference.com/w/cpp/string/basic_string">std::string</a> <a href="#StringPiece-as_string">as_string</a>() const;
+  <a href="#StringPiece-opstring">operator std::string</a>() const;
+  <a href="#StringPiece-opre2sp">operator re2::StringPiece</a>() const noexcept;
+};
+
+std::ostream&amp; <a href="#StringPiece-opltlt">operator&lt;&lt;</a>(std::ostream&amp; o, StringPiece sp);
+
+constexpr bool <a href="#StringPiece-opeqeq">operator==</a>(StringPiece a, StringPiece b) noexcept;
+constexpr bool <a href="#StringPiece-opnoteq">operator!=</a>(StringPiece a, StringPiece b) noexcept;
+constexpr bool <a href="#StringPiece-oplt">operator&lt;</a>(StringPiece a, StringPiece b) noexcept;
+constexpr bool <a href="#StringPiece-oplteq">operator&lt;=</a>(StringPiece a, StringPiece b) noexcept;
+constexpr bool <a href="#StringPiece-opgt">operator&gt;</a>(StringPiece a, StringPiece b) noexcept;
+constexpr bool <a href="#StringPiece-opgteq">operator&gt;=</a>(StringPiece a, StringPiece b) noexcept;
+
+}
+</pre>
+
+      <p>TODO: fill this in.</p>
+
+      <h3 id="StringPiece-ctor">StringPiece::StringPiece()</h3>
+      <h3 id="StringPiece-opeq">StringPiece::operator=()</h3>
+      <h3 id="accessors">Accessors</h3>
+      <h4 id="StringPiece-empty">StringPiece::empty()</h4>
+      <h4 id="StringPiece-data">StringPiece::data()</h4>
+      <h4 id="StringPiece-size">StringPiece::size()</h4>
+      <h3 id="iterators">Iterators</h3>
+      <h4 id="StringPiece-begin-end">StringPiece::begin() / StringPiece::end()</h4>
+      <h4 id="StringPiece-cbegin-cend">StringPiece::cbegin() / StringPiece::cend()</h4>
+      <h4 id="StringPiece-rbegin-rend">StringPiece::rbegin() / StringPiece::rend()</h4>
+      <h4 id="StringPiece-crbegin-crend">StringPiece::crbegin() / StringPiece::crend()</h4>
+      <h3 id="indexing">Indexing</h3>
+      <h4 id="StringPiece-front">StringPiece::front()</h4>
+      <h4 id="StringPiece-back">StringPiece::back()</h4>
+      <h4 id="StringPiece-opindex">StringPiece::operator[]()</h4>
+      <h3 id="comparing">Comparing</h3>
+      <h4 id="StringPiece-compare">StringPiece::compare()</h4>
+      <h4 id="StringPiece-opeqeq">StringPiece::operator==()</h4>
+      <h4 id="StringPiece-opnoteq">StringPiece::operator!=()</h4>
+      <h4 id="StringPiece-oplt">StringPiece::operator&lt;()</h4>
+      <h4 id="StringPiece-oplteq">StringPiece::operator&lt;=()</h4>
+      <h4 id="StringPiece-opgt">StringPiece::operator&gt;()</h4>
+      <h4 id="StringPiece-opgteq">StringPiece::operator&gt;=()</h4>
+      <h3 id="substrings">Substrings</h3>
+      <h4 id="StringPiece-substring">StringPiece::substring()</h4>
+      <h4 id="StringPiece-prefix">StringPiece::prefix()</h4>
+      <h4 id="StringPiece-suffix">StringPiece::suffix()</h4>
+      <h4 id="StringPiece-strip_prefix">StringPiece::strip_prefix()</h4>
+      <h4 id="StringPiece-strip_suffix">StringPiece::strip_suffix()</h4>
+      <h3 id="trimming">Trimming</h3>
+      <h4 id="StringPiece-remove_prefix">StringPiece::remove_prefix()</h4>
+      <h4 id="StringPiece-remove_suffix">StringPiece::remove_suffix()</h4>
+      <h4 id="StringPiece-ltrim">StringPiece::ltrim() / StringPiece::ltrim_whitespace()</h4>
+      <h4 id="StringPiece-rtrim">StringPiece::rtrim() / StringPiece::rtrim_whitespace()</h4>
+      <h4 id="StringPiece-trim">StringPiece::trim() / StringPiece::trim_whitespace()</h4>
+      <h3 id="searching">Searching</h3>
+      <h4 id="StringPiece-contains">StringPiece::contains()</h4>
+      <h4 id="StringPiece-has_prefix">StringPiece::has_prefix()</h4>
+      <h4 id="StringPiece-has_suffix">StringPiece::has_suffix()</h4>
+      <h4 id="StringPiece-find">StringPiece::find()</h4>
+      <h4 id="StringPiece-rfind">StringPiece::rfind()</h4>
+      <h3 id="stringification">Stringification</h3>
+      <h4 id="StringPiece-append_to">StringPiece::append_to()</h4>
+      <h4 id="StringPiece-length_hint">StringPiece::length_hint()</h4>
+      <h4 id="StringPiece-as_string">StringPiece::as_string()</h4>
+      <h4 id="StringPiece-opltlt">StringPiece::operator&lt;&lt;()</h4>
+      <h3 id="conversions">Conversions</h3>
+      <h4 id="StringPiece-opstring">StringPiece::operator std::string()</h4>
+      <h4 id="StringPiece-opre2sp">StringPiece::operator re2::StringPiece()</h4>
+    </section>
+    <hr>
+    <section>
+      <h2 id="Splitter">Splitter</h2>
+
+<pre class="codebox">
+namespace base {
+
+class <strong>Splitter</strong> {
+ public:
+  using Pointer = <a href="http://en.cppreference.com/w/cpp/memory/shared_ptr">std::shared_ptr</a>&lt;<a href="#SplitterImpl">SplitterImpl</a>&gt;;
+  using Predicate = <a href="http://en.cppreference.com/w/cpp/utility/functional/function">std::function</a>&lt;bool(char)&gt;;
+
+  <a href="#Splitter-ctor">Splitter</a>();
+  <a href="#Splitter-ctor">Splitter</a>(Pointer ptr);
+  <a href="#Splitter-ctor">Splitter</a>(const Splitter&amp;);
+  <a href="#Splitter-ctor">Splitter</a>(Splitter&amp;&amp;);
+  Splitter&amp; <a href="#Splitter-opeq">operator=</a>(const Splitter&amp;);
+  Splitter&amp; <a href="#Splitter-opeq">operator=</a>(Splitter&amp;&amp;);
+
+  <a href="#Splitter-opbool">explicit operator bool</a>() const noexcept;
+  void <a href="#Splitter-assert_valid">assert_valid</a>() const noexcept;
+  const Pointer&amp; <a href="#Splitter-implementation">implementation</a>() const noexcept;
+  Pointer&amp; <a href="#Splitter-implementation">implementation</a>() noexcept;
+
+  Splitter&amp; <a href="#Splitter-trim">trim</a>(Predicate pred);
+  Splitter&amp; <a href="#Splitter-trim">trim</a>(char ch);
+  Splitter&amp; <a href="#Splitter-trim_whitespace">trim_whitespace</a>();
+  Splitter&amp; <a href="#Splitter-limit">limit</a>(std::size_t n) noexcept;
+  Splitter&amp; <a href="#Splitter-unlimited">unlimited</a>() noexcept;
+  Splitter&amp; <a href="#Splitter-omit_empty">omit_empty</a>(bool value = true) noexcept;
+
+  <a href="http://en.cppreference.com/w/cpp/container/vector">std::vector</a>&lt;<a href="#StringPiece">StringPiece</a>&gt; <a href="#Splitter-split">split</a>(StringPiece sp) const;
+  <a href="http://en.cppreference.com/w/cpp/container/vector">std::vector</a>&lt;<a href="http://en.cppreference.com/w/cpp/string/basic_string">std::string</a>&gt; <a href="#Splitter-split_strings">split_strings</a>(StringPiece sp) const;
+};
+
+}
+</pre>
+
+      <p>TODO: fill this in.</p>
+      <h3 id="Splitter-ctor">Splitter::Splitter()</h3>
+      <h3 id="Splitter-opeq">Splitter::operator=()</h3>
+      <h3 id="simplementation">Implementation</h3>
+      <h4 id="Splitter-opbool">Splitter::operator bool()</h4>
+      <h4 id="Splitter-assert_valid">Splitter::assert_valid()</h4>
+      <h4 id="Splitter-implementation">Splitter::implementation()</h4>
+      <h3 id="sfluent">Fluent Setters</h3>
+      <h4 id="Splitter-trim">Splitter::trim()</h4>
+      <h4 id="Splitter-trim_whitespace">Splitter::trim_whitespace()</h4>
+      <h4 id="Splitter-limit">Splitter::limit()</h4>
+      <h4 id="Splitter-unlimited">Splitter::unlimited()</h4>
+      <h4 id="Splitter-omit_empty">Splitter::omit_empty()</h4>
+      <h3 id="Splitter-split">Splitter::split()</h3>
+      <h3 id="Splitter-split_strings">Splitter::split_strings()</h3>
+    </section>
+    <hr>
+    <section>
+      <h2 id="SplitterImpl">SplitterImpl</h2>
+
+<pre class="codebox">
+namespace base {
+
+class <strong>SplitterImpl</strong> {
+ public:
+  virtual ~SplitterImpl() noexcept = default;
+  virtual bool <a href="#SplitterImpl-chop">chop</a>(<a href="#StringPiece">StringPiece</a>* first, <a href="#StringPiece">StringPiece</a>* rest,
+                    <a href="#StringPiece">StringPiece</a> sp) const = 0;
+
+  <s>SplitterImpl(const SplitterImpl&amp;) = delete;</s>
+  <s>SplitterImpl(SplitterImpl&amp;&amp;) = delete;</s>
+  <s>SplitterImpl&amp; operator=(const SplitterImpl&amp;) = delete;</s>
+  <s>SplitterImpl&amp; operator=(SplitterImpl&amp;&amp;) = delete;</s>
+}
+</pre>
+
+      <p>TODO: fill this in.</p>
+
+      <h3 id="SplitterImpl-chop">SplitterImpl::chop()</h3>
+    </section>
+    <hr>
+    <section>
+      <h2 id="Joiner">Joiner</h2>
+
+<pre class="codebox">
+namespace base {
+
+class <strong>Joiner</strong> {
+ public:
+  using Pointer = <a href="http://en.cppreference.com/w/cpp/memory/shared_ptr">std::shared_ptr</a>&lt;<a href="#JoinerImpl">JoinerImpl</a>&gt;;
+
+  <a href="#Joiner-ctor">Joiner</a>();
+  <a href="#Joiner-ctor">Joiner</a>(Pointer ptr);
+  <a href="#Joiner-ctor">Joiner</a>(const Joiner&amp;);
+  <a href="#Joiner-ctor">Joiner</a>(Joiner&amp;&amp;);
+  Joiner&amp; <a href="#Joiner-opeq">operator=</a>(const Joiner&amp;);
+  Joiner&amp; <a href="#Joiner-opeq">operator=</a>(Joiner&amp;&amp;);
+
+  <a href="#Joiner-opbool">explicit operator bool</a>() const noexcept;
+  void <a href="#Joiner-assert_valid">assert_valid</a>() const noexcept;
+  const Pointer&amp; <a href="#Joiner-implementation">implementation</a>() const noexcept;
+  Pointer&amp; <a href="#Joiner-implementation">implementation</a>() noexcept;
+
+  Joiner&amp; <a href="#Joiner-skip_empty">skip_empty</a>(bool value = true) noexcept;
+
+  <a href="http://en.cppreference.com/w/cpp/string/basic_string">std::string</a> <a href="#Joiner-join">join</a>(const <a href="http://en.cppreference.com/w/cpp/container/vector">std::vector</a>&lt;<a href="#StringPiece">StringPiece</a>&gt;&amp; vec) const;
+};
+
+}
+</pre>
+
+      <p>TODO: fill this in.</p>
+
+      <h3 id="Joiner-ctor">Joiner::Joiner()</h3>
+      <h3 id="Joiner-opeq">Joiner::operator=()</h3>
+      <h3 id="jimplementation">Implementation</h3>
+      <h4 id="Joiner-opbool">Joiner::operator bool()</h4>
+      <h4 id="Joiner-assert_valid">Joiner::assert_valid()</h4>
+      <h4 id="Joiner-implementation">Joiner::implementation()</h4>
+      <h3 id="jfluent">Fluent Setters</h3>
+      <h4 id="Joiner-skip_empty">Joiner::skip_empty()</h4>
+      <h3 id="Joiner-join">Joiner::join()</h3>
+    </section>
+    <hr>
+    <section>
+      <h2 id="JoinerImpl">JoinerImpl</h2>
+
+<pre class="codebox">
+namespace base {
+
+class <strong>JoinerImpl</strong> {
+ public:
+  virtual ~JoinerImpl() noexcept = default;
+  virtual void <a href="#JoinerImpl-glue">glue</a>(<a href="http://en.cppreference.com/w/cpp/string/basic_string">std::string</a>* out, <a href="#StringPiece">StringPiece</a> sp, bool first) const = 0;
+  virtual std::size_t <a href="#JoinerImpl-hint">hint</a>() const noexcept = 0;
+
+  <s>JoinerImpl(const JoinerImpl&amp;) = delete;</s>
+  <s>JoinerImpl(JoinerImpl&amp;&amp;) = delete;</s>
+  <s>JoinerImpl&amp; operator=(const JoinerImpl&amp;) = delete;</s>
+  <s>JoinerImpl&amp; operator=(JoinerImpl&amp;&amp;) = delete;</s>
+};
+
+}
+</pre>
+
+      <p>TODO: fill this in.</p>
+
+      <h3 id="JoinerImpl-glue">JoinerImpl::glue()</h3>
+      <h3 id="JoinerImpl-hint">JoinerImpl::hint()</h3>
     </section>
   </article>
 
