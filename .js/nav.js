@@ -254,7 +254,7 @@ var sitemap = [{
   var tmp = [];
   for (var i = 0; i < document.all.length; ++i) {
     var elem = document.all[i];
-    if (/^h[2-6]$/i.test(elem.tagName) && elem.id.length > 0) {
+    if (/^h[23]$/i.test(elem.tagName) && elem.id.length > 0) {
       var level = parseInt(elem.tagName.substr(1));
       tmp.push([level - 1, elem.id, elem.innerText])
     }
