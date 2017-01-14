@@ -102,7 +102,7 @@ class <strong>StringPiece</strong> {
   template &lt;std::size_t N&gt; constexpr <a href="#StringPiece-ctor">StringPiece</a>(const char arr[N]) noexcept;
   <a href="#StringPiece-ctor">StringPiece</a>(const <a href="http://en.cppreference.com/w/cpp/string/basic_string">std::string</a>&amp; str) noexcept;
   <a href="#StringPiece-ctor">StringPiece</a>(const <a href="http://en.cppreference.com/w/cpp/container/vector">std::vector</a>&lt;char&gt;&amp; vec) noexcept;
-  <a href="#StringPiece-ctor">StringPiece</a>(re2::StringPiece sp) noexcept;
+  <a href="#StringPiece-ctor">StringPiece</a>(<a href="https://github.com/google/re2/blob/master/re2/stringpiece.h">re2::StringPiece</a> sp) noexcept;
 
   StringPiece&amp; <a href="#StringPiece-opeq">operator=</a>(const StringPiece&amp;) noexcept;
   StringPiece&amp; <a href="#StringPiece-opeq">operator=</a>(StringPiece&amp;&amp;) noexcept;
@@ -139,15 +139,15 @@ class <strong>StringPiece</strong> {
   void <a href="#StringPiece-remove_suffix">remove_suffix</a>(size_type n) noexcept;
   bool <a href="#StringPiece-remove_prefix">remove_prefix</a>(StringPiece sp) noexcept;
   bool <a href="#StringPiece-remove_suffix">remove_suffix</a>(StringPiece sp) noexcept;
+  template &lt;typename Func&gt; void <a href="#StringPiece-trim">trim</a>(Func func);
+  void <a href="#StringPiece-trim">trim</a>(char ch);
+  void <a href="#StringPiece-trim">trim_whitespace</a>();
   template &lt;typename Func&gt; void <a href="#StringPiece-ltrim">ltrim</a>(Func func);
   void <a href="#StringPiece-ltrim">ltrim</a>(char ch);
   void <a href="#StringPiece-ltrim">ltrim_whitespace</a>();
   template &lt;typename Func&gt; void <a href="#StringPiece-rtrim">rtrim</a>(Func func);
   void <a href="#StringPiece-rtrim">rtrim</a>(char ch);
   void <a href="#StringPiece-rtrim">rtrim_whitespace</a>();
-  template &lt;typename Func&gt; void <a href="#StringPiece-trim">trim</a>(Func func);
-  void <a href="#StringPiece-trim">trim</a>(char ch);
-  void <a href="#StringPiece-trim">trim_whitespace</a>();
 
   constexpr bool <a href="#StringPiece-contains">contains</a>(StringPiece sp) const noexcept;
   constexpr bool <a href="#StringPiece-has_prefix">has_prefix</a>(StringPiece sp) const noexcept;
@@ -176,57 +176,358 @@ constexpr bool <a href="#StringPiece-opgteq">operator&gt;=</a>(StringPiece a, St
 }
 </pre>
 
-      <p>TODO: fill this in.</p>
+      <p>RC. StringPiece is a value type consisting of a pointer to
+      <code>const char</code> and a length. It represents a string or a piece
+      of a string. Take a StringPiece by value where you would normally take a
+      <code>const&nbsp;std::string&amp;</code>, especially in situations where
+      you don't need a <code>std::string</code> or NUL-termination.</p>
+
+      <p><strong>NOTE</strong>: StringPiece values are <strong>NOT</strong>
+      NUL-terminated.</p>
+
+      <p><strong>NOTE</strong>: StringPiece does <strong>NOT</strong>
+      own the memory it points to. It is the caller's responsibility to ensure
+      that the region of memory pointed to remains valid for the lifetime of
+      the StringPiece.</p>
+
+      <p><strong>NOTE</strong>: If a StringPiece's <code>size()</code> is 0,
+      then its <code>data()</code> pointer may be <code>NULL</code>.</p>
 
       <h3 id="StringPiece-ctor">StringPiece::StringPiece()</h3>
+
+      <p>Constructs a StringPiece.</p>
+
+      <ul>
+        <li>
+          The default constructor creates a StringPiece with a
+          <code>data()</code> of <code>NULL</code> and a <code>size()</code>
+          of 0.
+        </li>
+        <li>
+          The copy constructor copies the literal pointer and size of the
+          copied-from object. The pointed-to string is not copied.
+        </li>
+        <li>
+          The move constructor is indistinguishable from the copy constructor.
+        </li>
+        <li>
+          The 2-arg constructor creates a StringPiece with the given
+          <code>data()</code> and <code>size()</code>.
+        </li>
+        <li>
+          The 1-arg <code>const&nbsp;char*</code> constructor takes the given
+          NUL-terminated string as <code>data()</code> and its length as
+          <code>size()</code>.
+        </li>
+        <li>
+          The templated <code>const&nbsp;char[N]</code> constructor takes the
+          given NUL-terminated char array as <code>data()</code> and
+          <code>N&nbsp;-&nbsp;1</code> as <code>size()</code>.
+        </li>
+        <li>
+          The <code>const&nbsp;std::string&amp;</code> constructor takes the
+          <code>data()</code> and <code>size()</code> of the provided string
+          as its own <code>data()</code> and <code>size()</code>.
+        </li>
+        <li>
+          The <code>const&nbsp;std::vector&lt;char&gt;&amp;</code> constructor
+          takes the <code>data()</code> and <code>size()</code> of the
+          provided vector as its own <code>data()</code> and
+          <code>size()</code>.
+        </li>
+        <li>
+          The
+          <a href="https://github.com/google/re2/blob/master/re2/stringpiece.h"><code>re2::StringPiece</code></a>
+          constructor takes the <code>data()</code> and <code>size()</code> of
+          the provided <code>re2::StringPiece</code> as its own
+          <code>data()</code> and <code>size()</code>.
+        </li>
+      </ul>
+
       <h3 id="StringPiece-opeq">StringPiece::operator=()</h3>
+
+      <p>Assigns to this StringPiece. The copy and move assignment operators
+      function analogously to the copy constructor.</p>
+
       <h3 id="accessors">Accessors</h3>
+
       <h4 id="StringPiece-empty">StringPiece::empty()</h4>
+
+      <p>Returns true iff this StringPiece has <code>size()</code> 0.</p>
+
       <h4 id="StringPiece-data">StringPiece::data()</h4>
+
+      <p>Returns this StringPiece's pointer.</p>
+
+      <p>If <code>size()</code> is 0, then this pointer may be
+      <code>NULL</code>.</p>
+
       <h4 id="StringPiece-size">StringPiece::size()</h4>
+
+      <p>Returns this StringPiece's size.</p>
+
       <h3 id="iterators">Iterators</h3>
+
       <h4 id="StringPiece-begin-end">StringPiece::begin() / StringPiece::end()</h4>
+
+      <p>Iterates over the characters of this StringPiece's string.</p>
+
       <h4 id="StringPiece-cbegin-cend">StringPiece::cbegin() / StringPiece::cend()</h4>
+
+      <p>Alias for <code>begin()</code> / <code>end()</code>.</p>
+
       <h4 id="StringPiece-rbegin-rend">StringPiece::rbegin() / StringPiece::rend()</h4>
+
+      <p>Reverse iterates over the characters of this StringPiece's
+      string.</p>
+
       <h4 id="StringPiece-crbegin-crend">StringPiece::crbegin() / StringPiece::crend()</h4>
+
+      <p>Alias for <code>rbegin()</code> / <code>rend()</code>.</p>
+
       <h3 id="indexing">Indexing</h3>
+
       <h4 id="StringPiece-front">StringPiece::front()</h4>
+
+      <p>Returns a reference to this StringPiece's first character.</p>
+
+      <p>PRECONDITION: <code>!empty()</code></p>
+
       <h4 id="StringPiece-back">StringPiece::back()</h4>
+
+      <p>Returns a reference to this StringPiece's last character.</p>
+
+      <p>PRECONDITION: <code>!empty()</code></p>
+
       <h4 id="StringPiece-opindex">StringPiece::operator[]()</h4>
+
+      <p>Returns a reference to this StringPiece's i'th character.</p>
+
+      <p>PRECONDITION: <code>i&nbsp;&lt;&nbsp;size()</code></p>
+
       <h3 id="comparing">Comparing</h3>
+
       <h4 id="StringPiece-compare">StringPiece::compare()</h4>
+
+      <p>Compares this StringPiece with the other. Returns a value less than 0
+      if this StringPiece compares less than the other, a value greater than 0
+      if this StringPiece compares greater than the other, or 0 if the two
+      StringPieces compare equal.</p>
+
       <h4 id="StringPiece-opeqeq">StringPiece::operator==()</h4>
       <h4 id="StringPiece-opnoteq">StringPiece::operator!=()</h4>
       <h4 id="StringPiece-oplt">StringPiece::operator&lt;()</h4>
       <h4 id="StringPiece-oplteq">StringPiece::operator&lt;=()</h4>
       <h4 id="StringPiece-opgt">StringPiece::operator&gt;()</h4>
       <h4 id="StringPiece-opgteq">StringPiece::operator&gt;=()</h4>
+
+      <p>Compares two StringPieces.</p>
+
       <h3 id="substrings">Substrings</h3>
+
       <h4 id="StringPiece-substring">StringPiece::substring()</h4>
+
+      <p>Returns a StringPiece which is a substring of this StringPiece. If
+      both arguments are in range, the substring will begin <code>pos</code>
+      bytes past the start of this StringPiece, and will be <code>len</code>
+      bytes long.</p>
+      
+      <ul>
+        <li>
+          If the <code>pos</code> argument would begin past the end of the
+          string, then the function behaves as if <code>pos</code> were
+          <code>size()</code>.
+        </li>
+        <li>
+          If the <code>len</code> argument is larger than the number of
+          bytes remaining between <code>pos</code> and <code>size()</code>,
+          then <code>len</code> is reduced to the number of remaining bytes.
+        </li>
+      </ul>
+
       <h4 id="StringPiece-prefix">StringPiece::prefix()</h4>
+
+      <p>Returns a StringPiece which is a prefix of this StringPiece. If
+      <code>len&nbsp;&lt;=&nbsp;size()</code>, returns the first
+      <code>len</code> bytes; otherwise, returns the whole string.</p>
+
+      <p>Equivalent to: <code>substring(0,&nbsp;len)</code>.</p>
+
       <h4 id="StringPiece-suffix">StringPiece::suffix()</h4>
+
+      <p>Returns a StringPiece which is a suffix of this StringPiece. If
+      <code>len&nbsp;&lt;=&nbsp;size()</code>, returns the last
+      <code>len</code> bytes; otherwise, returns the whole string.</p>
+
+      <p>Equivalent to: <code>substring(size()&nbsp;-&nbsp;len)</code>
+      (assuming that <code>len</code> is in range)</p>
+
       <h4 id="StringPiece-strip_prefix">StringPiece::strip_prefix()</h4>
+
+      <p>Variant #1: takes <code>std::size_t</code></p>
+
+      <p>Returns a StringPiece which removes a prefix of this StringPiece. If
+      <code>len&nbsp;&lt;=&nbsp;size()</code>, returns the last
+      <code>size()&nbsp;-&nbsp;len</code> bytes; otherwise, returns an empty
+      string positioned at <code>data()&nbsp;+&nbsp;size()</code>.</p>
+
+      <p>Equivalent to: <code>substring(len)</code>.</p>
+
+      <p>Variant #2: takes <code>StringPiece</code></p>
+
+      <p>Returns a StringPiece which is like this StringPiece, but with the
+      given prefix removed.</p>
+
+      <p>Equivalent to:
+      <code>x.has_prefix(sp)&nbsp;?&nbsp;x.strip_prefix(sp.size())&nbsp;:&nbsp;x</code>.</p>
+
       <h4 id="StringPiece-strip_suffix">StringPiece::strip_suffix()</h4>
+
+      <p>Variant #1: takes <code>std::size_t</code></p>
+
+      <p>Returns a StringPiece which removes a suffix of this StringPiece. If
+      <code>len&nbsp;&lt;=&nbsp;size()</code>, returns the first
+      <code>size()&nbsp;-&nbsp;len</code> bytes; otherwise, returns an empty
+      string positioned at <code>data()</code>.</p>
+
+      <p>Equivalent to: <code>substring(0,&nbsp;size()&nbsp;-&nbsp;len)</code>
+      (assuming that <code>len</code> is in range)</p>
+
+      <p>Variant #2: takes <code>StringPiece</code></p>
+
+      <p>Returns a StringPiece which is like this StringPiece, but with the
+      given suffix removed.</p>
+
+      <p>Equivalent to:
+      <code>x.has_suffix(sp)&nbsp;?&nbsp;x.strip_suffix(sp.size())&nbsp;:&nbsp;x</code>.</p>
+
       <h3 id="trimming">Trimming</h3>
+
       <h4 id="StringPiece-remove_prefix">StringPiece::remove_prefix()</h4>
+
+      <p>Variant #1: takes <code>std::size_t</code></p>
+
+      <p>Removes the first <code>len</code> bytes from this StringPiece.</p>
+
+      <p>Equivalent to: <code>x&nbsp;=&nbsp;x.strip_prefix(len);</code></p>
+
+      <p>Variant #1: takes <code>StringPiece</code></p>
+
+      <p>Removes the prefix <code>sp</code> from this StringPiece, if this
+      StringPiece has such a prefix.</p>
+
+      <p>Equivalent to:<br>
+      <code>result&nbsp;=&nbsp;x.has_prefix(sp);</code><br>
+      <code>if&nbsp;(result)&nbsp;x&nbsp;=&nbsp;x.strip_prefix(sp.size());</code></p>
+
       <h4 id="StringPiece-remove_suffix">StringPiece::remove_suffix()</h4>
-      <h4 id="StringPiece-ltrim">StringPiece::ltrim() / StringPiece::ltrim_whitespace()</h4>
-      <h4 id="StringPiece-rtrim">StringPiece::rtrim() / StringPiece::rtrim_whitespace()</h4>
+
+      <p>Variant #1: takes <code>std::size_t</code></p>
+
+      <p>Removes the last <code>len</code> bytes from this StringPiece.</p>
+
+      <p>Equivalent to: <code>x&nbsp;=&nbsp;x.strip_suffix(len);</code></p>
+
+      <p>Variant #1: takes <code>StringPiece</code></p>
+
+      <p>Removes the suffix <code>sp</code> from this StringPiece, if this
+      StringPiece has such a suffix.</p>
+
+      <p>Equivalent to:<br>
+      <code>result&nbsp;=&nbsp;x.has_suffix(sp);</code><br>
+      <code>if&nbsp;(result)&nbsp;x&nbsp;=&nbsp;x.strip_suffix(sp.size());</code></p>
+
       <h4 id="StringPiece-trim">StringPiece::trim() / StringPiece::trim_whitespace()</h4>
+
+      <p>Removes all matching bytes from both the beginning and the end of the
+      StringPiece.</p>
+
+      <p>Variant #1: takes <code>std::function&lt;bool(char)&gt;</code></p>
+
+      <p>Removes all initial and final bytes for which <code>pred</code>
+      returns true.</p>
+
+      <p>Variant #2: takes <code>char</code></p>
+
+      <p>Removes all initial and final occurrences of <code>ch</code>.</p>
+
+      <p>Variant #3: <code>trim_whitespace()</code></p>
+
+      <p>Removes all initial and final occurrences of ASCII HT, LF, VT, FF,
+      CR, and/or SP.</p>
+
+      <h4 id="StringPiece-ltrim">StringPiece::ltrim() / StringPiece::ltrim_whitespace()</h4>
+
+      <p>Like <a href="#StringPiece-trim"><code>trim()</code></a>, but only
+      affects initial ("left") occurrences.</p>
+
+      <h4 id="StringPiece-rtrim">StringPiece::rtrim() / StringPiece::rtrim_whitespace()</h4>
+
+      <p>Like <a href="#StringPiece-trim"><code>trim()</code></a>, but only
+      affects final ("right") occurrences.</p>
+
       <h3 id="searching">Searching</h3>
+
       <h4 id="StringPiece-contains">StringPiece::contains()</h4>
+
+      <p>Returns true iff this StringPiece contains a literal occurrence of
+      <code>sp</code> within it.</p>
+
       <h4 id="StringPiece-has_prefix">StringPiece::has_prefix()</h4>
+
+      <p>Returns true iff this StringPiece begins with a literal occurrence of
+      <code>sp</code>.</p>
+
       <h4 id="StringPiece-has_suffix">StringPiece::has_suffix()</h4>
+
+      <p>Returns true iff this StringPiece ends with a literal occurrence of
+      <code>sp</code>.</p>
+
       <h4 id="StringPiece-find">StringPiece::find()</h4>
+
+      <p>Returns the index of the first ("leftmost") occurrence of
+      <code>ch</code> or <code>sp</code> that begins at or after offset
+      <code>pos</code>, or return <code>StringPiece::npos</code> if no such
+      index could be found.</p>
+
       <h4 id="StringPiece-rfind">StringPiece::rfind()</h4>
+
+      <p>Returns the index of the last ("rightmost") occurrence of <code>ch</code> or
+      <code>sp</code> that begins at or before offset <code>pos</code>, or
+      return <code>StringPiece::npos</code> if no such index could be
+      found.</p>
+
       <h3 id="stringification">Stringification</h3>
+
       <h4 id="StringPiece-append_to">StringPiece::append_to()</h4>
+
+      <p>Stringifies this StringPiece and appends it to <code>out</code>.</p>
+
       <h4 id="StringPiece-length_hint">StringPiece::length_hint()</h4>
+
+      <p>Returns the length of this StringPiece's stringification.</p>
+
       <h4 id="StringPiece-as_string">StringPiece::as_string()</h4>
+
+      <p>Returns this StringPiece as a <code>std::string</code>.</p>
+
       <h4 id="StringPiece-opltlt">StringPiece::operator&lt;&lt;()</h4>
+
+      <p>Outputs this StringPiece to the given <code>std::ostream</code>.</p>
+
       <h3 id="conversions">Conversions</h3>
+
       <h4 id="StringPiece-opstring">StringPiece::operator std::string()</h4>
+
+      <p>Alternative to
+      <a href="#StringPiece-as_string"><code>as_string()</code></a>.</p>
+
       <h4 id="StringPiece-opre2sp">StringPiece::operator re2::StringPiece()</h4>
+
+      <p>Returns an
+      <a href="https://github.com/google/re2/blob/master/re2/stringpiece.h"><code>re2::StringPiece</code></a>
+      that has the same <code>data()</code> and <code>size()</code> as this
+      StringPiece's <code>data()</code> and <code>size()</code>.</p>
     </section>
     <hr>
     <section>
