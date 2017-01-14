@@ -161,6 +161,9 @@ p:hover > .hoverlink {
     border-right: none;
     border-bottom: 1px solid #ccc;
   }
+  #toc {
+    max-width: 95%;
+  }
   p, pre, .codebox {
     margin-left: 0;
     margin-right: 0;
