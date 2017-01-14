@@ -45,7 +45,7 @@
         <li><code>event::Data</code>, an aggregate struct containing data about an event;</li>
         <li><code>event::Handler</code>, a base class for multishot callback functions;</li>
         <li><code>event::Manager</code>, a class that integrates polling and dispatching;</li>
-        <li><code>event::FileDescriptor</code>, <code>event::Signal</code>, <code>event::Timer</code>, and <code>event::Generic</code>, each of which binds an event to an <code>event::Handler</code>.</li>
+        <li><code>event::Handle</code>, which binds an event to an <code>event::Handler</code>.</li>
       </ul>
 
       <p>Example:</p>
@@ -62,7 +62,7 @@ int fdnum = accept4(..., SOCK_NONBLOCK);
 base::FD fd = base::FDHolder::make(fdnum);
 
 // Operate on socket asynchronously.
-event::FileDescriptor evt;
+event::Handle evt;
 bool done = false;
 auto closure = [&amp;](event::Data data) {
   if (data.events.error()) {
